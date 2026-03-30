@@ -1,0 +1,19 @@
+{
+  "funds": {
+    "Improved Daily Living": 22308.85,
+    "Increased Social and Community": 7164.48
+  },
+  "transactions": [
+    {
+      "id": 1,
+      "title": "Example Provider Pty Ltd",
+      "invoiceNo": "INV-2026-001",
+      "date": "2026-02-15",
+      "amount": 350.00,
+      "status": "Paid",
+      "notes": "",
+      "ndisNo": "YOUR-NDIS-NO",
+      "fundedSupport": "Improved Daily Living"
+    }
+  ]
+}

@@ -1,0 +1,440 @@
+<!-- Baker Hub Dashboard — Paste into WordPress HTML Block -->
+<!-- WordPress/Avada-proof styles: all rules use !important -->
+<style>
+  #personalHub, #personalHub * { margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; line-height: 1.5 !important; }
+  #personalHub { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important; background: #f8fafc !important; color: #1e293b !important; display: flex !important; min-height: 700px !important; border-radius: 12px !important; overflow: hidden !important; border: 1px solid #e2e8f0 !important; position: relative !important; }
+  #personalHub a, #personalHub a:hover, #personalHub a:visited { text-decoration: none !important; }
+
+  #personalHub .sidebar { width: 240px !important; background: #1e293b !important; color: white !important; padding: 24px 0 !important; flex-shrink: 0 !important; display: flex !important; flex-direction: column !important; }
+  #personalHub .sidebar h1 { font-size: 18px !important; font-weight: 700 !important; padding: 0 20px !important; margin-bottom: 28px !important; color: white !important; border: none !important; }
+  #personalHub .nav-item { display: flex !important; align-items: center !important; gap: 10px !important; padding: 11px 20px !important; font-size: 13px !important; cursor: pointer !important; transition: background 0.15s !important; border: none !important; background: none !important; color: white !important; width: 100% !important; text-align: left !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important; text-transform: none !important; letter-spacing: 0 !important; }
+  #personalHub .nav-item:hover { background: rgba(59,130,246,0.15) !important; color: white !important; }
+  #personalHub .nav-item.active { background: rgba(59,130,246,0.2) !important; border-right: 3px solid #3b82f6 !important; color: white !important; }
+  #personalHub .nav-item .icon { font-size: 16px !important; width: 22px !important; text-align: center !important; }
+  #personalHub .sidebar-footer { margin-top: auto !important; padding: 14px 20px !important; font-size: 10px !important; color: rgba(255,255,255,0.35) !important; }
+
+  #personalHub .main { flex: 1 !important; overflow-y: auto !important; padding: 28px 32px !important; max-height: 800px !important; background: #f8fafc !important; }
+  #personalHub .main h2 { font-size: 22px !important; font-weight: 700 !important; margin-bottom: 20px !important; color: #1e293b !important; border: none !important; padding: 0 !important; }
+
+  #personalHub .kpi-row { display: flex !important; gap: 16px !important; margin-bottom: 28px !important; flex-wrap: wrap !important; }
+  #personalHub .fund-card { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 20px !important; flex: 1 !important; min-width: 220px !important; }
+  #personalHub .fund-card .fund-label { font-size: 10px !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; margin-bottom: 3px !important; }
+  #personalHub .fund-card .fund-name { font-size: 14px !important; font-weight: 700 !important; margin-bottom: 14px !important; color: #1e293b !important; }
+  #personalHub .fund-card .fund-remaining { font-size: 30px !important; font-weight: 800 !important; margin-bottom: 4px !important; }
+  #personalHub .fund-card .fund-remaining.healthy { color: #16a34a !important; }
+  #personalHub .fund-card .fund-remaining.warning { color: #eab308 !important; }
+  #personalHub .fund-card .fund-remaining.danger { color: #ef4444 !important; }
+  #personalHub .fund-card .fund-detail { font-size: 11px !important; color: #94a3b8 !important; margin-bottom: 2px !important; }
+  #personalHub .fund-card .fund-detail span { color: #1e293b !important; font-weight: 600 !important; }
+  #personalHub .progress-bar { height: 6px !important; background: #f1f5f9 !important; border-radius: 99px !important; margin-top: 14px !important; overflow: hidden !important; }
+  #personalHub .progress-bar .fill { height: 100% !important; border-radius: 99px !important; }
+  #personalHub .fill.healthy { background: #22c55e !important; }
+  #personalHub .fill.warning { background: #eab308 !important; }
+  #personalHub .fill.danger { background: #ef4444 !important; }
+  #personalHub .progress-pct { font-size: 10px !important; color: #94a3b8 !important; margin-top: 4px !important; text-align: right !important; }
+
+  #personalHub .prem-card { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 20px !important; min-width: 220px !important; max-width: 280px !important; flex: 0.8 !important; }
+  #personalHub .prem-card .label { font-size: 10px !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; margin-bottom: 10px !important; }
+  #personalHub .premium-item { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 7px 0 !important; border-bottom: 1px solid #f1f5f9 !important; font-size: 12px !important; }
+  #personalHub .premium-item:last-child { border-bottom: none !important; }
+  #personalHub .p-name { font-weight: 600 !important; }
+  #personalHub .p-due { font-size: 10px !important; color: #a16207 !important; background: #fef9c3 !important; padding: 2px 7px !important; border-radius: 5px !important; }
+  #personalHub .prem-total { margin-top: 10px !important; padding-top: 8px !important; border-top: 1px solid #e2e8f0 !important; font-size: 12px !important; display: flex !important; justify-content: space-between !important; }
+  #personalHub .prem-none { font-size: 12px !important; color: #94a3b8 !important; padding: 10px 0 !important; }
+
+  #personalHub .content-grid { display: grid !important; grid-template-columns: 1.4fr 1fr !important; gap: 20px !important; }
+  #personalHub .panel { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; overflow: hidden !important; }
+  #personalHub .panel-header { padding: 14px 18px !important; border-bottom: 1px solid #e2e8f0 !important; font-weight: 600 !important; font-size: 14px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
+  #personalHub .badge { font-size: 10px !important; padding: 2px 8px !important; border-radius: 99px !important; font-weight: 600 !important; display: inline-block !important; }
+  #personalHub .badge.red { background: #fef2f2 !important; color: #ef4444 !important; }
+  #personalHub .badge.amber { background: #fefce8 !important; color: #ca8a04 !important; }
+
+  #personalHub .list-item { padding: 12px 18px !important; border-bottom: 1px solid #f1f5f9 !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
+  #personalHub .list-item:last-child { border-bottom: none !important; }
+  #personalHub .list-item:hover { background: #f8fafc !important; }
+  #personalHub .list-item .left { flex: 1 !important; min-width: 0 !important; }
+  #personalHub .list-item .title { font-weight: 600 !important; font-size: 13px !important; margin-bottom: 2px !important; }
+  #personalHub .list-item .meta { font-size: 11px !important; color: #94a3b8 !important; }
+  #personalHub .list-item .right { text-align: right !important; flex-shrink: 0 !important; margin-left: 14px !important; }
+  #personalHub .list-item .amount { font-weight: 700 !important; font-size: 14px !important; }
+  #personalHub .list-item .amount.red { color: #ef4444 !important; }
+  #personalHub .overdue-days { font-size: 10px !important; color: #ef4444 !important; margin-top: 1px !important; }
+  #personalHub .fund-tag { font-size: 9px !important; padding: 2px 7px !important; border-radius: 5px !important; display: inline-block !important; margin-top: 2px !important; }
+  #personalHub .fund-tag.isc { background: #f0fdf4 !important; color: #16a34a !important; }
+  #personalHub .fund-tag.idl { background: #eff6ff !important; color: #2563eb !important; }
+  #personalHub .due-tag { font-size: 10px !important; padding: 2px 7px !important; border-radius: 5px !important; display: inline-block !important; }
+  #personalHub .due-tag.soon { background: #fef9c3 !important; color: #a16207 !important; }
+  #personalHub .due-tag.ok { background: #f0fdf4 !important; color: #16a34a !important; }
+  #personalHub .empty-msg { padding: 20px !important; text-align: center !important; color: #94a3b8 !important; font-size: 13px !important; }
+
+  #personalHub .status { font-size: 10px !important; padding: 2px 8px !important; border-radius: 99px !important; font-weight: 600 !important; display: inline-block !important; }
+  #personalHub .status.Paid { background: #f0fdf4 !important; color: #16a34a !important; }
+  #personalHub .status.Outstanding { background: #fef2f2 !important; color: #ef4444 !important; }
+
+  #personalHub .screen { display: none !important; }
+  #personalHub .screen.active { display: block !important; }
+
+  #personalHub .data-table { width: 100% !important; border-collapse: collapse !important; }
+  #personalHub .data-table th { text-align: left !important; padding: 10px 14px !important; font-size: 10px !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; border-bottom: 2px solid #e2e8f0 !important; background: #fafbfc !important; font-weight: 600 !important; }
+  #personalHub .data-table td { padding: 10px 14px !important; border-bottom: 1px solid #f1f5f9 !important; font-size: 12px !important; background: white !important; }
+  #personalHub .data-table tr:hover td { background: #f8fafc !important; }
+  #personalHub .filter-bar { display: flex !important; gap: 10px !important; margin-bottom: 16px !important; align-items: center !important; flex-wrap: wrap !important; }
+  #personalHub .filter-bar select, #personalHub .filter-bar input { padding: 7px 10px !important; border: 1px solid #e2e8f0 !important; border-radius: 7px !important; font-size: 12px !important; background: white !important; color: #1e293b !important; height: auto !important; }
+  #personalHub .filter-bar input { flex: 1 !important; max-width: 250px !important; }
+  #personalHub .fund-summary-bar { display: flex !important; gap: 12px !important; margin-bottom: 16px !important; flex-wrap: wrap !important; }
+  #personalHub .fund-summary-item { flex: 1 !important; border-radius: 7px !important; padding: 10px 14px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; min-width: 200px !important; }
+  #personalHub .fund-summary-item.idl { background: #eff6ff !important; }
+  #personalHub .fund-summary-item.isc { background: #f0fdf4 !important; }
+  #personalHub .fs-label { font-size: 12px !important; font-weight: 600 !important; }
+  #personalHub .fund-summary-item.idl .fs-label { color: #2563eb !important; }
+  #personalHub .fund-summary-item.isc .fs-label { color: #16a34a !important; }
+  #personalHub .fs-value { font-size: 13px !important; font-weight: 700 !important; }
+
+  @media (max-width: 500px) {
+    #personalHub { flex-direction: column !important; }
+    #personalHub .sidebar { width: 100% !important; flex-direction: row !important; padding: 12px !important; align-items: center !important; flex-wrap: wrap !important; }
+    #personalHub .sidebar h1 { margin-bottom: 0 !important; margin-right: 16px !important; }
+    #personalHub .nav-item { width: auto !important; padding: 8px 14px !important; }
+    #personalHub .sidebar-footer { display: none !important; }
+    #personalHub .content-grid { grid-template-columns: 1fr !important; }
+    #personalHub .kpi-row { flex-direction: column !important; }
+    #personalHub .prem-card { max-width: 100% !important; }
+  }
+</style>
+
+<div class="ph" id="personalHub">
+  <div class="sidebar">
+    <h1>Baker Hub</h1>
+    <a class="nav-item" href="https://www.coach4u.com.au/appspersonalprofessional/" style="color:rgba(255,255,255,0.6) !important; font-size:11px !important;"><span class="icon">&#x2B05;</span> Back to Apps</a>
+    <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
+    <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
+    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+    <div class="sidebar-footer">Baker Hub v1.0</div>
+  </div>
+  <div class="main">
+    <div class="screen active" id="ph-home">
+      <h2>Dashboard</h2>
+      <div class="kpi-row" id="ph-kpis"></div>
+      <div class="content-grid">
+        <div class="panel">
+          <div class="panel-header">Outstanding NDIS Payments <span class="badge red" id="ph-out-badge"></span></div>
+          <div id="ph-out-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">Upcoming Premiums <span class="badge amber">Next 7 days</span></div>
+          <div id="ph-prem-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="ph-ndis">
+      <h2>NDIS Transactions 2026</h2>
+      <div class="fund-summary-bar" id="ph-fund-bar"></div>
+      <div class="filter-bar">
+        <select id="ph-sf" onchange="phNDIS()"><option value="">All Statuses</option><option>Paid</option><option>Outstanding</option></select>
+        <select id="ph-ff" onchange="phNDIS()"><option value="">All Funds</option><option>Improved Daily Living</option><option>Increased Social and Community</option></select>
+        <input type="text" id="ph-ns" placeholder="Search..." oninput="phNDIS()">
+      </div>
+      <div class="panel"><table class="data-table"><thead><tr><th>Provider</th><th>Invoice</th><th>Date</th><th>Fund</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ph-ntb"></tbody></table></div>
+    </div>
+    <div class="screen" id="ph-insurance">
+      <h2>Personal Insurances & Superannuation</h2>
+      <div class="filter-bar">
+        <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
+        <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
+      </div>
+      <div class="panel"><table class="data-table"><thead><tr><th>Name</th><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody id="ph-itb"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===== YOUR DATA — Edit here to update =====
+  const FUNDS = {
+    "Improved Daily Living": 22308.85,
+    "Increased Social and Community": 7164.48
+  };
+
+  const NDIS = [
+    {p:"Fiona Debarge",inv:"3",fund:"Increased Social and Community",ndis:"432335528",date:"2025-11-25",amt:715,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"6",fund:"Increased Social and Community",ndis:"432335528",date:"2025-12-09",amt:398,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"7",fund:"Increased Social and Community",ndis:"432335528",date:"2025-12-18",amt:330,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"11",fund:"Increased Social and Community",ndis:"432335528",date:"2026-01-31",amt:330,status:"Paid",notes:""},
+    {p:"Therese",inv:"15",fund:"Increased Social and Community",ndis:"435019239",date:"2026-01-28",amt:175,status:"Paid",notes:""},
+    {p:"Therese",inv:"17 Revision 1",fund:"Increased Social and Community",ndis:"435019239",date:"2026-01-28",amt:575,status:"Paid",notes:""},
+    {p:"Therese",inv:"16",fund:"Increased Social and Community",ndis:"435019239",date:"2026-01-28",amt:350,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"14",fund:"Increased Social and Community",ndis:"432335528",date:"2026-02-10",amt:343.75,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"17",fund:"Increased Social and Community",ndis:"432335528",date:"2026-03-09",amt:398.75,status:"Paid",notes:""},
+    {p:"Fiona Debarge",inv:"16",fund:"Increased Social and Community",ndis:"432335528",date:"2026-02-25",amt:247.50,status:"Paid",notes:""},
+    {p:"Therese",inv:"18 and 19",fund:"Increased Social and Community",ndis:"432335528",date:"2026-02-26",amt:0,status:"Paid",notes:"Awaiting signed consent form from Sarah."}
+  ];
+
+  const INS = [
+    {name:"Cathrine Baker",ins:"AIA",pol:"15652440",freq:"Annually",prem:467.64,pay:"Macquarie Super Plan",cover:"Life Cover",due:"2026-04-10",paid:"2026-04-10",super:null},
+    {name:"Cathrine Baker",ins:"Acenda",pol:"36083146",freq:"Monthly",prem:326.20,pay:"MLC Masterkey",cover:"Life, Trauma & Income Protection Plus 1",due:"2026-02-10",paid:"2026-02-20",super:null},
+    {name:"Cathrine Baker",ins:"Acenda",pol:"36093145",freq:"Monthly",prem:202.73,pay:"Credit Card",cover:"Income Protection Plus 1",due:"2026-02-11",paid:"2026-02-11",super:null},
+    {name:"Cathrine Baker",ins:"Acenda",pol:"36135328",freq:"Monthly",prem:128.80,pay:"Credit Card",cover:"Critical Illness Plus 1",due:"2026-02-20",paid:"2026-02-20",super:null},
+    {name:"Cathrine Baker",ins:"Zurich",pol:"50210902",freq:"Annually",prem:297.02,pay:"Macquarie Super Plan",cover:"Life & TPD",due:"2026-11-15",paid:"2026-11-15",super:null},
+    {name:"Cathrine Baker",ins:"Zurich",pol:"50210901",freq:"Monthly",prem:48.08,pay:"Credit Card",cover:"TPD & Trauma",due:"2026-02-15",paid:"2026-02-15",super:null},
+    {name:"Cathrine Baker",ins:"TAL/Asteron",pol:"81376809",freq:"Monthly",prem:94.30,pay:"Credit Card",cover:"Trauma & TPD",due:"2026-02-17",paid:"2026-02-17",super:null},
+    {name:"Andrew Baker",ins:"Ascenda",pol:"36065775",freq:"Annually",prem:4066.00,pay:"MLC Masterkey",cover:"Life, Trauma & Income Protection Plus 1",due:"2026-11-18",paid:"2026-11-18",super:null},
+    {name:"Andrew Baker",ins:"Ascenda",pol:"36085574",freq:"Monthly",prem:454.00,pay:"Credit Card",cover:"Income Protection Plus 1",due:"2026-02-19",paid:"2026-02-19",super:null},
+    {name:"Andrew Baker",ins:"Ascenda",pol:"36158209",freq:"Monthly",prem:86.76,pay:"Credit Card",cover:"Critical Illness Plus 1",due:"2026-02-15",paid:"2026-02-15",super:null},
+    {name:"Andrew Baker",ins:"Zurich",pol:"50211672",freq:"Annually",prem:600.86,pay:"Macquarie Super Plan",cover:"Life & TPD",due:"2026-11-28",paid:"2026-11-28",super:null},
+    {name:"Andrew Baker",ins:"Zurich",pol:"50211674",freq:"Monthly",prem:105.29,pay:"Credit Card",cover:"TPD & Trauma",due:"2026-01-28",paid:"2026-01-28",super:null},
+    {name:"Andrew Baker",ins:"TAL/Asteron",pol:"81376807",freq:"Monthly",prem:150.92,pay:"Credit Card",cover:"Trauma & TPD",due:"2026-02-17",paid:"2026-02-17",super:null},
+    {name:"Andrew Baker",ins:"ClearView",pol:"51825896",freq:"Monthly",prem:76.78,pay:"Credit Card",cover:"Income Protection Plus",due:"2026-02-13",paid:"2026-02-13",super:null},
+    {name:"Cathrine Baker",ins:"Macquarie Superannuation",pol:"M99069 / 802445185",freq:"",prem:0,pay:"",cover:"Superannuation",due:"",paid:"",super:225857.13}
+  ];
+  // ===== END DATA =====
+
+  const $=s=>document.querySelector(s);
+  const $$=s=>document.querySelectorAll(s);
+  const money=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const fmtD=d=>{if(!d)return'—';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});};
+  const shortD=d=>{if(!d)return'—';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});};
+  const daysDiff=d=>Math.floor((new Date()-new Date(d+'T00:00:00'))/86400000);
+  const daysUntil=d=>Math.floor((new Date(d+'T00:00:00')-new Date())/86400000);
+  const ftc=f=>f.includes('Daily Living')?'idl':'isc';
+  const ftn=f=>f.includes('Daily Living')?'Improved Daily Living':'Social & Community';
+
+  function color(remaining,budget){const p=((budget-remaining)/budget)*100;return p>=80?'danger':p>=50?'warning':'healthy';}
+
+  function renderHome(){
+    const spent={};
+    for(const f in FUNDS)spent[f]=0;
+    NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+
+    let h='';
+    for(const f in FUNDS){
+      const b=FUNDS[f],s=spent[f]||0,r=b-s,pct=Math.round((s/b)*100),c=color(r,b);
+      h+=`<div class="fund-card"><div class="fund-label">NDIS Funding</div><div class="fund-name">${f}</div><div class="fund-remaining ${c}">${money(r)}</div><div class="fund-detail">Budget: <span>${money(b)}</span></div><div class="fund-detail">Spent: <span>${money(s)}</span></div><div class="progress-bar"><div class="fill ${c}" style="width:${pct}%"></div></div><div class="progress-pct">${pct}% used</div></div>`;
+    }
+
+    const in7=INS.filter(p=>p.due&&daysUntil(p.due)>=0&&daysUntil(p.due)<=7);
+    h+='<div class="prem-card"><div class="label">Premiums Due &#8212; Next 7 Days</div>';
+    if(!in7.length)h+='<div class="prem-none">No premiums due this week</div>';
+    else{in7.forEach(p=>{h+=`<div class="premium-item"><span class="p-name">${p.name} — ${p.cover}</span><span class="p-due">${shortD(p.due)}</span></div>`;});h+=`<div class="prem-total"><span>Total due</span><span style="font-weight:700;color:#eab308">${money(in7.reduce((s,p)=>s+p.prem,0))}</span></div>`;}
+    h+='</div>';
+    $('#ph-kpis').innerHTML=h;
+
+    const outstanding=NDIS.filter(t=>t.status==='Outstanding');
+    $('#ph-out-badge').textContent=outstanding.length+' outstanding';
+    if(!outstanding.length)$('#ph-out-list').innerHTML='<div class="empty-msg">No outstanding payments</div>';
+    else $('#ph-out-list').innerHTML=outstanding.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(t=>`<div class="list-item"><div class="left"><div class="title">${t.p}</div><div class="meta">Inv: ${t.inv} | ${fmtD(t.date)}${t.notes?' | '+t.notes:''}</div><span class="fund-tag ${ftc(t.fund)}">${ftn(t.fund)}</span></div><div class="right"><div class="amount red">${t.amt?money(t.amt):'TBC'}</div><div class="overdue-days">${daysDiff(t.date)} days</div></div></div>`).join('');
+
+    if(!in7.length)$('#ph-prem-list').innerHTML='<div class="empty-msg">No premiums due in the next 7 days</div>';
+    else $('#ph-prem-list').innerHTML=in7.map(p=>`<div class="list-item"><div class="left"><div class="title">${p.name} — ${p.cover}</div><div class="meta">${p.ins} | ${money(p.prem)}/${p.freq.toLowerCase()}</div></div><div class="right"><span class="due-tag soon">Due ${shortD(p.due)}</span></div></div>`).join('');
+  }
+
+  window.phNDIS=function(){
+    const sf=$('#ph-sf').value,ff=$('#ph-ff').value,ns=$('#ph-ns').value.toLowerCase();
+    const spent={};for(const f in FUNDS)spent[f]=0;NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+    let bar='';for(const f in FUNDS){const r=FUNDS[f]-(spent[f]||0),cls=ftc(f),c=color(r,FUNDS[f]);bar+=`<div class="fund-summary-item ${cls}"><span class="fs-label">${f}</span><span class="fs-value" style="color:${c==='healthy'?'#16a34a':c==='warning'?'#eab308':'#ef4444'}">${money(r)} remaining</span></div>`;}
+    $('#ph-fund-bar').innerHTML=bar;
+
+    let fl=NDIS;
+    if(sf)fl=fl.filter(t=>t.status===sf);
+    if(ff)fl=fl.filter(t=>t.fund===ff);
+    if(ns)fl=fl.filter(t=>t.p.toLowerCase().includes(ns)||t.inv.toLowerCase().includes(ns));
+    fl.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+    $('#ph-ntb').innerHTML=fl.map(t=>`<tr><td><strong>${t.p}</strong></td><td>${t.inv}</td><td>${fmtD(t.date)}</td><td><span class="fund-tag ${ftc(t.fund)}">${ftn(t.fund)}</span></td><td><strong>${t.amt?money(t.amt):'TBC'}</strong></td><td><span class="status ${t.status}">${t.status}</span></td></tr>`).join('');
+  };
+
+  window.phIns=function(){
+    const tf=$('#ph-tf').value,is=$('#ph-is').value.toLowerCase();
+    let fl=INS;
+    if(tf)fl=fl.filter(p=>p.cover===tf);
+    if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is));
+    fl.sort((a,b)=>a.due&&b.due?new Date(a.due)-new Date(b.due):a.due?-1:1);
+    $('#ph-itb').innerHTML=fl.map(p=>{
+      const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
+      return `<tr><td><strong>${p.name}</strong></td><td>${p.ins}</td><td>${p.pol}</td><td>${p.cover}</td><td><strong>${p.prem?money(p.prem):'—'}</strong>${p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':''}</td><td>${p.freq||'—'}</td><td>${p.pay||'—'}</td><td>${p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'—'}</td><td>${fmtD(p.paid)}</td></tr>`;
+    }).join('');
+  };
+
+  window.phNav=function(name,btn){
+    $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
+    $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('ph-'+name).classList.add('active');
+    btn.classList.add('active');
+    if(name==='ndis')phNDIS();
+    if(name==='insurance')phIns();
+  };
+
+  // Populate cover type filter
+  const types=[...new Set(INS.map(p=>p.cover))].sort();
+  $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+
+  // Build data summary for AI context
+  window.phGetDataSummary=function(){
+    const spent={};for(const f in FUNDS)spent[f]=0;
+    NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+    let summary='NDIS FUNDING:\n';
+    for(const f in FUNDS){summary+=`- ${f}: Budget $${FUNDS[f].toFixed(2)}, Spent $${(spent[f]||0).toFixed(2)}, Remaining $${(FUNDS[f]-(spent[f]||0)).toFixed(2)}\n`;}
+    summary+=`\nNDIS TRANSACTIONS (${NDIS.length} total):\n`;
+    NDIS.forEach(t=>{summary+=`- ${t.p}, Inv ${t.inv}, ${t.date}, $${t.amt.toFixed(2)}, ${t.status}, ${t.fund}${t.notes?' ('+t.notes+')':''}\n`;});
+    summary+=`\nINSURANCE POLICIES (${INS.length} total):\n`;
+    INS.forEach(p=>{summary+=`- ${p.name}, ${p.ins}, ${p.cover}, $${p.prem.toFixed(2)} ${p.freq}, Due ${p.due||'N/A'}, Paid to ${p.paid||'N/A'}, Pay via ${p.pay||'N/A'}${p.super?' (Super balance: $'+p.super.toFixed(2)+')':''}\n`;});
+    return summary;
+  };
+
+  renderHome();
+  phNDIS();
+  phIns();
+})();
+</script>
+
+<!-- Baker AI Chat Widget -->
+<style>
+  .bai-toggle { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; font-size: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+  .bai-toggle:hover { transform: scale(1.1); }
+
+  .bai-panel { position: fixed; bottom: 92px; right: 24px; width: 400px; max-height: 520px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 9999; display: none; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .bai-panel.open { display: flex; }
+
+  .bai-header { background: #1e293b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .bai-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
+  .bai-header span { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .bai-close { background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 4px; }
+
+  .bai-messages { flex: 1; overflow-y: auto; padding: 16px; max-height: 340px; }
+  .bai-msg { margin-bottom: 12px; max-width: 85%; }
+  .bai-msg.user { margin-left: auto; }
+  .bai-msg .bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+  .bai-msg.ai .bubble { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 4px; }
+  .bai-msg.user .bubble { background: #1e293b; color: white; border-bottom-right-radius: 4px; }
+  .bai-msg .bubble ul, .bai-msg .bubble ol { padding-left: 18px; margin: 6px 0; }
+  .bai-msg .bubble li { margin-bottom: 3px; }
+  .bai-msg .bubble strong { font-weight: 700; }
+  .bai-msg .bubble p { margin-bottom: 8px; }
+  .bai-msg .bubble p:last-child { margin-bottom: 0; }
+  .bai-typing { color: #94a3b8; font-size: 12px; padding: 4px 14px; }
+  .bai-typing .dots { display: inline-block; }
+  .bai-typing .dots span { animation: baiDot 1.4s infinite; opacity: 0.3; }
+  .bai-typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .bai-typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes baiDot { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  .bai-input { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #e2e8f0; }
+  .bai-input input { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; outline: none; }
+  .bai-input input:focus { border-color: #3b82f6; }
+  .bai-input button { padding: 10px 16px; background: #1e293b; color: white; border: none; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .bai-input button:hover { background: #334155; }
+  .bai-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .bai-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+  .bai-sug { font-size: 11px; padding: 5px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; color: #475569; }
+  .bai-sug:hover { background: #e2e8f0; }
+</style>
+
+<button class="bai-toggle" onclick="baiToggle()" title="Baker AI">&#x1F916;</button>
+
+<div class="bai-panel" id="baiPanel">
+  <div class="bai-header">
+    <div><h3>Baker AI</h3><span>Your personal finance assistant</span></div>
+    <button class="bai-close" onclick="baiToggle()">&#x2715;</button>
+  </div>
+  <div class="bai-messages" id="baiMessages">
+    <div class="bai-msg ai"><div class="bubble">G'day! I'm Baker AI. I can see your NDIS funding, insurance policies, and super data. Ask me anything &#8212; or try one of the suggestions below.</div></div>
+  </div>
+  <div class="bai-suggestions" id="baiSugs">
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">What's my NDIS budget status?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">Which premiums are due soon?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">How can I optimise my insurance?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">Summarise my spending</span>
+  </div>
+  <div class="bai-input">
+    <input type="text" id="baiInput" placeholder="Ask Baker AI..." onkeydown="if(event.key==='Enter')baiSend()">
+    <button onclick="baiSend()" id="baiSendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===== CONFIGURATION =====
+  // Replace with the URL where you uploaded baker-ai-proxy.php on GoDaddy
+  const PROXY_URL = 'https://yourdomain.com/baker-ai-proxy.php';
+  // ==========================
+
+  const msgs = document.getElementById('baiMessages');
+  const input = document.getElementById('baiInput');
+  const sendBtn = document.getElementById('baiSendBtn');
+  const sugs = document.getElementById('baiSugs');
+
+  window.baiToggle = function(){
+    document.getElementById('baiPanel').classList.toggle('open');
+    if(document.getElementById('baiPanel').classList.contains('open')) input.focus();
+  };
+
+  function addMsg(text, role){
+    const div = document.createElement('div');
+    div.className = 'bai-msg ' + role;
+    // Simple markdown-like formatting
+    let html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n- /g, '\n<li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    if(html.includes('<li>')) html = '<ul>' + html.replace(/<li>/g, '<li>') + '</ul>';
+    div.innerHTML = '<div class="bubble"><p>' + html + '</p></div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping(){
+    const div = document.createElement('div');
+    div.className = 'bai-typing';
+    div.id = 'baiTyping';
+    div.innerHTML = 'Baker AI is thinking <span class="dots"><span>.</span><span>.</span><span>.</span></span>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  function hideTyping(){
+    const el = document.getElementById('baiTyping');
+    if(el) el.remove();
+  }
+
+  window.baiAsk = function(text){
+    input.value = text;
+    baiSend();
+  };
+
+  window.baiSend = async function(){
+    const text = input.value.trim();
+    if(!text) return;
+
+    addMsg(text, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+    sugs.style.display = 'none';
+    showTyping();
+
+    try {
+      const dataSummary = typeof phGetDataSummary === 'function' ? phGetDataSummary() : '';
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: text, data: dataSummary })
+      });
+
+      hideTyping();
+
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        addMsg(err.error || 'Sorry, something went wrong. Please try again.', 'ai');
+      } else {
+        const data = await res.json();
+        addMsg(data.reply, 'ai');
+      }
+    } catch(e) {
+      hideTyping();
+      addMsg('Could not reach Baker AI. Check that the proxy URL is configured correctly.', 'ai');
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  };
+})();
+</script>

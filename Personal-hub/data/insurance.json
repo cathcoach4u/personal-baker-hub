@@ -1,0 +1,19 @@
+{
+  "policies": [
+    {
+      "id": 1,
+      "title": "Example Policy",
+      "insurer": "Example Insurer",
+      "policyNo": "POL-00001",
+      "superannuationAmount": null,
+      "premiumFrequency": "Monthly",
+      "premium": 100.00,
+      "paymentMethod": "Direct Debit",
+      "coverType": "Home & Contents",
+      "dueDate": "2026-04-01",
+      "paidToDate": "2026-03-01",
+      "notes": "",
+      "sharepointFiling": ""
+    }
+  ]
+}

@@ -146,6 +146,25 @@
     .priority-dot.high { background: #f97316; }
     .priority-dot.urgent { background: #ef4444; }
 
+    .bin-widget { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    .bin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .bin-header h3 { font-size: 14px; font-weight: 700; color: #1e293b; }
+    .bin-week-label { font-size: 22px; font-weight: 800; padding: 4px 14px; border-radius: 8px; }
+    .bin-week-label.week-a { background: #fefce8; color: #a16207; }
+    .bin-week-label.week-b { background: #f0fdf4; color: #16a34a; }
+    .bin-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .bin-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; }
+    .bin-item.red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .bin-item.yellow { background: #fefce8; color: #a16207; border: 1px solid #fef08a; }
+    .bin-item.green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .bin-dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+    .bin-dot.red { background: #dc2626; }
+    .bin-dot.yellow { background: #eab308; }
+    .bin-dot.green { background: #16a34a; }
+    .bin-toggle { font-size: 10px; color: #94a3b8; cursor: pointer; text-decoration: underline; }
+    .bin-toggle:hover { color: #64748b; }
+    .bin-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
 
@@ -179,6 +198,7 @@
     <div id="ph-error"></div>
     <div class="screen active" id="ph-home" style="display:none;">
       <h2>Dashboard</h2>
+      <div class="bin-widget" id="ph-bin"></div>
       <div class="kpi-row" id="ph-kpis"></div>
       <div class="content-grid">
         <div class="panel">
@@ -349,7 +369,48 @@
 
   function color(remaining,budget){const p=((budget-remaining)/budget)*100;return p>=80?'danger':p>=50?'warning':'healthy';}
 
+  // --- Bin Collection Widget ---
+  // Thursday collection. Week A = Yellow (Recycling), Week B = Green (Vegetation).
+  // Reference: Thursday 2 April 2026 = Week A (from ThursdayA.pdf filename).
+  // User can toggle if wrong — saved in localStorage.
+  function getBinWeek(){
+    const refDate=new Date('2026-04-02T00:00:00'); // Known Week A Thursday
+    const now=new Date();
+    const diffMs=now-refDate;
+    const diffWeeks=Math.floor(diffMs/604800000);
+    const isA=(diffWeeks%2===0);
+    // Check if user has flipped it
+    const flipped=localStorage.getItem('binWeekFlipped')==='true';
+    return flipped?!isA:isA;
+  }
+
+  function renderBin(){
+    const isA=getBinWeek();
+    const week=isA?'A':'B';
+    const wClass=isA?'week-a':'week-b';
+    const today=new Date();
+    const dayOfWeek=today.getDay(); // 0=Sun, 4=Thu
+    const daysToThursday=(4-dayOfWeek+7)%7;
+    const nextThursday=new Date(today);
+    nextThursday.setDate(today.getDate()+(daysToThursday===0?0:daysToThursday));
+    const thuStr=nextThursday.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'short'});
+    const isToday=daysToThursday===0;
+
+    let bins='<div class="bin-item red"><span class="bin-dot red"></span>Red lid — General Waste (weekly)</div>';
+    if(isA) bins+='<div class="bin-item yellow"><span class="bin-dot yellow"></span>Yellow lid — Recycling</div>';
+    else bins+='<div class="bin-item green"><span class="bin-dot green"></span>Green lid — Vegetation / Organics</div>';
+
+    $('#ph-bin').innerHTML='<div class="bin-header"><h3>Bin Collection — '+(isToday?'Today!':thuStr)+'</h3><span class="bin-week-label '+wClass+'">Week '+week+'</span></div><div class="bin-row">'+bins+'</div><div class="bin-note">Bins out the night before, lid facing the street. <span class="bin-toggle" onclick="phFlipBin()">Wrong week? Click to swap</span></div>';
+  }
+
+  window.phFlipBin=function(){
+    const current=localStorage.getItem('binWeekFlipped')==='true';
+    localStorage.setItem('binWeekFlipped',String(!current));
+    renderBin();
+  };
+
   function renderHome(){
+    renderBin();
     const spent={};
     for(const f in FUNDS)spent[f]=0;
     NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});

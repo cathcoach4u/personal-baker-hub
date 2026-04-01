@@ -196,7 +196,7 @@
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
     <div id="ph-error"></div>
-    <div class="screen active" id="ph-home" style="display:none;">
+    <div class="screen" id="ph-home">
       <h2>Dashboard</h2>
       <div class="bin-widget" id="ph-bin"></div>
       <div class="kpi-row" id="ph-kpis"></div>
@@ -356,7 +356,7 @@
 
   // --- Hide loading, show dashboard ---
   $('#ph-loading').style.display = 'none';
-  $('#ph-home').style.display = 'block';
+  $('#ph-home').classList.add('active');
 
   // --- Helpers ---
   const money=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');

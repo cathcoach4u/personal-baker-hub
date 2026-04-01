@@ -207,6 +207,11 @@
     .bin-toggle { font-size: 10px; color: #94a3b8; cursor: pointer; text-decoration: underline; }
     .bin-toggle:hover { color: #64748b; }
     .bin-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    .weekly-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .weekly-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; border: 1px solid #e2e8f0; }
+    .weekly-item .wi-icon { font-size: 16px; }
+    .weekly-item .wi-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px; }
+    .weekly-item .wi-value { font-weight: 700; color: #1e293b; }
 
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
@@ -263,8 +268,9 @@
     <div id="ph-loading">Loading dashboard data...</div>
     <div id="ph-error"></div>
     <div class="screen" id="ph-home">
-      <h2>Dashboard</h2>
+      <h2 id="ph-greeting">Dashboard</h2>
       <div class="bin-widget" id="ph-bin"></div>
+      <div class="bin-widget" id="ph-weekly"></div>
       <div class="bin-widget" id="ph-bulky" style="display:none;"></div>
       <div class="kpi-row" id="ph-kpis"></div>
       <div class="content-grid">
@@ -590,6 +596,27 @@
     renderBin();
   };
 
+  function renderWeekly(){
+    const isA=getBinWeek();
+    const week=isA?'A':'B';
+    // Week A = Cleaners, Week B = Fiona
+    const thisWeek=isA?'Cleaners':'Fiona';
+    const nextWeek=isA?'Fiona':'Cleaners';
+    const wClass=isA?'week-a':'week-b';
+
+    // Greeting with week
+    const hour=new Date().getHours();
+    const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+    $('#ph-greeting').innerHTML=greeting+' <span class="bin-week-label '+wClass+'" style="font-size:14px;vertical-align:middle;margin-left:8px;">Week '+week+'</span>';
+
+    let html='<div class="bin-header"><h3>This Week</h3></div>';
+    html+='<div class="weekly-row">';
+    html+='<div class="weekly-item"><span class="wi-icon">'+(thisWeek==='Cleaners'?'\u{1F9F9}':'\u{1F9D1}\u200D\u{1F9AF}')+'</span><div><div class="wi-label">This week</div><div class="wi-value">'+thisWeek+'</div></div></div>';
+    html+='<div class="weekly-item"><span class="wi-icon">'+(nextWeek==='Cleaners'?'\u{1F9F9}':'\u{1F9D1}\u200D\u{1F9AF}')+'</span><div><div class="wi-label">Next week</div><div class="wi-value">'+nextWeek+'</div></div></div>';
+    html+='</div>';
+    $('#ph-weekly').innerHTML=html;
+  }
+
   function renderBulky(){
     // Bulky waste collection date — update here when rebooked
     const bulkyDate='2026-05-11';
@@ -607,6 +634,7 @@
 
   function renderHome(){
     renderBin();
+    renderWeekly();
     renderBulky();
     const spent={};
     for(const f in FUNDS)spent[f]=0;

@@ -164,6 +164,9 @@
     .form-msg { font-size: 12px; padding: 8px 12px; border-radius: 7px; margin-top: 10px; display: none; }
     .form-msg.success { display: block; background: #f0fdf4; color: #16a34a; }
     .form-msg.error { display: block; background: #fef2f2; color: #ef4444; }
+    .group-section { margin-bottom: 24px; }
+    .group-header { font-size: 15px; font-weight: 700; color: #1e293b; padding: 10px 0 8px; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; }
+    .group-header .group-total { font-size: 12px; font-weight: 600; color: #64748b; }
     .data-table tr.clickable { cursor: pointer; }
     .data-table tr.clickable:hover td { background: #eff6ff; }
     .receipt-link { font-size: 10px; color: #3b82f6; text-decoration: none; }
@@ -273,9 +276,31 @@
       <h2>Personal Insurances & Superannuation</h2>
       <div class="filter-bar">
         <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
+        <select id="ph-if" onchange="phIns()"><option value="">All People</option></select>
         <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
+        <button class="add-btn" onclick="phToggleInsForm()">+ Add Policy</button>
       </div>
-      <div class="panel"><table class="data-table"><thead><tr><th>Name</th><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody id="ph-itb"></tbody></table></div>
+      <div class="add-form" id="ph-ins-form">
+        <h3 id="if-title">New Insurance Policy</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option></select></div>
+          <div class="form-group"><label>Insurer</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
+          <div class="form-group"><label>Policy No</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
+          <div class="form-group"><label>Cover Type</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
+          <div class="form-group"><label>Premium ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
+          <div class="form-group"><label>Frequency</label><select id="if-freq"><option>Monthly</option><option>Annually</option><option value="">N/A</option></select></div>
+          <div class="form-group"><label>Payment Method</label><input type="text" id="if-pay" placeholder="e.g. Credit Card"></div>
+          <div class="form-group"><label>Next Due</label><input type="date" id="if-due"></div>
+          <div class="form-group"><label>Paid To</label><input type="date" id="if-paid"></div>
+          <div class="form-group"><label>Super Amount ($)</label><input type="number" id="if-super" step="0.01" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="if-save-btn" onclick="phSaveIns()">Save Policy</button>
+          <button class="add-btn cancel" onclick="phToggleInsForm()">Cancel</button>
+        </div>
+        <div class="form-msg" id="if-msg"></div>
+      </div>
+      <div id="ph-ins-groups"></div>
     </div>
     <div class="screen" id="ph-contacts">
       <h2>Baker Contacts</h2>
@@ -361,6 +386,7 @@
     }));
 
     INS = (insRes.data || []).map(r => ({
+      id: r.id,
       name: r.person_name,
       ins: r.insurer,
       pol: r.policy_number,
@@ -691,15 +717,122 @@
   };
 
   window.phIns=function(){
-    const tf=$('#ph-tf').value,is=$('#ph-is').value.toLowerCase();
+    const tf=$('#ph-tf').value,pf=$('#ph-if').value,is=$('#ph-is').value.toLowerCase();
     let fl=INS;
     if(tf)fl=fl.filter(p=>p.cover===tf);
-    if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is));
+    if(pf)fl=fl.filter(p=>p.name===pf);
+    if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
     fl.sort((a,b)=>a.due&&b.due?new Date(a.due)-new Date(b.due):a.due?-1:1);
-    $('#ph-itb').innerHTML=fl.map(p=>{
-      const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
-      return '<tr><td><strong>'+p.name+'</strong></td><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
-    }).join('');
+
+    // Group by person
+    const groups={};
+    fl.forEach(p=>{if(!groups[p.name])groups[p.name]=[];groups[p.name].push(p);});
+
+    let html='';
+    for(const person in groups){
+      const policies=groups[person];
+      const monthlyTotal=policies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
+      const annualTotal=policies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
+      let totalStr='';
+      if(monthlyTotal)totalStr+=money(monthlyTotal)+'/mo';
+      if(monthlyTotal&&annualTotal)totalStr+=' + ';
+      if(annualTotal)totalStr+=money(annualTotal)+'/yr';
+
+      html+='<div class="group-section"><div class="group-header"><span>'+person+' ('+policies.length+' policies)</span><span class="group-total">'+totalStr+'</span></div>';
+      html+='<div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
+      html+=policies.map(p=>{
+        const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
+        return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
+      }).join('');
+      html+='</tbody></table></div></div>';
+    }
+    $('#ph-ins-groups').innerHTML=html;
+  };
+
+  let editingInsId=null;
+
+  function resetInsForm(){
+    editingInsId=null;
+    $('#if-title').textContent='New Insurance Policy';
+    $('#if-save-btn').textContent='Save Policy';
+    $('#if-name').value='Cathrine Baker';$('#if-ins').value='';$('#if-pol').value='';
+    $('#if-cover').value='';$('#if-prem').value='';$('#if-freq').value='Monthly';
+    $('#if-pay').value='';$('#if-due').value='';$('#if-paid').value='';$('#if-super').value='';
+    $('#if-msg').className='form-msg';$('#if-msg').textContent='';
+  }
+
+  window.phToggleInsForm=function(){
+    const form=$('#ph-ins-form');
+    if(form.classList.contains('open')){form.classList.remove('open');resetInsForm();return;}
+    resetInsForm();
+    form.classList.add('open');
+  };
+
+  window.phEditIns=function(id){
+    const p=INS.find(x=>x.id===id);
+    if(!p)return;
+    editingInsId=id;
+    const form=$('#ph-ins-form');
+    form.classList.add('open');
+    $('#if-title').textContent='Edit Policy \u2014 '+p.ins+' ('+p.cover+')';
+    $('#if-save-btn').textContent='Update Policy';
+    $('#if-name').value=p.name;$('#if-ins').value=p.ins;$('#if-pol').value=p.pol;
+    $('#if-cover').value=p.cover;$('#if-prem').value=p.prem||'';$('#if-freq').value=p.freq;
+    $('#if-pay').value=p.pay;$('#if-due').value=p.due;$('#if-paid').value=p.paid;
+    $('#if-super').value=p.super||'';
+    $('#if-msg').className='form-msg';$('#if-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveIns=async function(){
+    const name=$('#if-name').value;
+    const ins=$('#if-ins').value.trim();
+    const pol=$('#if-pol').value.trim();
+    const cover=$('#if-cover').value.trim();
+    const prem=parseFloat($('#if-prem').value)||0;
+    const freq=$('#if-freq').value;
+    const pay=$('#if-pay').value.trim();
+    const due=$('#if-due').value||null;
+    const paid=$('#if-paid').value||null;
+    const superAmt=parseFloat($('#if-super').value)||null;
+
+    if(!ins||!cover){
+      $('#if-msg').className='form-msg error';
+      $('#if-msg').textContent='Please fill in Insurer and Cover Type.';
+      return;
+    }
+
+    const row={
+      person_name:name,insurer:ins,policy_number:pol,cover_type:cover,
+      premium:prem,premium_frequency:freq,payment_method:pay,
+      due_date:due,paid_to_date:paid,superannuation_amount:superAmt
+    };
+
+    try {
+      if(editingInsId){
+        const {error}=await sb.from('insurance_policies').update(row).eq('id',editingInsId);
+        if(error)throw error;
+        const idx=INS.findIndex(x=>x.id===editingInsId);
+        if(idx>=0)INS[idx]={id:editingInsId,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt};
+        $('#if-msg').className='form-msg success';
+        $('#if-msg').textContent='Policy updated!';
+      } else {
+        const {data:inserted,error}=await sb.from('insurance_policies').insert(row).select().single();
+        if(error)throw error;
+        INS.push({id:inserted.id,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt});
+        $('#if-msg').className='form-msg success';
+        $('#if-msg').textContent='Policy saved!';
+      }
+      phIns();
+      // Refresh cover type filter
+      const types=[...new Set(INS.map(p=>p.cover))].sort();
+      $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+      setTimeout(()=>{$('#ph-ins-form').classList.remove('open');resetInsForm();},1500);
+    } catch(e){
+      $('#if-msg').className='form-msg error';
+      $('#if-msg').textContent='Error: '+e.message;
+      console.error(e);
+    }
   };
 
   const catClass=c=>c==='Medical'?'medical':c==='Health & Wellness'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Entertainment'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
@@ -765,9 +898,11 @@
     if(name==='dates')phDates();
   };
 
-  // Populate cover type filter
+  // Populate insurance filters
   const types=[...new Set(INS.map(p=>p.cover))].sort();
   $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+  const people=[...new Set(INS.map(p=>p.name))].sort();
+  $('#ph-if').innerHTML='<option value="">All People</option>'+people.map(p=>'<option>'+p+'</option>').join('');
 
   // Populate contacts category filter
   const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();

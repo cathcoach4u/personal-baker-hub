@@ -242,14 +242,15 @@
       <div class="add-form" id="ph-ndis-form">
         <h3>New NDIS Transaction</h3>
         <div class="form-grid">
-          <div class="form-group"><label>Provider</label><input type="text" id="nf-provider" placeholder="e.g. Fiona Debarge"></div>
+          <div class="form-group"><label>Provider</label><select id="nf-provider" onchange="phProviderChanged()"><option value="">Select provider...</option></select></div>
+          <div class="form-group" id="nf-newprov-group" style="display:none;"><label>New Provider Name</label><input type="text" id="nf-newprov" placeholder="e.g. Sarah's Support Services"></div>
           <div class="form-group"><label>Invoice No</label><input type="text" id="nf-invoice" placeholder="e.g. 20"></div>
           <div class="form-group"><label>Date</label><input type="date" id="nf-date"></div>
           <div class="form-group"><label>Amount ($)</label><input type="number" id="nf-amount" step="0.01" placeholder="0.00"></div>
           <div class="form-group"><label>Fund</label><select id="nf-fund"><option>Increased Social and Community</option><option>Improved Daily Living</option></select></div>
           <div class="form-group"><label>NDIS Number</label><input type="text" id="nf-ndis" placeholder="e.g. 432335528"></div>
           <div class="form-group"><label>Status</label><select id="nf-status"><option>Outstanding</option><option>Paid</option></select></div>
-          <div class="form-group"><label>Notes</label><input type="text" id="nf-notes" placeholder="Optional"></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="nf-notes" placeholder="Optional"></div>
         </div>
         <div class="form-actions">
           <button class="add-btn" onclick="phSaveNdis()">Save Transaction</button>
@@ -311,18 +312,20 @@
   let CONTACTS = [];
   let PROJECTS = [];
   let DATES = [];
+  let PROVIDERS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   try {
 
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
       sb.from('contacts').select('*').order('name'),
       sb.from('house_projects').select('*').order('priority'),
-      sb.from('important_dates').select('*').order('date_start')
+      sb.from('important_dates').select('*').order('date_start'),
+      sb.from('ndis_providers').select('*').order('name')
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
@@ -331,6 +334,7 @@
     if (contactsRes.error) throw contactsRes.error;
     if (projectsRes.error) throw projectsRes.error;
     if (datesRes.error) throw datesRes.error;
+    if (providersRes.error) throw providersRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -383,6 +387,13 @@
       loc: r.location || '',
       cat: r.category,
       notes: r.notes || ''
+    }));
+
+    PROVIDERS = (providersRes.data || []).map(r => ({
+      id: r.id,
+      name: r.name,
+      ndis: r.ndis_number || '',
+      fund: r.default_fund || ''
     }));
 
   } catch (err) {
@@ -491,17 +502,50 @@
     $('#ph-ntb').innerHTML=fl.map(t=>'<tr><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td></tr>').join('');
   };
 
+  function populateProviderDropdown(){
+    $('#nf-provider').innerHTML='<option value="">Select provider...</option>'+PROVIDERS.map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('')+'<option value="__new">+ Add new provider...</option>';
+  }
+
+  window.phProviderChanged=function(){
+    const val=$('#nf-provider').value;
+    if(val==='__new'){
+      $('#nf-newprov-group').style.display='flex';
+      $('#nf-ndis').value='';$('#nf-fund').value='Increased Social and Community';
+      return;
+    }
+    $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
+    if(!val)return;
+    const prov=PROVIDERS.find(p=>p.id===parseInt(val));
+    if(prov){
+      if(prov.ndis)$('#nf-ndis').value=prov.ndis;
+      if(prov.fund)$('#nf-fund').value=prov.fund;
+    }
+  };
+
   window.phToggleNdisForm=function(){
     const form=$('#ph-ndis-form');
     form.classList.toggle('open');
     if(form.classList.contains('open')){
+      populateProviderDropdown();
       $('#nf-date').value=new Date().toISOString().split('T')[0];
       $('#nf-msg').className='form-msg';$('#nf-msg').textContent='';
     }
   };
 
   window.phSaveNdis=async function(){
-    const provider=$('#nf-provider').value.trim();
+    const provVal=$('#nf-provider').value;
+    const newProvName=$('#nf-newprov').value.trim();
+    let provider='';
+
+    // Resolve provider name
+    if(provVal==='__new'){
+      if(!newProvName){$('#nf-msg').className='form-msg error';$('#nf-msg').textContent='Please enter the new provider name.';return;}
+      provider=newProvName;
+    } else if(provVal){
+      const prov=PROVIDERS.find(p=>p.id===parseInt(provVal));
+      provider=prov?prov.name:'';
+    }
+
     const invoice=$('#nf-invoice').value.trim();
     const date=$('#nf-date').value;
     const amount=parseFloat($('#nf-amount').value)||0;
@@ -517,6 +561,17 @@
     }
 
     try {
+      // If new provider, save to providers table first
+      if(provVal==='__new'){
+        const {data:newProv,error:provErr}=await sb.from('ndis_providers').insert({
+          name:newProvName,
+          ndis_number:ndisNo,
+          default_fund:fund
+        }).select().single();
+        if(provErr)throw provErr;
+        PROVIDERS.push({id:newProv.id,name:newProv.name,ndis:ndisNo,fund:fund});
+      }
+
       const {error}=await sb.from('ndis_transactions').insert({
         provider_name:provider,
         invoice_number:invoice,
@@ -536,6 +591,7 @@
       // Reset form
       $('#nf-provider').value='';$('#nf-invoice').value='';$('#nf-amount').value='';
       $('#nf-ndis').value='';$('#nf-notes').value='';$('#nf-status').value='Outstanding';
+      $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
       $('#nf-msg').className='form-msg success';
       $('#nf-msg').textContent='Transaction saved!';
       setTimeout(()=>{$('#ph-ndis-form').classList.remove('open');},1500);

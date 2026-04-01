@@ -341,16 +341,52 @@
         <select id="ph-pf" onchange="phProjects()"><option value="">All Statuses</option><option>Not Started</option><option>In Progress</option><option>Complete</option></select>
         <select id="ph-pp" onchange="phProjects()"><option value="">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
         <input type="text" id="ph-ps" placeholder="Search projects..." oninput="phProjects()">
+        <button class="add-btn" onclick="phToggleProjForm()">+ Add Project</button>
+      </div>
+      <div class="add-form" id="ph-proj-form">
+        <h3 id="pf-title">New House Project</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Title</label><input type="text" id="pf-title-input" placeholder="e.g. Fix deck railing"></div>
+          <div class="form-group"><label>Priority</label><select id="pf-priority"><option>Medium</option><option>Urgent</option><option>High</option><option>Low</option></select></div>
+          <div class="form-group"><label>Status</label><select id="pf-status"><option>Not Started</option><option>In Progress</option><option>Complete</option></select></div>
+          <div class="form-group"><label>Due Date</label><input type="date" id="pf-due"></div>
+          <div class="form-group full"><label>Description</label><input type="text" id="pf-desc" placeholder="Optional details"></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="pf-notes" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="pf-save-btn" onclick="phSaveProj()">Save Project</button>
+          <button class="add-btn cancel" onclick="phToggleProjForm()">Cancel</button>
+        </div>
+        <div class="form-msg" id="pf-msg"></div>
       </div>
       <div class="cat-count" id="ph-pc"></div>
       <div id="ph-pg"></div>
-      <div class="empty-msg" id="ph-pe" style="display:none;">No house projects yet. Add them in Supabase Table Editor.</div>
+      <div class="empty-msg" id="ph-pe" style="display:none;">No house projects yet. Tap + Add Project to create one.</div>
     </div>
     <div class="screen" id="ph-dates">
       <h2>Important Dates</h2>
       <div class="filter-bar">
         <select id="ph-df" onchange="phDates()"><option value="">All Categories</option></select>
         <input type="text" id="ph-ds" placeholder="Search dates..." oninput="phDates()">
+        <button class="add-btn" onclick="phToggleDateForm()">+ Add Date</button>
+      </div>
+      <div class="add-form" id="ph-date-form">
+        <h3 id="dtf-title">New Important Date</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Title</label><input type="text" id="dtf-title-input" placeholder="e.g. Council CleanUp"></div>
+          <div class="form-group"><label>Category</label><select id="dtf-cat"><option>Council</option><option>Family</option><option>Financial</option><option>Other</option></select></div>
+          <div class="form-group"><label>Start Date</label><input type="date" id="dtf-start"></div>
+          <div class="form-group"><label>End Date</label><input type="date" id="dtf-end" placeholder="Optional"></div>
+          <div class="form-group"><label>Time</label><input type="text" id="dtf-time" placeholder="e.g. 9am - 3pm"></div>
+          <div class="form-group"><label>Location</label><input type="text" id="dtf-loc" placeholder="Optional"></div>
+          <div class="form-group full"><label>Description</label><input type="text" id="dtf-desc" placeholder="Optional details"></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="dtf-notes" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="dtf-save-btn" onclick="phSaveDate()">Save Date</button>
+          <button class="add-btn cancel" onclick="phToggleDateForm()">Cancel</button>
+        </div>
+        <div class="form-msg" id="dtf-msg"></div>
       </div>
       <div class="cat-count" id="ph-dc"></div>
       <div id="ph-dg"></div>
@@ -433,6 +469,7 @@
     }));
 
     PROJECTS = (projectsRes.data || []).map(r => ({
+      id: r.id,
       title: r.title,
       desc: r.description || '',
       status: r.status,
@@ -442,6 +479,7 @@
     }));
 
     DATES = (datesRes.data || []).map(r => ({
+      id: r.id,
       title: r.title,
       desc: r.description || '',
       start: r.date_start || '',
@@ -976,8 +1014,69 @@
     $('#ph-pe').style.display='none';
     $('#ph-pg').innerHTML=fl.map(p=>{
       const sc=p.status==='Complete'?'complete':p.status==='In Progress'?'in-progress':'not-started';
-      return '<div class="proj-card"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div>';
+      return '<div class="proj-card" onclick="phEditProj('+p.id+')" style="cursor:pointer;"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div>';
     }).join('');
+  };
+
+  let editingProjId=null;
+
+  function resetProjForm(){
+    editingProjId=null;
+    $('#pf-title').textContent='New House Project';
+    $('#pf-save-btn').textContent='Save Project';
+    $('#pf-title-input').value='';$('#pf-desc').value='';$('#pf-notes').value='';
+    $('#pf-priority').value='Medium';$('#pf-status').value='Not Started';$('#pf-due').value='';
+    $('#pf-msg').className='form-msg';$('#pf-msg').textContent='';
+  }
+
+  window.phToggleProjForm=function(){
+    const form=$('#ph-proj-form');
+    if(form.classList.contains('open')){form.classList.remove('open');resetProjForm();return;}
+    resetProjForm();form.classList.add('open');
+  };
+
+  window.phEditProj=function(id){
+    const p=PROJECTS.find(x=>x.id===id);
+    if(!p)return;
+    editingProjId=id;
+    const form=$('#ph-proj-form');
+    form.classList.add('open');
+    $('#pf-title').textContent='Edit \u2014 '+p.title;
+    $('#pf-save-btn').textContent='Update Project';
+    $('#pf-title-input').value=p.title;$('#pf-desc').value=p.desc;$('#pf-notes').value=p.notes;
+    $('#pf-priority').value=p.priority;$('#pf-status').value=p.status;$('#pf-due').value=p.due;
+    $('#pf-msg').className='form-msg';$('#pf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveProj=async function(){
+    const title=$('#pf-title-input').value.trim();
+    const desc=$('#pf-desc').value.trim();
+    const notes=$('#pf-notes').value.trim();
+    const priority=$('#pf-priority').value;
+    const status=$('#pf-status').value;
+    const due=$('#pf-due').value||null;
+
+    if(!title){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Please enter a title.';return;}
+
+    const row={title:title,description:desc||null,notes:notes||null,priority:priority,status:status,due_date:due};
+
+    try {
+      if(editingProjId){
+        const {error}=await sb.from('house_projects').update(row).eq('id',editingProjId);
+        if(error)throw error;
+        const idx=PROJECTS.findIndex(x=>x.id===editingProjId);
+        if(idx>=0)PROJECTS[idx]={id:editingProjId,title:title,desc:desc,notes:notes,priority:priority,status:status,due:due||''};
+        $('#pf-msg').className='form-msg success';$('#pf-msg').textContent='Project updated!';
+      } else {
+        const {data:inserted,error}=await sb.from('house_projects').insert(row).select().single();
+        if(error)throw error;
+        PROJECTS.push({id:inserted.id,title:title,desc:desc,notes:notes,priority:priority,status:status,due:due||''});
+        $('#pf-msg').className='form-msg success';$('#pf-msg').textContent='Project saved!';
+      }
+      phProjects();
+      setTimeout(()=>{$('#ph-proj-form').classList.remove('open');resetProjForm();},1500);
+    } catch(e){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
   window.phDates=function(){
@@ -993,8 +1092,75 @@
       else if(d.start)dateStr=fmtD(d.start);
       else dateStr='Ongoing';
       const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=30;
-      return '<div class="date-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
+      return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
     }).join('');
+  };
+
+  let editingDateId=null;
+
+  function resetDateForm(){
+    editingDateId=null;
+    $('#dtf-title').textContent='New Important Date';
+    $('#dtf-save-btn').textContent='Save Date';
+    $('#dtf-title-input').value='';$('#dtf-desc').value='';$('#dtf-notes').value='';
+    $('#dtf-cat').value='Council';$('#dtf-start').value='';$('#dtf-end').value='';
+    $('#dtf-time').value='';$('#dtf-loc').value='';
+    $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
+  }
+
+  window.phToggleDateForm=function(){
+    const form=$('#ph-date-form');
+    if(form.classList.contains('open')){form.classList.remove('open');resetDateForm();return;}
+    resetDateForm();form.classList.add('open');
+  };
+
+  window.phEditDate=function(id){
+    const d=DATES.find(x=>x.id===id);
+    if(!d)return;
+    editingDateId=id;
+    const form=$('#ph-date-form');
+    form.classList.add('open');
+    $('#dtf-title').textContent='Edit \u2014 '+d.title;
+    $('#dtf-save-btn').textContent='Update Date';
+    $('#dtf-title-input').value=d.title;$('#dtf-desc').value=d.desc;$('#dtf-notes').value=d.notes;
+    $('#dtf-cat').value=d.cat;$('#dtf-start').value=d.start;$('#dtf-end').value=d.end;
+    $('#dtf-time').value=d.time;$('#dtf-loc').value=d.loc;
+    $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveDate=async function(){
+    const title=$('#dtf-title-input').value.trim();
+    const desc=$('#dtf-desc').value.trim();
+    const notes=$('#dtf-notes').value.trim();
+    const cat=$('#dtf-cat').value;
+    const start=$('#dtf-start').value||null;
+    const end=$('#dtf-end').value||null;
+    const time=$('#dtf-time').value.trim();
+    const loc=$('#dtf-loc').value.trim();
+
+    if(!title){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Please enter a title.';return;}
+
+    const row={title:title,description:desc||null,notes:notes||null,category:cat,date_start:start,date_end:end,time_info:time||null,location:loc||null};
+
+    try {
+      if(editingDateId){
+        const {error}=await sb.from('important_dates').update(row).eq('id',editingDateId);
+        if(error)throw error;
+        const idx=DATES.findIndex(x=>x.id===editingDateId);
+        if(idx>=0)DATES[idx]={id:editingDateId,title:title,desc:desc,notes:notes,cat:cat,start:start||'',end:end||'',time:time,loc:loc};
+        $('#dtf-msg').className='form-msg success';$('#dtf-msg').textContent='Date updated!';
+      } else {
+        const {data:inserted,error}=await sb.from('important_dates').insert(row).select().single();
+        if(error)throw error;
+        DATES.push({id:inserted.id,title:title,desc:desc,notes:notes,cat:cat,start:start||'',end:end||'',time:time,loc:loc});
+        $('#dtf-msg').className='form-msg success';$('#dtf-msg').textContent='Date saved!';
+      }
+      phDates();
+      const dateCats=[...new Set(DATES.map(d=>d.cat))].sort();
+      $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
+      setTimeout(()=>{$('#ph-date-form').classList.remove('open');resetDateForm();},1500);
+    } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
   window.phNav=function(name,btn){

@@ -204,21 +204,44 @@
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
 
-    @media (max-width: 500px) {
+    .mobile-topbar { display: none; }
+    .menu-toggle { display: none; }
+
+    @media (max-width: 768px) {
       #personalHub { flex-direction: column; }
-      .sidebar { width: 100%; flex-direction: row; padding: 12px; align-items: center; flex-wrap: wrap; }
-      .sidebar h1 { margin-bottom: 0; margin-right: 16px; }
-      .nav-item { width: auto; padding: 8px 14px; }
-      .sidebar-footer { display: none; }
+      .sidebar { display: none; }
+      .mobile-topbar { display: flex; align-items: center; justify-content: space-between; background: #1e293b; padding: 12px 16px; position: sticky; top: 0; z-index: 100; }
+      .mobile-topbar h1 { font-size: 16px; font-weight: 700; color: white; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+      .menu-toggle:hover { background: rgba(255,255,255,0.1); }
+      .mobile-nav { display: none; background: #1e293b; padding: 0 16px 12px; }
+      .mobile-nav.open { display: block; }
+      .mobile-nav .nav-item { border-radius: 8px; margin-bottom: 2px; }
+      .mobile-nav .nav-item.active { border-right: none; background: rgba(59,130,246,0.3); }
       .content-grid { grid-template-columns: 1fr; }
       .kpi-row { flex-direction: column; }
       .prem-card { max-width: 100%; }
+      .main { padding: 16px; }
+      .filter-bar { flex-wrap: wrap; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
 <div id="personalHub">
+  <div class="mobile-topbar">
+    <h1>Baker Hub</h1>
+    <button class="menu-toggle" onclick="phToggleMenu()" id="ph-menu-btn">&#x2630;</button>
+  </div>
+  <div class="mobile-nav" id="ph-mobile-nav">
+    <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
+    <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
+    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+    <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
+    <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
+    <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+  </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
@@ -1163,11 +1186,22 @@
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
+  window.phToggleMenu=function(){
+    const nav=$('#ph-mobile-nav');
+    nav.classList.toggle('open');
+    $('#ph-menu-btn').innerHTML=nav.classList.contains('open')?'\u2715':'\u2630';
+  };
+
   window.phNav=function(name,btn){
     $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
     $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('ph-'+name).classList.add('active');
-    btn.classList.add('active');
+    // Highlight the clicked button and its counterpart in sidebar/mobile nav
+    const allBtns=$$('#personalHub .nav-item');
+    allBtns.forEach(b=>{if(b.textContent.trim()===btn.textContent.trim())b.classList.add('active');});
+    // Close mobile menu
+    const mobileNav=$('#ph-mobile-nav');
+    if(mobileNav.classList.contains('open')){mobileNav.classList.remove('open');$('#ph-menu-btn').innerHTML='\u2630';}
     if(name==='ndis')phNDIS();
     if(name==='insurance')phIns();
     if(name==='contacts')phContacts();

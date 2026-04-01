@@ -4,8 +4,8 @@
   "description": "Baker family personal dashboard",
   "start_url": "/personal-baker-hub/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#16a34a",
+  "background_color": "#0d9488",
+  "theme_color": "#0d9488",
   "icons": [
     {
       "src": "icon-192.svg",

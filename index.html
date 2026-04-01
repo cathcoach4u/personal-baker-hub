@@ -527,7 +527,7 @@
     fl.sort((a,b)=>new Date(b.date)-new Date(a.date));
 
     $('#ph-ntb').innerHTML=fl.map(t=>{
-      const receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-receipts/'+t.receipt:'';
+      const receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-invoices/'+t.receipt:'';
       const receiptCol=receiptUrl?'<a class="receipt-link" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View</a>':'\u2014';
       return '<tr class="clickable" onclick="phEditNdis('+t.id+')"><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td><td>'+receiptCol+'</td></tr>';
     }).join('');
@@ -650,7 +650,7 @@
         const ext=file.name.split('.').pop().toLowerCase();
         const fileName=date+'_'+provider.replace(/\s+/g,'-')+'_inv-'+invoice+'.'+ext;
         const filePath='receipts/'+fileName;
-        const {error:uploadErr}=await sb.storage.from('ndis-receipts').upload(filePath,file,{upsert:true});
+        const {error:uploadErr}=await sb.storage.from('ndis-invoices').upload(filePath,file,{upsert:true});
         if(uploadErr)throw uploadErr;
         receiptPath=filePath;
       }

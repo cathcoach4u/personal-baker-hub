@@ -98,6 +98,25 @@
     .fund-summary-item.isc .fs-label { color: #16a34a; }
     .fs-value { font-size: 13px; font-weight: 700; }
 
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .contact-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+    .contact-card:hover { border-color: #3b82f6; }
+    .contact-card .cc-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .contact-card .cc-person { font-size: 12px; color: #3b82f6; margin-bottom: 4px; }
+    .contact-card .cc-phone { font-size: 12px; color: #64748b; }
+    .contact-card .cc-phone a { color: #64748b; text-decoration: none; }
+    .contact-card .cc-phone a:hover { color: #1e293b; text-decoration: underline; }
+    .cat-tag { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; margin-top: 6px; font-weight: 600; }
+    .cat-tag.medical { background: #fef2f2; color: #ef4444; }
+    .cat-tag.health { background: #f0fdf4; color: #16a34a; }
+    .cat-tag.pharmacy { background: #eff6ff; color: #2563eb; }
+    .cat-tag.home { background: #fefce8; color: #ca8a04; }
+    .cat-tag.entertainment { background: #faf5ff; color: #9333ea; }
+    .cat-tag.food { background: #fff7ed; color: #ea580c; }
+    .cat-tag.government { background: #f1f5f9; color: #64748b; }
+    .cat-tag.ndis { background: #f0fdf4; color: #16a34a; }
+    .cat-count { font-size: 11px; color: #94a3b8; margin-bottom: 16px; }
+
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
 
@@ -121,6 +140,7 @@
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
     <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+    <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
   <div class="main">
@@ -158,6 +178,15 @@
       </div>
       <div class="panel"><table class="data-table"><thead><tr><th>Name</th><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody id="ph-itb"></tbody></table></div>
     </div>
+    <div class="screen" id="ph-contacts">
+      <h2>Baker Contacts</h2>
+      <div class="filter-bar">
+        <select id="ph-cf" onchange="phContacts()"><option value="">All Categories</option></select>
+        <input type="text" id="ph-cs" placeholder="Search contacts..." oninput="phContacts()">
+      </div>
+      <div class="cat-count" id="ph-cc"></div>
+      <div class="contact-grid" id="ph-cg"></div>
+    </div>
   </div>
 </div>
 
@@ -170,19 +199,22 @@
   let FUNDS = {};
   let NDIS = [];
   let INS = [];
+  let CONTACTS = [];
 
   try {
     const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-    const [fundsRes, ndisRes, insRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
-      sb.from('insurance_policies').select('*')
+      sb.from('insurance_policies').select('*'),
+      sb.from('contacts').select('*').order('name')
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
     if (ndisRes.error) throw ndisRes.error;
     if (insRes.error) throw insRes.error;
+    if (contactsRes.error) throw contactsRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -208,6 +240,13 @@
       due: r.due_date || '',
       paid: r.paid_to_date || '',
       super: r.superannuation_amount ? parseFloat(r.superannuation_amount) : null
+    }));
+
+    CONTACTS = (contactsRes.data || []).map(r => ({
+      name: r.name,
+      person: r.contact_person || '',
+      phone: r.phone || '',
+      cat: r.category
     }));
 
   } catch (err) {
@@ -287,6 +326,21 @@
     }).join('');
   };
 
+  const catClass=c=>c==='Medical'?'medical':c==='Health & Wellness'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Entertainment'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
+
+  window.phContacts=function(){
+    const cf=$('#ph-cf').value,cs=$('#ph-cs').value.toLowerCase();
+    let fl=CONTACTS;
+    if(cf)fl=fl.filter(c=>c.cat===cf);
+    if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
+    fl.sort((a,b)=>a.name.localeCompare(b.name));
+    $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
+    $('#ph-cg').innerHTML=fl.map(c=>{
+      const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
+      return '<div class="contact-card"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span></div>';
+    }).join('');
+  };
+
   window.phNav=function(name,btn){
     $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
     $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
@@ -294,11 +348,16 @@
     btn.classList.add('active');
     if(name==='ndis')phNDIS();
     if(name==='insurance')phIns();
+    if(name==='contacts')phContacts();
   };
 
   // Populate cover type filter
   const types=[...new Set(INS.map(p=>p.cover))].sort();
   $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+
+  // Populate contacts category filter
+  const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
+  $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
 
   // Build data summary for AI context
   window.phGetDataSummary=function(){
@@ -316,6 +375,7 @@
   renderHome();
   phNDIS();
   phIns();
+  phContacts();
 })();
 </script>
 

@@ -115,6 +115,7 @@
     .cat-tag.food { background: #fff7ed; color: #ea580c; }
     .cat-tag.government { background: #f1f5f9; color: #64748b; }
     .cat-tag.ndis { background: #f0fdf4; color: #16a34a; }
+    .person-tag { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; margin-top: 2px; margin-left: 4px; font-weight: 600; background: #f1f5f9; color: #475569; }
     .cat-count { font-size: 11px; color: #94a3b8; margin-bottom: 16px; }
 
     .date-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
@@ -312,6 +313,7 @@
       <h2>Baker Contacts</h2>
       <div class="filter-bar">
         <select id="ph-cf" onchange="phContacts()"><option value="">All Categories</option></select>
+        <select id="ph-cpf" onchange="phContacts()"><option value="">All People</option></select>
         <input type="text" id="ph-cs" placeholder="Search contacts..." oninput="phContacts()">
       </div>
       <div class="cat-count" id="ph-cc"></div>
@@ -409,7 +411,8 @@
       name: r.name,
       person: r.contact_person || '',
       phone: r.phone || '',
-      cat: r.category
+      cat: r.category,
+      forPerson: r.for_person || ''
     }));
 
     PROJECTS = (projectsRes.data || []).map(r => ({
@@ -851,15 +854,17 @@
   const catClass=c=>c==='Medical'?'medical':c==='Health & Wellness'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Entertainment'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
 
   window.phContacts=function(){
-    const cf=$('#ph-cf').value,cs=$('#ph-cs').value.toLowerCase();
+    const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
     let fl=CONTACTS;
     if(cf)fl=fl.filter(c=>c.cat===cf);
+    if(cpf)fl=fl.filter(c=>c.forPerson===cpf);
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     fl.sort((a,b)=>a.name.localeCompare(b.name));
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
     $('#ph-cg').innerHTML=fl.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
-      return '<div class="contact-card"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span></div>';
+      const personTag=c.forPerson?'<span class="person-tag">'+c.forPerson+'</span>':'';
+      return '<div class="contact-card"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span>'+personTag+'</div>';
     }).join('');
   };
 
@@ -917,9 +922,11 @@
   const people=[...new Set(INS.map(p=>p.name))].sort();
   $('#ph-if').innerHTML='<option value="">All People</option>'+people.map(p=>'<option>'+p+'</option>').join('');
 
-  // Populate contacts category filter
+  // Populate contacts filters
   const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
   $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
+  const contactPeople=[...new Set(CONTACTS.map(c=>c.forPerson).filter(p=>p))].sort();
+  $('#ph-cpf').innerHTML='<option value="">All People</option>'+contactPeople.map(p=>'<option>'+p+'</option>').join('');
 
   // Populate dates category filter
   const dateCats=[...new Set(DATES.map(d=>d.cat))].sort();

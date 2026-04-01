@@ -1,79 +1,119 @@
 # Project: Baker Hub — Personal Dashboard
 
 ## User Context
-- **Location**: Australia
+- **Location**: Australia (Northern Beaches, Sydney)
 - **Currency**: Australian Dollars (AUD, $). Always use `$` symbol with Australian formatting.
 - **Date format**: DD/MM/YYYY (Australian standard)
 - **Locale**: en-AU for all formatting (dates, currency, numbers)
 
-## Data Sources
-- **Supabase**: Primary database — 3 tables: `ndis_funds`, `ndis_transactions`, `insurance_policies`
-- **Notion** (archived): NDIS Transactions 2026 (collection://494b9de8-7eba-4930-934b-4f09c4af6524)
-- **Notion** (archived): Personal Insurances & Superannuation (collection://bd6fe259-42a4-4d79-9907-9ad407bbd51b)
-- **SharePoint** (archived): Site at netorgft4053847.sharepoint.com/sites/bakerpersonal
+## Architecture
+- **Hosting**: GitHub Pages at `cathcoach4u.github.io/personal-baker-hub/`
+- **Database**: Supabase (project ID: `ziwycymhaqghdiznyhhw`)
+- **Entry point**: `index.html` (root of repo)
+- **Config**: `config.js` (Supabase URL + anon key)
+- **Stack**: Vanilla HTML/CSS/JS, Supabase JS CDN, no frameworks
+- **PWA**: Web app manifest for home screen install (standalone mode)
 
-## NDIS Funding Buckets
-- Improved Daily Living: $22,308.85
-- Increased Social and Community: $7,164.48
+## Dashboard Sections
 
-## Deployment Process
+### 1. Dashboard (Home)
+- **Greeting**: Time-based (Good morning/afternoon/evening) with Week A/B badge
+- **This Week widget**: Combined bin collection + cleaners/Fiona schedule
+  - Week A = Cleaners + Red & Yellow bins
+  - Week B = Fiona + Red & Green bins
+  - Reference: Thursday 2 April 2026 = Week A
+  - "Wrong week? Swap" toggle (persists in localStorage)
+- **Important Reminders**: Bulky waste countdown, outstanding NDIS, upcoming premiums
+- **NDIS Funding**: Compact fund cards with budget/spent/remaining
+- **Upcoming Premiums**: Next 7 days
 
-### Architecture
-- **Hosting**: GitHub Pages (static site served from repo root)
-- **Database**: Supabase (client-side JS via supabase-js CDN)
-- **Live URL**: https://cathcoach4u.github.io/personal-baker-hub/
+### 2. NDIS Transactions
+- Transaction table with provider, invoice, date, fund, amount, status, receipt
+- **Add/Edit form**: Provider dropdown (auto-fills NDIS number & fund), receipt upload
+- **Providers table**: Saved providers for reuse with defaults
+- Filters: status, fund, search
 
-### Files
-- **Entry point**: `index.html` (root of repo — full HTML document with Supabase integration)
-- **Config**: `config.js` (Supabase project URL and anon key)
-- **DB schema**: `supabase-setup.sql` (table creation, RLS policies, seed data)
-- **Legacy**: `Personal-hub/wordpress-dashboard.html` (original hardcoded version, kept for reference)
+### 3. Insurance & Superannuation
+- **Grouped by owner**: Cathrine Baker, Andrew Baker (collapsible sections)
+- Monthly/annual premium totals per person
+- **Add/Edit form**: All policy fields
+- Filters: cover type, person, search
 
-### How to Deploy Updates
-1. Edit `index.html` (or other files) and push to the branch configured for GitHub Pages
-2. GitHub Pages auto-deploys within a few minutes
-3. Access at https://cathcoach4u.github.io/personal-baker-hub/
+### 4. Contacts
+- Contact cards with name, person, phone (clickable), category, person tag
+- **Categories**: Medical, Health & Wellness, Pharmacy, Home & Services, Entertainment, Food & Lifestyle, Government, NDIS
+- **Person tags**: Family, Cath, Andrew, Sarah, Russell
+- **Add/Edit form**: Tap any card to edit
+- Filters: category, person, search
 
-### Managing Data
-- Data is stored in **Supabase** — manage it via the Supabase Dashboard (Table Editor)
-- Go to your Supabase project > Table Editor to add, edit, or delete records
-- Changes appear on the dashboard immediately (no code changes needed)
-- The `config.js` file contains the Supabase project URL and anon key (safe to commit — RLS enforces read-only access)
+### 5. House Projects
+- Project cards with title, description, priority, status, due date
+- **Statuses**: Not Started, In Progress, Complete
+- **Priorities**: Low, Medium, High, Urgent
+- **Add/Edit form**: Tap any card to edit
+- Filters: status, priority, search
 
-## Supabase Setup
+### 6. Important Dates
+- Date cards with title, description, dates, time, location, category
+- **Categories**: Council, Family, Financial, Other
+- "Coming up" badge for dates within 30 days
+- **Add/Edit form**: Tap any card to edit
+- Filters: category, search
 
-### Initial Setup (one-time)
-1. Create a project at https://supabase.com
-2. Go to SQL Editor and run the contents of `supabase-setup.sql`
-3. Go to Settings > API and copy the **Project URL** and **anon public key**
-4. Update `config.js` with the real values
-5. Commit and push
+### 7. About
+- Built With: GitHub, Claude AI, Supabase
+- Stack details
+- Feature list
+- Supabase table reference
 
-### Tables
-| Table | Purpose | Records |
-|-------|---------|---------|
-| `ndis_funds` | NDIS funding bucket budgets | 2 |
-| `ndis_transactions` | NDIS transaction history | 11 |
-| `insurance_policies` | Insurance and superannuation policies | 15 |
+## Supabase Tables
 
-### Security
-- Row Level Security (RLS) is enabled on all tables
-- Only `SELECT` is allowed for the `anon` role (read-only from the browser)
-- To add/edit/delete data, use the Supabase Dashboard or a service role key
+| Table | Purpose | RLS |
+|-------|---------|-----|
+| `ndis_funds` | Funding bucket budgets | SELECT |
+| `ndis_transactions` | Transaction history + receipt paths | SELECT, INSERT, UPDATE |
+| `ndis_providers` | Provider defaults (name, NDIS#, fund) | SELECT, INSERT |
+| `insurance_policies` | Insurance & super policies | SELECT, INSERT, UPDATE |
+| `contacts` | Family contacts with categories | SELECT, INSERT, UPDATE |
+| `house_projects` | House project tracking | SELECT, INSERT, UPDATE |
+| `important_dates` | Important dates & council events | SELECT, INSERT, UPDATE |
 
-## GitHub Pages Setup
-1. Go to the repo on GitHub > Settings > Pages
-2. Set Source to "Deploy from a branch"
-3. Select the branch (e.g. `main`) and folder `/` (root)
-4. Save — the site will be live at https://cathcoach4u.github.io/personal-baker-hub/
+## Supabase Storage
+- **Bucket**: `ndis-invoices` (public)
+- Stores receipt/invoice uploads for NDIS transactions
+
+## Weekly Schedule
+- **Collection day**: Thursday
+- **Week A**: Cleaners + Yellow bin (Recycling)
+- **Week B**: Fiona + Green bin (Vegetation/Organics)
+- **Red bin**: Every week (General Waste)
+- **Bulky waste**: Booked 11 May 2026 (1 of 2 free per year)
+
+## Council Info (Northern Beaches)
+- Chemical CleanOut: 27-28 June 2026
+- Food Waste Pilot Phase 2: April-September 2026
+- Bulky waste: 2 free per 12 months, book via council portal
 
 ## Design Consistency
-- All hubs share the same dark sidebar + white content area layout
 - Sidebar colour: `#1e293b` (dark navy)
-- Accent colour: `#f59e0b` (amber)
+- Accent colour: `#3b82f6` (blue)
+- Theme colour: `#16a34a` (green)
 - Font: Segoe UI / system font stack
-- Cards: white with subtle border, 12px radius
+- Cards: white with subtle border, 10px radius
+- Mobile: Hamburger dropdown nav, single-column forms
 
-## SharePoint File Links (archived)
-- **NDIS Files**: https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgB94rvjEdr1TIsggra-7ZikAffnkzVBmmnutG_1j_V3HAA
-- **Insurance Files**: https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw
+## Files
+| File | Purpose |
+|------|---------|
+| `index.html` | Main dashboard (all HTML/CSS/JS) |
+| `config.js` | Supabase credentials |
+| `manifest.json` | PWA manifest |
+| `icon-192.svg` | App icon (192px) |
+| `icon-512.svg` | App icon (512px) |
+| `supabase-setup.sql` | Initial table creation + seed data |
+| `supabase-contacts.sql` | Contacts table + seed data |
+| `supabase-providers.sql` | NDIS providers table |
+| `supabase-house-dates.sql` | House projects + important dates tables |
+| `supabase-bulky-waste.sql` | Bulky waste date update |
+| `supabase-ndis-edit-upload.sql` | Receipt column + update policy |
+| `Personal-hub/` | Legacy files (original WordPress version) |

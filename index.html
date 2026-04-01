@@ -315,6 +315,22 @@
         <select id="ph-cf" onchange="phContacts()"><option value="">All Categories</option></select>
         <select id="ph-cpf" onchange="phContacts()"><option value="">All People</option></select>
         <input type="text" id="ph-cs" placeholder="Search contacts..." oninput="phContacts()">
+        <button class="add-btn" onclick="phToggleContactForm()">+ Add Contact</button>
+      </div>
+      <div class="add-form" id="ph-contact-form">
+        <h3 id="cf-title">New Contact</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Name</label><input type="text" id="cf-name" placeholder="e.g. Dr Smith"></div>
+          <div class="form-group"><label>Contact Person</label><input type="text" id="cf-person" placeholder="Optional"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="cf-phone" placeholder="e.g. 02 9123 4567"></div>
+          <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Health & Wellness</option><option>Pharmacy</option><option>Home & Services</option><option>Entertainment</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option></select></div>
+          <div class="form-group"><label>For Person</label><select id="cf-for"><option value="">None</option><option>Family</option><option>Cath</option><option>Andrew</option><option>Sarah</option><option>Russell</option></select></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="cf-save-btn" onclick="phSaveContact()">Save Contact</button>
+          <button class="add-btn cancel" onclick="phToggleContactForm()">Cancel</button>
+        </div>
+        <div class="form-msg" id="cf-msg"></div>
       </div>
       <div class="cat-count" id="ph-cc"></div>
       <div class="contact-grid" id="ph-cg"></div>
@@ -408,6 +424,7 @@
     }));
 
     CONTACTS = (contactsRes.data || []).map(r => ({
+      id: r.id,
       name: r.name,
       person: r.contact_person || '',
       phone: r.phone || '',
@@ -864,8 +881,84 @@
     $('#ph-cg').innerHTML=fl.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
       const personTag=c.forPerson?'<span class="person-tag">'+c.forPerson+'</span>':'';
-      return '<div class="contact-card"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span>'+personTag+'</div>';
+      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span>'+personTag+'</div>';
     }).join('');
+  };
+
+  let editingContactId=null;
+
+  function resetContactForm(){
+    editingContactId=null;
+    $('#cf-title').textContent='New Contact';
+    $('#cf-save-btn').textContent='Save Contact';
+    $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';
+    $('#cf-cat').value='Medical';$('#cf-for').value='';
+    $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
+  }
+
+  window.phToggleContactForm=function(){
+    const form=$('#ph-contact-form');
+    if(form.classList.contains('open')){form.classList.remove('open');resetContactForm();return;}
+    resetContactForm();
+    form.classList.add('open');
+  };
+
+  window.phEditContact=function(id){
+    const c=CONTACTS.find(x=>x.id===id);
+    if(!c)return;
+    editingContactId=id;
+    const form=$('#ph-contact-form');
+    form.classList.add('open');
+    $('#cf-title').textContent='Edit \u2014 '+c.name;
+    $('#cf-save-btn').textContent='Update Contact';
+    $('#cf-name').value=c.name;$('#cf-person').value=c.person;$('#cf-phone').value=c.phone;
+    $('#cf-cat').value=c.cat;$('#cf-for').value=c.forPerson;
+    $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveContact=async function(){
+    const name=$('#cf-name').value.trim();
+    const person=$('#cf-person').value.trim();
+    const phone=$('#cf-phone').value.trim();
+    const cat=$('#cf-cat').value;
+    const forPerson=$('#cf-for').value;
+
+    if(!name){
+      $('#cf-msg').className='form-msg error';
+      $('#cf-msg').textContent='Please enter a contact name.';
+      return;
+    }
+
+    const row={name:name,contact_person:person||null,phone:phone||null,category:cat,for_person:forPerson||null};
+
+    try {
+      if(editingContactId){
+        const {error}=await sb.from('contacts').update(row).eq('id',editingContactId);
+        if(error)throw error;
+        const idx=CONTACTS.findIndex(x=>x.id===editingContactId);
+        if(idx>=0)CONTACTS[idx]={id:editingContactId,name:name,person:person,phone:phone,cat:cat,forPerson:forPerson};
+        $('#cf-msg').className='form-msg success';
+        $('#cf-msg').textContent='Contact updated!';
+      } else {
+        const {data:inserted,error}=await sb.from('contacts').insert(row).select().single();
+        if(error)throw error;
+        CONTACTS.push({id:inserted.id,name:name,person:person,phone:phone,cat:cat,forPerson:forPerson});
+        $('#cf-msg').className='form-msg success';
+        $('#cf-msg').textContent='Contact saved!';
+      }
+      phContacts();
+      // Refresh filters
+      const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
+      $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
+      const contactPeople=[...new Set(CONTACTS.map(c=>c.forPerson).filter(p=>p))].sort();
+      $('#ph-cpf').innerHTML='<option value="">All People</option>'+contactPeople.map(p=>'<option>'+p+'</option>').join('');
+      setTimeout(()=>{$('#ph-contact-form').classList.remove('open');resetContactForm();},1500);
+    } catch(e){
+      $('#cf-msg').className='form-msg error';
+      $('#cf-msg').textContent='Error: '+e.message;
+      console.error(e);
+    }
   };
 
   const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Financial'?'financial':'other';

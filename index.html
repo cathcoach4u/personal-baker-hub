@@ -254,6 +254,7 @@
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+    <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -263,6 +264,7 @@
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+    <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
   <div class="main">
@@ -424,6 +426,61 @@
       </div>
       <div class="cat-count" id="ph-dc"></div>
       <div id="ph-dg"></div>
+    </div>
+    <div class="screen" id="ph-about">
+      <h2>About Baker Hub</h2>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;">cathcoach4u/personal-baker-hub</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Built With</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
+            <span style="font-size:20px;">&#x1F4BB;</span>
+            <div><div style="font-weight:700;font-size:13px;">GitHub</div><div style="font-size:11px;color:#64748b;">Source code hosting & version control</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
+            <span style="font-size:20px;">&#x1F916;</span>
+            <div><div style="font-weight:700;font-size:13px;">Claude (Anthropic AI)</div><div style="font-size:11px;color:#64748b;">AI-assisted development & code generation</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
+            <span style="font-size:20px;">&#x26A1;</span>
+            <div><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Backend database, auth & real-time data</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Stack</div>
+        <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
+          <li>Vanilla HTML / CSS / JavaScript (no frameworks)</li>
+          <li>Supabase for database & storage</li>
+          <li>GitHub Pages for hosting</li>
+          <li>Claude Code for AI-assisted development</li>
+          <li>PWA manifest for home screen install</li>
+        </ul>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Features</div>
+        <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
+          <li><strong>Dashboard</strong> — Weekly reminders (bins, cleaners/Fiona), bulky waste countdown, NDIS funding overview, upcoming premiums</li>
+          <li><strong>NDIS</strong> — Transaction tracking with provider dropdown, auto-fill, receipt/invoice uploads, edit in place</li>
+          <li><strong>Insurance</strong> — Policies grouped by owner (collapsible), add/edit forms, monthly & annual totals</li>
+          <li><strong>Contacts</strong> — Family contacts with categories, person tags (Family, Sarah, Cath, Andrew, Russell), tap to edit</li>
+          <li><strong>House</strong> — Project tracking with priority & status, due dates</li>
+          <li><strong>Dates</strong> — Important dates with council info, upcoming alerts, location & time details</li>
+        </ul>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Supabase Tables</div>
+        <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
+          <li><strong>ndis_funds</strong> — Funding bucket budgets</li>
+          <li><strong>ndis_transactions</strong> — NDIS transaction history with receipt uploads</li>
+          <li><strong>ndis_providers</strong> — Provider names with default NDIS numbers & funds</li>
+          <li><strong>insurance_policies</strong> — Insurance & superannuation policies</li>
+          <li><strong>contacts</strong> — Family contacts with categories & person tags</li>
+          <li><strong>house_projects</strong> — House project tracking</li>
+          <li><strong>important_dates</strong> — Important dates & council events</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

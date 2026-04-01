@@ -117,6 +117,35 @@
     .cat-tag.ndis { background: #f0fdf4; color: #16a34a; }
     .cat-count { font-size: 11px; color: #94a3b8; margin-bottom: 16px; }
 
+    .date-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .date-card:hover { border-color: #3b82f6; }
+    .date-card .dc-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .date-card .dc-desc { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+    .date-card .dc-meta { font-size: 11px; color: #94a3b8; display: flex; gap: 16px; flex-wrap: wrap; }
+    .date-card .dc-meta span { display: flex; align-items: center; gap: 4px; }
+    .date-badge { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; font-weight: 600; }
+    .date-badge.council { background: #eff6ff; color: #2563eb; }
+    .date-badge.family { background: #faf5ff; color: #9333ea; }
+    .date-badge.financial { background: #fefce8; color: #ca8a04; }
+    .date-badge.other { background: #f1f5f9; color: #64748b; }
+    .date-upcoming { background: #fef9c3; color: #a16207; font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 600; margin-left: 8px; }
+
+    .proj-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .proj-card:hover { border-color: #3b82f6; }
+    .proj-card .pc-left { flex: 1; }
+    .proj-card .pc-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+    .proj-card .pc-desc { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+    .proj-card .pc-meta { font-size: 11px; color: #94a3b8; }
+    .proj-status { font-size: 10px; padding: 3px 10px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
+    .proj-status.not-started { background: #f1f5f9; color: #64748b; }
+    .proj-status.in-progress { background: #eff6ff; color: #2563eb; }
+    .proj-status.complete { background: #f0fdf4; color: #16a34a; }
+    .priority-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+    .priority-dot.low { background: #94a3b8; }
+    .priority-dot.medium { background: #eab308; }
+    .priority-dot.high { background: #f97316; }
+    .priority-dot.urgent { background: #ef4444; }
+
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
 
@@ -141,6 +170,8 @@
     <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
     <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
+    <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
+    <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
   <div class="main">
@@ -187,6 +218,26 @@
       <div class="cat-count" id="ph-cc"></div>
       <div class="contact-grid" id="ph-cg"></div>
     </div>
+    <div class="screen" id="ph-projects">
+      <h2>House Projects</h2>
+      <div class="filter-bar">
+        <select id="ph-pf" onchange="phProjects()"><option value="">All Statuses</option><option>Not Started</option><option>In Progress</option><option>Complete</option></select>
+        <select id="ph-pp" onchange="phProjects()"><option value="">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
+        <input type="text" id="ph-ps" placeholder="Search projects..." oninput="phProjects()">
+      </div>
+      <div class="cat-count" id="ph-pc"></div>
+      <div id="ph-pg"></div>
+      <div class="empty-msg" id="ph-pe" style="display:none;">No house projects yet. Add them in Supabase Table Editor.</div>
+    </div>
+    <div class="screen" id="ph-dates">
+      <h2>Important Dates</h2>
+      <div class="filter-bar">
+        <select id="ph-df" onchange="phDates()"><option value="">All Categories</option></select>
+        <input type="text" id="ph-ds" placeholder="Search dates..." oninput="phDates()">
+      </div>
+      <div class="cat-count" id="ph-dc"></div>
+      <div id="ph-dg"></div>
+    </div>
   </div>
 </div>
 
@@ -200,21 +251,27 @@
   let NDIS = [];
   let INS = [];
   let CONTACTS = [];
+  let PROJECTS = [];
+  let DATES = [];
 
   try {
     const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-    const [fundsRes, ndisRes, insRes, contactsRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
-      sb.from('contacts').select('*').order('name')
+      sb.from('contacts').select('*').order('name'),
+      sb.from('house_projects').select('*').order('priority'),
+      sb.from('important_dates').select('*').order('date_start')
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
     if (ndisRes.error) throw ndisRes.error;
     if (insRes.error) throw insRes.error;
     if (contactsRes.error) throw contactsRes.error;
+    if (projectsRes.error) throw projectsRes.error;
+    if (datesRes.error) throw datesRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -247,6 +304,26 @@
       person: r.contact_person || '',
       phone: r.phone || '',
       cat: r.category
+    }));
+
+    PROJECTS = (projectsRes.data || []).map(r => ({
+      title: r.title,
+      desc: r.description || '',
+      status: r.status,
+      priority: r.priority || 'Medium',
+      due: r.due_date || '',
+      notes: r.notes || ''
+    }));
+
+    DATES = (datesRes.data || []).map(r => ({
+      title: r.title,
+      desc: r.description || '',
+      start: r.date_start || '',
+      end: r.date_end || '',
+      time: r.time_info || '',
+      loc: r.location || '',
+      cat: r.category,
+      notes: r.notes || ''
     }));
 
   } catch (err) {
@@ -341,6 +418,42 @@
     }).join('');
   };
 
+  const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Financial'?'financial':'other';
+
+  window.phProjects=function(){
+    const pf=$('#ph-pf').value,pp=$('#ph-pp').value,ps=$('#ph-ps').value.toLowerCase();
+    let fl=PROJECTS;
+    if(pf)fl=fl.filter(p=>p.status===pf);
+    if(pp)fl=fl.filter(p=>p.priority===pp);
+    if(ps)fl=fl.filter(p=>p.title.toLowerCase().includes(ps)||(p.desc&&p.desc.toLowerCase().includes(ps)));
+    const order={Urgent:0,High:1,Medium:2,Low:3};
+    fl.sort((a,b)=>(order[a.priority]||2)-(order[b.priority]||2));
+    $('#ph-pc').textContent=fl.length+' project'+(fl.length!==1?'s':'');
+    if(!fl.length){$('#ph-pg').innerHTML='';$('#ph-pe').style.display='block';return;}
+    $('#ph-pe').style.display='none';
+    $('#ph-pg').innerHTML=fl.map(p=>{
+      const sc=p.status==='Complete'?'complete':p.status==='In Progress'?'in-progress':'not-started';
+      return '<div class="proj-card"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div>';
+    }).join('');
+  };
+
+  window.phDates=function(){
+    const df=$('#ph-df').value,ds=$('#ph-ds').value.toLowerCase();
+    let fl=DATES;
+    if(df)fl=fl.filter(d=>d.cat===df);
+    if(ds)fl=fl.filter(d=>d.title.toLowerCase().includes(ds)||(d.desc&&d.desc.toLowerCase().includes(ds)));
+    fl.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
+    $('#ph-dc').textContent=fl.length+' date'+(fl.length!==1?'s':'');
+    $('#ph-dg').innerHTML=fl.map(d=>{
+      let dateStr='';
+      if(d.start&&d.end&&d.start!==d.end)dateStr=fmtD(d.start)+' \u2013 '+fmtD(d.end);
+      else if(d.start)dateStr=fmtD(d.start);
+      else dateStr='Ongoing';
+      const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=30;
+      return '<div class="date-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
+    }).join('');
+  };
+
   window.phNav=function(name,btn){
     $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
     $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
@@ -349,6 +462,8 @@
     if(name==='ndis')phNDIS();
     if(name==='insurance')phIns();
     if(name==='contacts')phContacts();
+    if(name==='projects')phProjects();
+    if(name==='dates')phDates();
   };
 
   // Populate cover type filter
@@ -358,6 +473,10 @@
   // Populate contacts category filter
   const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
   $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
+
+  // Populate dates category filter
+  const dateCats=[...new Set(DATES.map(d=>d.cat))].sort();
+  $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
 
   // Build data summary for AI context
   window.phGetDataSummary=function(){
@@ -376,6 +495,8 @@
   phNDIS();
   phIns();
   phContacts();
+  phProjects();
+  phDates();
 })();
 </script>
 

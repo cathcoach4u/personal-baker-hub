@@ -164,6 +164,13 @@
     .form-msg { font-size: 12px; padding: 8px 12px; border-radius: 7px; margin-top: 10px; display: none; }
     .form-msg.success { display: block; background: #f0fdf4; color: #16a34a; }
     .form-msg.error { display: block; background: #fef2f2; color: #ef4444; }
+    .data-table tr.clickable { cursor: pointer; }
+    .data-table tr.clickable:hover td { background: #eff6ff; }
+    .receipt-link { font-size: 10px; color: #3b82f6; text-decoration: none; }
+    .receipt-link:hover { text-decoration: underline; }
+    .file-input-wrap { display: flex; align-items: center; gap: 8px; }
+    .file-input-wrap input[type="file"] { font-size: 11px; }
+    .file-name { font-size: 11px; color: #16a34a; }
 
     .bin-widget { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
     .bin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -240,7 +247,7 @@
         <button class="add-btn" onclick="phToggleNdisForm()">+ Add Transaction</button>
       </div>
       <div class="add-form" id="ph-ndis-form">
-        <h3>New NDIS Transaction</h3>
+        <h3 id="nf-title">New NDIS Transaction</h3>
         <div class="form-grid">
           <div class="form-group"><label>Provider</label><select id="nf-provider" onchange="phProviderChanged()"><option value="">Select provider...</option></select></div>
           <div class="form-group" id="nf-newprov-group" style="display:none;"><label>New Provider Name</label><input type="text" id="nf-newprov" placeholder="e.g. Sarah's Support Services"></div>
@@ -251,14 +258,15 @@
           <div class="form-group"><label>NDIS Number</label><input type="text" id="nf-ndis" placeholder="e.g. 432335528"></div>
           <div class="form-group"><label>Status</label><select id="nf-status"><option>Outstanding</option><option>Paid</option></select></div>
           <div class="form-group full"><label>Notes</label><input type="text" id="nf-notes" placeholder="Optional"></div>
+          <div class="form-group full"><label>Receipt / Invoice</label><div class="file-input-wrap"><input type="file" id="nf-file" accept=".pdf,.jpg,.jpeg,.png,.heic"><span class="file-name" id="nf-file-current"></span></div></div>
         </div>
         <div class="form-actions">
-          <button class="add-btn" onclick="phSaveNdis()">Save Transaction</button>
+          <button class="add-btn" id="nf-save-btn" onclick="phSaveNdis()">Save Transaction</button>
           <button class="add-btn cancel" onclick="phToggleNdisForm()">Cancel</button>
         </div>
         <div class="form-msg" id="nf-msg"></div>
       </div>
-      <div class="panel"><table class="data-table"><thead><tr><th>Provider</th><th>Invoice</th><th>Date</th><th>Fund</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ph-ntb"></tbody></table></div>
+      <div class="panel"><table class="data-table"><thead><tr><th>Provider</th><th>Invoice</th><th>Date</th><th>Fund</th><th>Amount</th><th>Status</th><th>Receipt</th></tr></thead><tbody id="ph-ntb"></tbody></table></div>
     </div>
     <div class="screen" id="ph-insurance">
       <h2>Personal Insurances & Superannuation</h2>
@@ -339,6 +347,7 @@
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
     NDIS = (ndisRes.data || []).map(r => ({
+      id: r.id,
       p: r.provider_name,
       inv: r.invoice_number,
       fund: r.funded_support,
@@ -346,7 +355,8 @@
       date: r.date,
       amt: parseFloat(r.amount),
       status: r.status,
-      notes: r.notes || ''
+      notes: r.notes || '',
+      receipt: r.receipt_path || ''
     }));
 
     INS = (insRes.data || []).map(r => ({
@@ -499,22 +509,28 @@
     if(ns)fl=fl.filter(t=>t.p.toLowerCase().includes(ns)||t.inv.toLowerCase().includes(ns));
     fl.sort((a,b)=>new Date(b.date)-new Date(a.date));
 
-    $('#ph-ntb').innerHTML=fl.map(t=>'<tr><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td></tr>').join('');
+    $('#ph-ntb').innerHTML=fl.map(t=>{
+      const receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-receipts/'+t.receipt:'';
+      const receiptCol=receiptUrl?'<a class="receipt-link" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View</a>':'\u2014';
+      return '<tr class="clickable" onclick="phEditNdis('+t.id+')"><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td><td>'+receiptCol+'</td></tr>';
+    }).join('');
   };
 
-  function populateProviderDropdown(){
-    $('#nf-provider').innerHTML='<option value="">Select provider...</option>'+PROVIDERS.map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('')+'<option value="__new">+ Add new provider...</option>';
+  let editingNdisId=null; // null = adding new, number = editing existing
+
+  function populateProviderDropdown(selectedName){
+    $('#nf-provider').innerHTML='<option value="">Select provider...</option>'+PROVIDERS.map(p=>'<option value="'+p.id+'"'+(selectedName&&p.name===selectedName?' selected':'')+'>'+p.name+'</option>').join('')+'<option value="__new">+ Add new provider...</option>';
   }
 
   window.phProviderChanged=function(){
     const val=$('#nf-provider').value;
     if(val==='__new'){
       $('#nf-newprov-group').style.display='flex';
-      $('#nf-ndis').value='';$('#nf-fund').value='Increased Social and Community';
+      if(!editingNdisId){$('#nf-ndis').value='';$('#nf-fund').value='Increased Social and Community';}
       return;
     }
     $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
-    if(!val)return;
+    if(!val||editingNdisId)return;
     const prov=PROVIDERS.find(p=>p.id===parseInt(val));
     if(prov){
       if(prov.ndis)$('#nf-ndis').value=prov.ndis;
@@ -522,14 +538,51 @@
     }
   };
 
+  function resetNdisForm(){
+    editingNdisId=null;
+    $('#nf-title').textContent='New NDIS Transaction';
+    $('#nf-save-btn').textContent='Save Transaction';
+    $('#nf-provider').value='';$('#nf-invoice').value='';$('#nf-amount').value='';
+    $('#nf-ndis').value='';$('#nf-notes').value='';$('#nf-status').value='Outstanding';
+    $('#nf-fund').value='Increased Social and Community';
+    $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
+    $('#nf-file').value='';$('#nf-file-current').textContent='';
+    $('#nf-msg').className='form-msg';$('#nf-msg').textContent='';
+  }
+
   window.phToggleNdisForm=function(){
     const form=$('#ph-ndis-form');
-    form.classList.toggle('open');
     if(form.classList.contains('open')){
-      populateProviderDropdown();
-      $('#nf-date').value=new Date().toISOString().split('T')[0];
-      $('#nf-msg').className='form-msg';$('#nf-msg').textContent='';
+      form.classList.remove('open');
+      resetNdisForm();
+      return;
     }
+    resetNdisForm();
+    populateProviderDropdown();
+    $('#nf-date').value=new Date().toISOString().split('T')[0];
+    form.classList.add('open');
+  };
+
+  window.phEditNdis=function(id){
+    const t=NDIS.find(x=>x.id===id);
+    if(!t)return;
+    editingNdisId=id;
+    const form=$('#ph-ndis-form');
+    form.classList.add('open');
+    $('#nf-title').textContent='Edit Transaction — '+t.p+' (Inv '+t.inv+')';
+    $('#nf-save-btn').textContent='Update Transaction';
+    populateProviderDropdown(t.p);
+    $('#nf-invoice').value=t.inv;
+    $('#nf-date').value=t.date;
+    $('#nf-amount').value=t.amt||'';
+    $('#nf-fund').value=t.fund;
+    $('#nf-ndis').value=t.ndis;
+    $('#nf-status').value=t.status;
+    $('#nf-notes').value=t.notes;
+    $('#nf-file').value='';
+    $('#nf-file-current').textContent=t.receipt?'Current: '+t.receipt.split('/').pop():'';
+    $('#nf-msg').className='form-msg';$('#nf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
   };
 
   window.phSaveNdis=async function(){
@@ -537,13 +590,15 @@
     const newProvName=$('#nf-newprov').value.trim();
     let provider='';
 
-    // Resolve provider name
     if(provVal==='__new'){
       if(!newProvName){$('#nf-msg').className='form-msg error';$('#nf-msg').textContent='Please enter the new provider name.';return;}
       provider=newProvName;
     } else if(provVal){
       const prov=PROVIDERS.find(p=>p.id===parseInt(provVal));
       provider=prov?prov.name:'';
+    } else if(editingNdisId){
+      const t=NDIS.find(x=>x.id===editingNdisId);
+      provider=t?t.p:'';
     }
 
     const invoice=$('#nf-invoice').value.trim();
@@ -553,6 +608,7 @@
     const ndisNo=$('#nf-ndis').value.trim();
     const status=$('#nf-status').value;
     const notes=$('#nf-notes').value.trim();
+    const fileInput=$('#nf-file');
 
     if(!provider||!invoice||!date){
       $('#nf-msg').className='form-msg error';
@@ -564,40 +620,55 @@
       // If new provider, save to providers table first
       if(provVal==='__new'){
         const {data:newProv,error:provErr}=await sb.from('ndis_providers').insert({
-          name:newProvName,
-          ndis_number:ndisNo,
-          default_fund:fund
+          name:newProvName,ndis_number:ndisNo,default_fund:fund
         }).select().single();
         if(provErr)throw provErr;
         PROVIDERS.push({id:newProv.id,name:newProv.name,ndis:ndisNo,fund:fund});
       }
 
-      const {error}=await sb.from('ndis_transactions').insert({
-        provider_name:provider,
-        invoice_number:invoice,
-        date:date,
-        amount:amount,
-        funded_support:fund,
-        ndis_number:ndisNo,
-        status:status,
-        notes:notes
-      });
-      if(error)throw error;
+      // Upload receipt if file selected
+      let receiptPath='';
+      if(fileInput.files&&fileInput.files[0]){
+        const file=fileInput.files[0];
+        const ext=file.name.split('.').pop().toLowerCase();
+        const fileName=date+'_'+provider.replace(/\s+/g,'-')+'_inv-'+invoice+'.'+ext;
+        const filePath='receipts/'+fileName;
+        const {error:uploadErr}=await sb.storage.from('ndis-receipts').upload(filePath,file,{upsert:true});
+        if(uploadErr)throw uploadErr;
+        receiptPath=filePath;
+      }
 
-      // Add to local array and refresh
-      NDIS.push({p:provider,inv:invoice,fund:fund,ndis:ndisNo,date:date,amt:amount,status:status,notes:notes});
+      const row={
+        provider_name:provider,invoice_number:invoice,date:date,
+        amount:amount,funded_support:fund,ndis_number:ndisNo,
+        status:status,notes:notes
+      };
+      if(receiptPath)row.receipt_path=receiptPath;
+
+      if(editingNdisId){
+        // UPDATE existing
+        const {error}=await sb.from('ndis_transactions').update(row).eq('id',editingNdisId);
+        if(error)throw error;
+        const idx=NDIS.findIndex(x=>x.id===editingNdisId);
+        if(idx>=0){
+          NDIS[idx]={id:editingNdisId,p:provider,inv:invoice,fund:fund,ndis:ndisNo,date:date,amt:amount,status:status,notes:notes,receipt:receiptPath||NDIS[idx].receipt};
+        }
+        $('#nf-msg').className='form-msg success';
+        $('#nf-msg').textContent='Transaction updated!';
+      } else {
+        // INSERT new
+        const {data:inserted,error}=await sb.from('ndis_transactions').insert(row).select().single();
+        if(error)throw error;
+        NDIS.push({id:inserted.id,p:provider,inv:invoice,fund:fund,ndis:ndisNo,date:date,amt:amount,status:status,notes:notes,receipt:receiptPath});
+        $('#nf-msg').className='form-msg success';
+        $('#nf-msg').textContent='Transaction saved!';
+      }
+
       phNDIS();
-
-      // Reset form
-      $('#nf-provider').value='';$('#nf-invoice').value='';$('#nf-amount').value='';
-      $('#nf-ndis').value='';$('#nf-notes').value='';$('#nf-status').value='Outstanding';
-      $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
-      $('#nf-msg').className='form-msg success';
-      $('#nf-msg').textContent='Transaction saved!';
-      setTimeout(()=>{$('#ph-ndis-form').classList.remove('open');},1500);
+      setTimeout(()=>{$('#ph-ndis-form').classList.remove('open');resetNdisForm();},1500);
     } catch(e) {
       $('#nf-msg').className='form-msg error';
-      $('#nf-msg').textContent='Error saving: '+e.message;
+      $('#nf-msg').textContent='Error: '+e.message;
       console.error(e);
     }
   };

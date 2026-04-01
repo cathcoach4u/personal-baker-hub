@@ -630,8 +630,11 @@
     const isA=getBinWeek();
     const week=isA?'A':'B';
     const wClass=isA?'week-a':'week-b';
-    // Week A = Cleaners, Week B = Fiona
-    const whoThisWeek=isA?'Cleaners':'Fiona';
+    // Week A = Cleaners (Paula), Week B = Fiona
+    const whoName=isA?'Paula (Cleaners)':'Fiona';
+    const whoPhone=isA?'+61450042221':'+61403772056';
+    const whoPhoneDisplay=isA?'+61 450 042 221':'+61 403 772 056';
+    const whoIcon=isA?'\u{1F9F9}':'\u{1F9D1}\u200D\u{1F9AF}';
 
     // Greeting
     const hour=new Date().getHours();
@@ -650,7 +653,7 @@
     let html='<div class="bin-header"><h3>This Week <span style="font-weight:400;color:#64748b;font-size:12px;">\u2014 Week '+week+'</span></h3><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
     html+='<div class="weekly-row">';
     // Who is coming
-    html+='<div class="weekly-item"><span class="wi-icon">'+(whoThisWeek==='Cleaners'?'\u{1F9F9}':'\u{1F9D1}\u200D\u{1F9AF}')+'</span><div><div class="wi-label">'+whoThisWeek+'</div><div class="wi-value">This week</div></div></div>';
+    html+='<div class="weekly-item"><span class="wi-icon">'+whoIcon+'</span><div><div class="wi-label">'+whoName+'</div><div class="wi-value">This week</div><a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';
     // Bins
     html+='<div class="weekly-item red"><span class="bin-dot red"></span><div><div class="wi-label">Bins \u2014 '+(isToday?'Today!':thuStr)+'</div><div class="wi-value">Red'+(isA?' + Yellow':' + Green')+'</div></div></div>';
     html+='</div>';

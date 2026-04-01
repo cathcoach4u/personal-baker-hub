@@ -745,8 +745,8 @@
       if(annualTotal)totalStr+=money(annualTotal)+'/yr';
 
       const gid='ins-group-'+person.replace(/\s/g,'-');
-      html+='<div class="group-section"><div class="group-header open" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
-      html+='<div class="group-body open" id="'+gid+'"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
+      html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
+      html+='<div class="group-body" id="'+gid+'"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
       html+=policies.map(p=>{
         const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
         return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';

@@ -31,24 +31,24 @@
     .main { flex: 1; overflow-y: auto; padding: 28px 32px; background: #f8fafc; }
     .main h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: #1e293b; border: none; padding: 0; }
 
-    .kpi-row { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
-    .fund-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; flex: 1; min-width: 220px; }
-    .fund-card .fund-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-    .fund-card .fund-name { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #1e293b; }
-    .fund-card .fund-remaining { font-size: 30px; font-weight: 800; margin-bottom: 4px; }
+    .kpi-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .fund-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; flex: 1; min-width: 180px; }
+    .fund-card .fund-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .fund-card .fund-name { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #1e293b; }
+    .fund-card .fund-remaining { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
     .fund-card .fund-remaining.healthy { color: #16a34a; }
     .fund-card .fund-remaining.warning { color: #eab308; }
     .fund-card .fund-remaining.danger { color: #ef4444; }
-    .fund-card .fund-detail { font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+    .fund-card .fund-detail { font-size: 10px; color: #94a3b8; margin-bottom: 1px; }
     .fund-card .fund-detail span { color: #1e293b; font-weight: 600; }
-    .progress-bar { height: 6px; background: #f1f5f9; border-radius: 99px; margin-top: 14px; overflow: hidden; }
+    .progress-bar { height: 4px; background: #f1f5f9; border-radius: 99px; margin-top: 8px; overflow: hidden; }
     .progress-bar .fill { height: 100%; border-radius: 99px; }
     .fill.healthy { background: #22c55e; }
     .fill.warning { background: #eab308; }
     .fill.danger { background: #ef4444; }
     .progress-pct { font-size: 10px; color: #94a3b8; margin-top: 4px; text-align: right; }
 
-    .prem-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; min-width: 220px; max-width: 280px; flex: 0.8; }
+    .prem-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; min-width: 180px; max-width: 260px; flex: 0.8; }
     .prem-card .label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .premium-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
     .premium-item:last-child { border-bottom: none; }
@@ -271,7 +271,11 @@
       <h2 id="ph-greeting">Dashboard</h2>
       <div class="bin-widget" id="ph-bin"></div>
       <div class="bin-widget" id="ph-weekly"></div>
-      <div class="bin-widget" id="ph-bulky" style="display:none;"></div>
+      <div id="ph-reminders" style="margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:10px;">Important Reminders</div>
+        <div id="ph-reminders-list"></div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:10px;">NDIS Funding</div>
       <div class="kpi-row" id="ph-kpis"></div>
       <div class="content-grid">
         <div class="panel">
@@ -617,25 +621,43 @@
     $('#ph-weekly').innerHTML=html;
   }
 
-  function renderBulky(){
-    // Bulky waste collection date — update here when rebooked
+  function renderReminders(){
+    let items=[];
+
+    // Bulky waste
     const bulkyDate='2026-05-11';
-    const bulkyUsed=1; // out of 2 free per 12 months
-    const days=daysUntil(bulkyDate);
-    const el=$('#ph-bulky');
-    if(days<-30){el.style.display='none';return;} // hide if long past
+    const bulkyUsed=1;
+    const bulkyDays=daysUntil(bulkyDate);
+    if(bulkyDays>=-30){
+      let statusText='',statusColor='';
+      if(bulkyDays>0){statusText='In '+bulkyDays+' day'+(bulkyDays!==1?'s':'');statusColor='#2563eb';}
+      else if(bulkyDays===0){statusText='Today!';statusColor='#16a34a';}
+      else{statusText='Collected — ready to book next';statusColor='#16a34a';}
+      items.push('<div class="weekly-item"><span class="wi-icon">\u{1F6FB}</span><div><div class="wi-label">Bulky Waste — '+fmtD(bulkyDate)+'</div><div class="wi-value" style="color:'+statusColor+'">'+statusText+'</div><div style="font-size:10px;color:#94a3b8;">'+bulkyUsed+'/2 free collections used</div></div></div>');
+    }
+
+    // Upcoming premiums due within 7 days
+    const in7=INS.filter(p=>p.due&&daysUntil(p.due)>=0&&daysUntil(p.due)<=7);
+    if(in7.length){
+      items.push('<div class="weekly-item"><span class="wi-icon">\u{1F4B3}</span><div><div class="wi-label">Premiums Due This Week</div><div class="wi-value">'+in7.length+' payment'+(in7.length!==1?'s':'')+' — '+money(in7.reduce((s,p)=>s+p.prem,0))+'</div></div></div>');
+    }
+
+    // Outstanding NDIS
+    const outstanding=NDIS.filter(t=>t.status==='Outstanding');
+    if(outstanding.length){
+      items.push('<div class="weekly-item"><span class="wi-icon">\u{26A0}\u{FE0F}</span><div><div class="wi-label">Outstanding NDIS</div><div class="wi-value" style="color:#ef4444;">'+outstanding.length+' unpaid</div></div></div>');
+    }
+
+    const el=$('#ph-reminders');
+    if(!items.length){el.style.display='none';return;}
     el.style.display='block';
-    let statusText='',statusColor='';
-    if(days>0){statusText='In '+days+' day'+(days!==1?'s':'');statusColor='#2563eb';}
-    else if(days===0){statusText='Today!';statusColor='#16a34a';}
-    else{statusText='Collected '+Math.abs(days)+' day'+(Math.abs(days)!==1?'s':'')+' ago — ready to book next';statusColor='#16a34a';}
-    el.innerHTML='<div class="bin-header"><h3>Bulky Waste Collection</h3><span style="font-size:14px;font-weight:700;color:'+statusColor+'">'+fmtD(bulkyDate)+'</span></div><div style="font-size:12px;color:#64748b;margin-bottom:6px;">'+statusText+'</div><div style="font-size:11px;color:#94a3b8;">'+bulkyUsed+' of 2 free collections used this year. Book via Northern Beaches Council portal.</div>';
+    $('#ph-reminders-list').innerHTML='<div class="weekly-row">'+items.join('')+'</div>';
   }
 
   function renderHome(){
     renderBin();
     renderWeekly();
-    renderBulky();
+    renderReminders();
     const spent={};
     for(const f in FUNDS)spent[f]=0;
     NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});

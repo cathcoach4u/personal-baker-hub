@@ -7,9 +7,10 @@
 - **Locale**: en-AU for all formatting (dates, currency, numbers)
 
 ## Data Sources
-- **Notion**: NDIS Transactions 2026 (collection://494b9de8-7eba-4930-934b-4f09c4af6524)
-- **Notion**: Personal Insurances & Superannuation (collection://bd6fe259-42a4-4d79-9907-9ad407bbd51b)
-- **SharePoint**: Site at netorgft4053847.sharepoint.com/sites/bakerpersonal (original source)
+- **Supabase**: Primary database — 3 tables: `ndis_funds`, `ndis_transactions`, `insurance_policies`
+- **Notion** (archived): NDIS Transactions 2026 (collection://494b9de8-7eba-4930-934b-4f09c4af6524)
+- **Notion** (archived): Personal Insurances & Superannuation (collection://bd6fe259-42a4-4d79-9907-9ad407bbd51b)
+- **SharePoint** (archived): Site at netorgft4053847.sharepoint.com/sites/bakerpersonal
 
 ## NDIS Funding Buckets
 - Improved Daily Living: $22,308.85
@@ -18,59 +19,61 @@
 ## Deployment Process
 
 ### Architecture
-- **WordPress site**: www.coach4u.com.au (GoDaddy Managed WordPress, Avada theme)
-- **Avada limitation**: Avada theme aggressively overrides CSS — custom HTML/JS dashboards cannot be pasted directly into WordPress pages
-- **Solution**: Host dashboard HTML on **Netlify**, embed in WordPress via iframe
+- **Hosting**: GitHub Pages (static site served from repo root)
+- **Database**: Supabase (client-side JS via supabase-js CDN)
+- **Live URL**: https://cathcoach4u.github.io/personal-baker-hub/
 
 ### Files
-- **Source file**: `wordpress-dashboard.html` (standalone, self-contained HTML/CSS/JS)
-- **Hosted at**: https://bakerhub.netlify.app/wordpress-dashboard.html
-- **WordPress page**: Private page at www.coach4u.com.au/bakerhub
+- **Entry point**: `index.html` (root of repo — full HTML document with Supabase integration)
+- **Config**: `config.js` (Supabase project URL and anon key)
+- **DB schema**: `supabase-setup.sql` (table creation, RLS policies, seed data)
+- **Legacy**: `Personal-hub/wordpress-dashboard.html` (original hardcoded version, kept for reference)
 
 ### How to Deploy Updates
-1. Edit `wordpress-dashboard.html` in `C:\Projects\Personal-hub\`
-2. Go to https://app.netlify.com — open the bakerhub site
-3. Go to **Deploys** > drag the updated file (or the whole `Personal-hub` folder) onto the deploy area
-4. Netlify auto-publishes — WordPress iframe picks up changes immediately
-5. If WordPress caches, go to GoDaddy wp-admin > Tools > **Flush Cache**
+1. Edit `index.html` (or other files) and push to the branch configured for GitHub Pages
+2. GitHub Pages auto-deploys within a few minutes
+3. Access at https://cathcoach4u.github.io/personal-baker-hub/
 
-### WordPress Embed Code
-```html
-<iframe src="https://bakerhub.netlify.app/wordpress-dashboard.html" style="width: 100%; height: 1200px; border: none; border-radius: 12px;" title="Baker Hub Dashboard"></iframe>
-```
+### Managing Data
+- Data is stored in **Supabase** — manage it via the Supabase Dashboard (Table Editor)
+- Go to your Supabase project > Table Editor to add, edit, or delete records
+- Changes appear on the dashboard immediately (no code changes needed)
+- The `config.js` file contains the Supabase project URL and anon key (safe to commit — RLS enforces read-only access)
 
-### Key Rules for Internal Dashboards
-- **Never paste raw HTML into Avada pages** — Avada strips/overrides styles
-- **Always use Netlify + iframe** for custom dashboards
-- WordPress page should use **100% Width** template
-- Set WordPress page to **Private** visibility (only visible when logged in)
-- Avada is for the business site (Coach4U) — internal tools are isolated via iframe
+## Supabase Setup
 
-## Hub Family — Creating New Hubs
+### Initial Setup (one-time)
+1. Create a project at https://supabase.com
+2. Go to SQL Editor and run the contents of `supabase-setup.sql`
+3. Go to Settings > API and copy the **Project URL** and **anon public key**
+4. Update `config.js` with the real values
+5. Commit and push
 
-### Existing Hubs
-| Hub | Purpose | Source File | Netlify URL | WordPress Page |
-|-----|---------|-------------|-------------|----------------|
-| Baker Hub | Personal/family finances | `wordpress-dashboard.html` | bakerhub.netlify.app | /bakerhub |
-| Cath Hub | Coach4U internal operations | `C:\Projects\Cath-hub\index.html` | TBD | TBD |
-| Coach4U Hub | Business dashboard | TBD | TBD | TBD |
+### Tables
+| Table | Purpose | Records |
+|-------|---------|---------|
+| `ndis_funds` | NDIS funding bucket budgets | 2 |
+| `ndis_transactions` | NDIS transaction history | 11 |
+| `insurance_policies` | Insurance and superannuation policies | 15 |
 
-### How to Create a New Hub
-1. **Copy the template**: Duplicate `wordpress-dashboard.html` and rename (e.g., `cathhub-dashboard.html`)
-2. **Customise**: Change the hub name, sidebar tabs, data, and colour scheme as needed
-3. **Create Netlify site**: Go to https://app.netlify.com/drop, drag the file, then rename the site (e.g., `cathhub.netlify.app`)
-4. **Create WordPress page**: Pages > Add New, set Template to "100% Width", Visibility to "Private"
-5. **Embed**: Paste the iframe code (update the src URL to point to the new Netlify site)
-6. **Update this CLAUDE.md**: Add the new hub to the table above
+### Security
+- Row Level Security (RLS) is enabled on all tables
+- Only `SELECT` is allowed for the `anon` role (read-only from the browser)
+- To add/edit/delete data, use the Supabase Dashboard or a service role key
 
-### Design Consistency
+## GitHub Pages Setup
+1. Go to the repo on GitHub > Settings > Pages
+2. Set Source to "Deploy from a branch"
+3. Select the branch (e.g. `main`) and folder `/` (root)
+4. Save — the site will be live at https://cathcoach4u.github.io/personal-baker-hub/
+
+## Design Consistency
 - All hubs share the same dark sidebar + white content area layout
 - Sidebar colour: `#1e293b` (dark navy)
 - Accent colour: `#f59e0b` (amber)
 - Font: Segoe UI / system font stack
 - Cards: white with subtle border, 12px radius
-- All hubs use the same CSS foundation — only change content and data
 
-## SharePoint File Links
+## SharePoint File Links (archived)
 - **NDIS Files**: https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgB94rvjEdr1TIsggra-7ZikAffnkzVBmmnutG_1j_V3HAA
 - **Insurance Files**: https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw

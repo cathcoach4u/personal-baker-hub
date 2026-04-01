@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baker Hub</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
+
+    #personalHub { display: flex; min-height: 100vh; }
+    #personalHub a, #personalHub a:hover, #personalHub a:visited { text-decoration: none; }
+
+    .sidebar { width: 240px; background: #1e293b; color: white; padding: 24px 0; flex-shrink: 0; display: flex; flex-direction: column; }
+    .sidebar h1 { font-size: 18px; font-weight: 700; padding: 0 20px; margin-bottom: 28px; color: white; border: none; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 13px; cursor: pointer; transition: background 0.15s; border: none; background: none; color: white; width: 100%; text-align: left; border-radius: 0; box-shadow: none; outline: none; text-transform: none; letter-spacing: 0; }
+    .nav-item:hover { background: rgba(59,130,246,0.15); color: white; }
+    .nav-item.active { background: rgba(59,130,246,0.2); border-right: 3px solid #3b82f6; color: white; }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; }
+    .sidebar-footer { margin-top: auto; padding: 14px 20px; font-size: 10px; color: rgba(255,255,255,0.35); }
+
+    .main { flex: 1; overflow-y: auto; padding: 28px 32px; background: #f8fafc; }
+    .main h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: #1e293b; border: none; padding: 0; }
+
+    .kpi-row { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .fund-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; flex: 1; min-width: 220px; }
+    .fund-card .fund-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .fund-card .fund-name { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #1e293b; }
+    .fund-card .fund-remaining { font-size: 30px; font-weight: 800; margin-bottom: 4px; }
+    .fund-card .fund-remaining.healthy { color: #16a34a; }
+    .fund-card .fund-remaining.warning { color: #eab308; }
+    .fund-card .fund-remaining.danger { color: #ef4444; }
+    .fund-card .fund-detail { font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+    .fund-card .fund-detail span { color: #1e293b; font-weight: 600; }
+    .progress-bar { height: 6px; background: #f1f5f9; border-radius: 99px; margin-top: 14px; overflow: hidden; }
+    .progress-bar .fill { height: 100%; border-radius: 99px; }
+    .fill.healthy { background: #22c55e; }
+    .fill.warning { background: #eab308; }
+    .fill.danger { background: #ef4444; }
+    .progress-pct { font-size: 10px; color: #94a3b8; margin-top: 4px; text-align: right; }
+
+    .prem-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; min-width: 220px; max-width: 280px; flex: 0.8; }
+    .prem-card .label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .premium-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+    .premium-item:last-child { border-bottom: none; }
+    .p-name { font-weight: 600; }
+    .p-due { font-size: 10px; color: #a16207; background: #fef9c3; padding: 2px 7px; border-radius: 5px; }
+    .prem-total { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 12px; display: flex; justify-content: space-between; }
+    .prem-none { font-size: 12px; color: #94a3b8; padding: 10px 0; }
+
+    .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+    .panel { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .panel-header { padding: 14px 18px; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; display: inline-block; }
+    .badge.red { background: #fef2f2; color: #ef4444; }
+    .badge.amber { background: #fefce8; color: #ca8a04; }
+
+    .list-item { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .list-item:last-child { border-bottom: none; }
+    .list-item:hover { background: #f8fafc; }
+    .list-item .left { flex: 1; min-width: 0; }
+    .list-item .title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+    .list-item .meta { font-size: 11px; color: #94a3b8; }
+    .list-item .right { text-align: right; flex-shrink: 0; margin-left: 14px; }
+    .list-item .amount { font-weight: 700; font-size: 14px; }
+    .list-item .amount.red { color: #ef4444; }
+    .overdue-days { font-size: 10px; color: #ef4444; margin-top: 1px; }
+    .fund-tag { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; margin-top: 2px; }
+    .fund-tag.isc { background: #f0fdf4; color: #16a34a; }
+    .fund-tag.idl { background: #eff6ff; color: #2563eb; }
+    .due-tag { font-size: 10px; padding: 2px 7px; border-radius: 5px; display: inline-block; }
+    .due-tag.soon { background: #fef9c3; color: #a16207; }
+    .due-tag.ok { background: #f0fdf4; color: #16a34a; }
+    .empty-msg { padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; }
+
+    .status { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; display: inline-block; }
+    .status.Paid { background: #f0fdf4; color: #16a34a; }
+    .status.Outstanding { background: #fef2f2; color: #ef4444; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 10px 14px; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; background: #fafbfc; font-weight: 600; }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12px; background: white; }
+    .data-table tr:hover td { background: #f8fafc; }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .filter-bar select, .filter-bar input { padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 12px; background: white; color: #1e293b; height: auto; }
+    .filter-bar input { flex: 1; max-width: 250px; }
+    .fund-summary-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .fund-summary-item { flex: 1; border-radius: 7px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; min-width: 200px; }
+    .fund-summary-item.idl { background: #eff6ff; }
+    .fund-summary-item.isc { background: #f0fdf4; }
+    .fs-label { font-size: 12px; font-weight: 600; }
+    .fund-summary-item.idl .fs-label { color: #2563eb; }
+    .fund-summary-item.isc .fs-label { color: #16a34a; }
+    .fs-value { font-size: 13px; font-weight: 700; }
+
+    #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
+    #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
+
+    @media (max-width: 500px) {
+      #personalHub { flex-direction: column; }
+      .sidebar { width: 100%; flex-direction: row; padding: 12px; align-items: center; flex-wrap: wrap; }
+      .sidebar h1 { margin-bottom: 0; margin-right: 16px; }
+      .nav-item { width: auto; padding: 8px 14px; }
+      .sidebar-footer { display: none; }
+      .content-grid { grid-template-columns: 1fr; }
+      .kpi-row { flex-direction: column; }
+      .prem-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="personalHub">
+  <div class="sidebar">
+    <h1>Baker Hub</h1>
+    <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
+    <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
+    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+    <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
+  </div>
+  <div class="main">
+    <div id="ph-loading">Loading dashboard data...</div>
+    <div id="ph-error"></div>
+    <div class="screen active" id="ph-home" style="display:none;">
+      <h2>Dashboard</h2>
+      <div class="kpi-row" id="ph-kpis"></div>
+      <div class="content-grid">
+        <div class="panel">
+          <div class="panel-header">Outstanding NDIS Payments <span class="badge red" id="ph-out-badge"></span></div>
+          <div id="ph-out-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">Upcoming Premiums <span class="badge amber">Next 7 days</span></div>
+          <div id="ph-prem-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="ph-ndis">
+      <h2>NDIS Transactions 2026</h2>
+      <div class="fund-summary-bar" id="ph-fund-bar"></div>
+      <div class="filter-bar">
+        <select id="ph-sf" onchange="phNDIS()"><option value="">All Statuses</option><option>Paid</option><option>Outstanding</option></select>
+        <select id="ph-ff" onchange="phNDIS()"><option value="">All Funds</option><option>Improved Daily Living</option><option>Increased Social and Community</option></select>
+        <input type="text" id="ph-ns" placeholder="Search..." oninput="phNDIS()">
+      </div>
+      <div class="panel"><table class="data-table"><thead><tr><th>Provider</th><th>Invoice</th><th>Date</th><th>Fund</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ph-ntb"></tbody></table></div>
+    </div>
+    <div class="screen" id="ph-insurance">
+      <h2>Personal Insurances & Superannuation</h2>
+      <div class="filter-bar">
+        <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
+        <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
+      </div>
+      <div class="panel"><table class="data-table"><thead><tr><th>Name</th><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody id="ph-itb"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function(){
+  const $=s=>document.querySelector(s);
+  const $$=s=>document.querySelectorAll(s);
+
+  // --- Fetch data from Supabase ---
+  let FUNDS = {};
+  let NDIS = [];
+  let INS = [];
+
+  try {
+    const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+    const [fundsRes, ndisRes, insRes] = await Promise.all([
+      sb.from('ndis_funds').select('*'),
+      sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
+      sb.from('insurance_policies').select('*')
+    ]);
+
+    if (fundsRes.error) throw fundsRes.error;
+    if (ndisRes.error) throw ndisRes.error;
+    if (insRes.error) throw insRes.error;
+
+    (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
+
+    NDIS = (ndisRes.data || []).map(r => ({
+      p: r.provider_name,
+      inv: r.invoice_number,
+      fund: r.funded_support,
+      ndis: r.ndis_number,
+      date: r.date,
+      amt: parseFloat(r.amount),
+      status: r.status,
+      notes: r.notes || ''
+    }));
+
+    INS = (insRes.data || []).map(r => ({
+      name: r.person_name,
+      ins: r.insurer,
+      pol: r.policy_number,
+      freq: r.premium_frequency || '',
+      prem: parseFloat(r.premium),
+      pay: r.payment_method || '',
+      cover: r.cover_type,
+      due: r.due_date || '',
+      paid: r.paid_to_date || '',
+      super: r.superannuation_amount ? parseFloat(r.superannuation_amount) : null
+    }));
+
+  } catch (err) {
+    $('#ph-loading').style.display = 'none';
+    $('#ph-error').style.display = 'block';
+    $('#ph-error').textContent = 'Could not load data from Supabase. Check that config.js has your project URL and anon key, and that the tables exist.';
+    console.error('Supabase error:', err);
+    return;
+  }
+
+  // --- Hide loading, show dashboard ---
+  $('#ph-loading').style.display = 'none';
+  $('#ph-home').style.display = 'block';
+
+  // --- Helpers ---
+  const money=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const fmtD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});};
+  const shortD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});};
+  const daysDiff=d=>Math.floor((new Date()-new Date(d+'T00:00:00'))/86400000);
+  const daysUntil=d=>Math.floor((new Date(d+'T00:00:00')-new Date())/86400000);
+  const ftc=f=>f.includes('Daily Living')?'idl':'isc';
+  const ftn=f=>f.includes('Daily Living')?'Improved Daily Living':'Social & Community';
+
+  function color(remaining,budget){const p=((budget-remaining)/budget)*100;return p>=80?'danger':p>=50?'warning':'healthy';}
+
+  function renderHome(){
+    const spent={};
+    for(const f in FUNDS)spent[f]=0;
+    NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+
+    let h='';
+    for(const f in FUNDS){
+      const b=FUNDS[f],s=spent[f]||0,r=b-s,pct=Math.round((s/b)*100),c=color(r,b);
+      h+='<div class="fund-card"><div class="fund-label">NDIS Funding</div><div class="fund-name">'+f+'</div><div class="fund-remaining '+c+'">'+money(r)+'</div><div class="fund-detail">Budget: <span>'+money(b)+'</span></div><div class="fund-detail">Spent: <span>'+money(s)+'</span></div><div class="progress-bar"><div class="fill '+c+'" style="width:'+pct+'%"></div></div><div class="progress-pct">'+pct+'% used</div></div>';
+    }
+
+    const in7=INS.filter(p=>p.due&&daysUntil(p.due)>=0&&daysUntil(p.due)<=7);
+    h+='<div class="prem-card"><div class="label">Premiums Due \u2014 Next 7 Days</div>';
+    if(!in7.length)h+='<div class="prem-none">No premiums due this week</div>';
+    else{in7.forEach(p=>{h+='<div class="premium-item"><span class="p-name">'+p.name+' \u2014 '+p.cover+'</span><span class="p-due">'+shortD(p.due)+'</span></div>';});h+='<div class="prem-total"><span>Total due</span><span style="font-weight:700;color:#eab308">'+money(in7.reduce((s,p)=>s+p.prem,0))+'</span></div>';}
+    h+='</div>';
+    $('#ph-kpis').innerHTML=h;
+
+    const outstanding=NDIS.filter(t=>t.status==='Outstanding');
+    $('#ph-out-badge').textContent=outstanding.length+' outstanding';
+    if(!outstanding.length)$('#ph-out-list').innerHTML='<div class="empty-msg">No outstanding payments</div>';
+    else $('#ph-out-list').innerHTML=outstanding.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(t=>'<div class="list-item"><div class="left"><div class="title">'+t.p+'</div><div class="meta">Inv: '+t.inv+' | '+fmtD(t.date)+(t.notes?' | '+t.notes:'')+'</div><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></div><div class="right"><div class="amount red">'+(t.amt?money(t.amt):'TBC')+'</div><div class="overdue-days">'+daysDiff(t.date)+' days</div></div></div>').join('');
+
+    if(!in7.length)$('#ph-prem-list').innerHTML='<div class="empty-msg">No premiums due in the next 7 days</div>';
+    else $('#ph-prem-list').innerHTML=in7.map(p=>'<div class="list-item"><div class="left"><div class="title">'+p.name+' \u2014 '+p.cover+'</div><div class="meta">'+p.ins+' | '+money(p.prem)+'/'+p.freq.toLowerCase()+'</div></div><div class="right"><span class="due-tag soon">Due '+shortD(p.due)+'</span></div></div>').join('');
+  }
+
+  window.phNDIS=function(){
+    const sf=$('#ph-sf').value,ff=$('#ph-ff').value,ns=$('#ph-ns').value.toLowerCase();
+    const spent={};for(const f in FUNDS)spent[f]=0;NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+    let bar='';for(const f in FUNDS){const r=FUNDS[f]-(spent[f]||0),cls=ftc(f),c=color(r,FUNDS[f]);bar+='<div class="fund-summary-item '+cls+'"><span class="fs-label">'+f+'</span><span class="fs-value" style="color:'+(c==='healthy'?'#16a34a':c==='warning'?'#eab308':'#ef4444')+'">'+money(r)+' remaining</span></div>';}
+    $('#ph-fund-bar').innerHTML=bar;
+
+    let fl=NDIS;
+    if(sf)fl=fl.filter(t=>t.status===sf);
+    if(ff)fl=fl.filter(t=>t.fund===ff);
+    if(ns)fl=fl.filter(t=>t.p.toLowerCase().includes(ns)||t.inv.toLowerCase().includes(ns));
+    fl.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+    $('#ph-ntb').innerHTML=fl.map(t=>'<tr><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td></tr>').join('');
+  };
+
+  window.phIns=function(){
+    const tf=$('#ph-tf').value,is=$('#ph-is').value.toLowerCase();
+    let fl=INS;
+    if(tf)fl=fl.filter(p=>p.cover===tf);
+    if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is));
+    fl.sort((a,b)=>a.due&&b.due?new Date(a.due)-new Date(b.due):a.due?-1:1);
+    $('#ph-itb').innerHTML=fl.map(p=>{
+      const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
+      return '<tr><td><strong>'+p.name+'</strong></td><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
+    }).join('');
+  };
+
+  window.phNav=function(name,btn){
+    $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
+    $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('ph-'+name).classList.add('active');
+    btn.classList.add('active');
+    if(name==='ndis')phNDIS();
+    if(name==='insurance')phIns();
+  };
+
+  // Populate cover type filter
+  const types=[...new Set(INS.map(p=>p.cover))].sort();
+  $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+
+  // Build data summary for AI context
+  window.phGetDataSummary=function(){
+    const spent={};for(const f in FUNDS)spent[f]=0;
+    NDIS.forEach(t=>{if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+    let summary='NDIS FUNDING:\n';
+    for(const f in FUNDS){summary+='- '+f+': Budget $'+FUNDS[f].toFixed(2)+', Spent $'+(spent[f]||0).toFixed(2)+', Remaining $'+(FUNDS[f]-(spent[f]||0)).toFixed(2)+'\n';}
+    summary+='\nNDIS TRANSACTIONS ('+NDIS.length+' total):\n';
+    NDIS.forEach(t=>{summary+='- '+t.p+', Inv '+t.inv+', '+t.date+', $'+t.amt.toFixed(2)+', '+t.status+', '+t.fund+(t.notes?' ('+t.notes+')':'')+'\n';});
+    summary+='\nINSURANCE POLICIES ('+INS.length+' total):\n';
+    INS.forEach(p=>{summary+='- '+p.name+', '+p.ins+', '+p.cover+', $'+p.prem.toFixed(2)+' '+p.freq+', Due '+(p.due||'N/A')+', Paid to '+(p.paid||'N/A')+', Pay via '+(p.pay||'N/A')+(p.super?' (Super balance: $'+p.super.toFixed(2)+')':'')+'\n';});
+    return summary;
+  };
+
+  renderHome();
+  phNDIS();
+  phIns();
+})();
+</script>
+
+<!-- Baker AI Chat Widget -->
+<style>
+  .bai-toggle { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; font-size: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+  .bai-toggle:hover { transform: scale(1.1); }
+
+  .bai-panel { position: fixed; bottom: 92px; right: 24px; width: 400px; max-height: 520px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 9999; display: none; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .bai-panel.open { display: flex; }
+
+  .bai-header { background: #1e293b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .bai-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
+  .bai-header span { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .bai-close { background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 4px; }
+
+  .bai-messages { flex: 1; overflow-y: auto; padding: 16px; max-height: 340px; }
+  .bai-msg { margin-bottom: 12px; max-width: 85%; }
+  .bai-msg.user { margin-left: auto; }
+  .bai-msg .bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+  .bai-msg.ai .bubble { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 4px; }
+  .bai-msg.user .bubble { background: #1e293b; color: white; border-bottom-right-radius: 4px; }
+  .bai-msg .bubble ul, .bai-msg .bubble ol { padding-left: 18px; margin: 6px 0; }
+  .bai-msg .bubble li { margin-bottom: 3px; }
+  .bai-msg .bubble strong { font-weight: 700; }
+  .bai-msg .bubble p { margin-bottom: 8px; }
+  .bai-msg .bubble p:last-child { margin-bottom: 0; }
+  .bai-typing { color: #94a3b8; font-size: 12px; padding: 4px 14px; }
+  .bai-typing .dots { display: inline-block; }
+  .bai-typing .dots span { animation: baiDot 1.4s infinite; opacity: 0.3; }
+  .bai-typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .bai-typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes baiDot { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  .bai-input { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #e2e8f0; }
+  .bai-input input { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; outline: none; }
+  .bai-input input:focus { border-color: #3b82f6; }
+  .bai-input button { padding: 10px 16px; background: #1e293b; color: white; border: none; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .bai-input button:hover { background: #334155; }
+  .bai-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .bai-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+  .bai-sug { font-size: 11px; padding: 5px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; color: #475569; }
+  .bai-sug:hover { background: #e2e8f0; }
+</style>
+
+<button class="bai-toggle" onclick="baiToggle()" title="Baker AI">&#x1F916;</button>
+
+<div class="bai-panel" id="baiPanel">
+  <div class="bai-header">
+    <div><h3>Baker AI</h3><span>Your personal finance assistant</span></div>
+    <button class="bai-close" onclick="baiToggle()">&#x2715;</button>
+  </div>
+  <div class="bai-messages" id="baiMessages">
+    <div class="bai-msg ai"><div class="bubble">G'day! I'm Baker AI. I can see your NDIS funding, insurance policies, and super data. Ask me anything &#8212; or try one of the suggestions below.</div></div>
+  </div>
+  <div class="bai-suggestions" id="baiSugs">
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">What's my NDIS budget status?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">Which premiums are due soon?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">How can I optimise my insurance?</span>
+    <span class="bai-sug" onclick="baiAsk(this.textContent)">Summarise my spending</span>
+  </div>
+  <div class="bai-input">
+    <input type="text" id="baiInput" placeholder="Ask Baker AI..." onkeydown="if(event.key==='Enter')baiSend()">
+    <button onclick="baiSend()" id="baiSendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const PROXY_URL = 'https://yourdomain.com/baker-ai-proxy.php';
+
+  const msgs = document.getElementById('baiMessages');
+  const input = document.getElementById('baiInput');
+  const sendBtn = document.getElementById('baiSendBtn');
+  const sugs = document.getElementById('baiSugs');
+
+  window.baiToggle = function(){
+    document.getElementById('baiPanel').classList.toggle('open');
+    if(document.getElementById('baiPanel').classList.contains('open')) input.focus();
+  };
+
+  function addMsg(text, role){
+    const div = document.createElement('div');
+    div.className = 'bai-msg ' + role;
+    let html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n- /g, '\n<li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    if(html.includes('<li>')) html = '<ul>' + html.replace(/<li>/g, '<li>') + '</ul>';
+    div.innerHTML = '<div class="bubble"><p>' + html + '</p></div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping(){
+    const div = document.createElement('div');
+    div.className = 'bai-typing';
+    div.id = 'baiTyping';
+    div.innerHTML = 'Baker AI is thinking <span class="dots"><span>.</span><span>.</span><span>.</span></span>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  function hideTyping(){
+    const el = document.getElementById('baiTyping');
+    if(el) el.remove();
+  }
+
+  window.baiAsk = function(text){
+    input.value = text;
+    baiSend();
+  };
+
+  window.baiSend = async function(){
+    const text = input.value.trim();
+    if(!text) return;
+
+    addMsg(text, 'user');
+    input.value = '';
+    sendBtn.disabled = true;
+    sugs.style.display = 'none';
+    showTyping();
+
+    try {
+      const dataSummary = typeof phGetDataSummary === 'function' ? phGetDataSummary() : '';
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: text, data: dataSummary })
+      });
+
+      hideTyping();
+
+      if(!res.ok){
+        const err = await res.json().catch(()=>({}));
+        addMsg(err.error || 'Sorry, something went wrong. Please try again.', 'ai');
+      } else {
+        const data = await res.json();
+        addMsg(data.reply, 'ai');
+      }
+    } catch(e) {
+      hideTyping();
+      addMsg('Could not reach Baker AI. Check that the proxy URL is configured correctly.', 'ai');
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  };
+})();
+</script>
+
+</body>
+</html>

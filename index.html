@@ -165,8 +165,14 @@
     .form-msg.success { display: block; background: #f0fdf4; color: #16a34a; }
     .form-msg.error { display: block; background: #fef2f2; color: #ef4444; }
     .group-section { margin-bottom: 24px; }
-    .group-header { font-size: 15px; font-weight: 700; color: #1e293b; padding: 10px 0 8px; border-bottom: 2px solid #e2e8f0; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; }
+    .group-header { font-size: 15px; font-weight: 700; color: #1e293b; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; background: white; cursor: pointer; user-select: none; }
+    .group-header:hover { background: #f8fafc; }
+    .group-header .group-left { display: flex; align-items: center; gap: 8px; }
+    .group-header .group-arrow { transition: transform 0.2s; font-size: 12px; color: #94a3b8; }
+    .group-header.open .group-arrow { transform: rotate(90deg); }
     .group-header .group-total { font-size: 12px; font-weight: 600; color: #64748b; }
+    .group-body { display: none; }
+    .group-body.open { display: block; }
     .data-table tr.clickable { cursor: pointer; }
     .data-table tr.clickable:hover td { background: #eff6ff; }
     .receipt-link { font-size: 10px; color: #3b82f6; text-decoration: none; }
@@ -738,15 +744,22 @@
       if(monthlyTotal&&annualTotal)totalStr+=' + ';
       if(annualTotal)totalStr+=money(annualTotal)+'/yr';
 
-      html+='<div class="group-section"><div class="group-header"><span>'+person+' ('+policies.length+' policies)</span><span class="group-total">'+totalStr+'</span></div>';
-      html+='<div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
+      const gid='ins-group-'+person.replace(/\s/g,'-');
+      html+='<div class="group-section"><div class="group-header open" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
+      html+='<div class="group-body open" id="'+gid+'"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
       html+=policies.map(p=>{
         const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
         return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
       }).join('');
-      html+='</tbody></table></div></div>';
+      html+='</tbody></table></div></div></div>';
     }
     $('#ph-ins-groups').innerHTML=html;
+  };
+
+  window.phToggleGroup=function(id,header){
+    const body=document.getElementById(id);
+    body.classList.toggle('open');
+    header.classList.toggle('open');
   };
 
   let editingInsId=null;

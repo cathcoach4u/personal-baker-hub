@@ -218,19 +218,31 @@
 
     .mobile-topbar { display: none; }
     .menu-toggle { display: none; }
+    .mobile-drawer-overlay { display: none; }
+    .mobile-drawer { display: none; }
 
     @media (max-width: 768px) {
       #personalHub { flex-direction: column; }
       .sidebar { display: none; }
       .mobile-topbar { display: flex; align-items: center; justify-content: space-between; background: #0d9488; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); position: sticky; top: 0; z-index: 100; }
-      .mobile-topbar h1 { font-size: 20px; font-weight: 700; color: white; }
+      .mobile-topbar h1 { font-size: 20px; font-weight: 700; color: white; text-align: center; flex: 1; }
       .menu-toggle { display: flex; align-items: center; justify-content: center; background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 8px 12px; border-radius: 8px; min-width: 48px; min-height: 48px; }
-      .menu-toggle:hover { background: rgba(255,255,255,0.1); }
-      .mobile-nav { display: none; background: #0d9488; padding: 0 16px 12px; }
-      .mobile-nav.open { display: block; }
-      .mobile-nav .nav-item { border-radius: 8px; margin-bottom: 4px; padding: 14px 20px; font-size: 15px; }
-      .mobile-nav .nav-item .icon { font-size: 18px; }
-      .mobile-nav .nav-item.active { border-right: none; background: rgba(59,130,246,0.3); }
+      .menu-toggle:hover { background: rgba(255,255,255,0.15); }
+      .topbar-spacer { width: 48px; }
+      .mobile-drawer-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+      .mobile-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+      .mobile-drawer { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: #0d9488; z-index: 201; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); }
+      .mobile-drawer.open { transform: translateX(0); }
+      .mobile-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+      .mobile-drawer-header h2 { font-size: 18px; font-weight: 700; color: white; margin: 0; }
+      .drawer-close { display: flex; align-items: center; justify-content: center; background: none; border: none; color: white; font-size: 22px; cursor: pointer; width: 40px; height: 40px; border-radius: 8px; }
+      .drawer-close:hover { background: rgba(255,255,255,0.15); }
+      .mobile-drawer .drawer-nav { flex: 1; padding: 8px 0; }
+      .mobile-drawer .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; font-size: 15px; color: rgba(255,255,255,0.85); border: none; background: none; width: 100%; text-align: left; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; }
+      .mobile-drawer .nav-item:hover { background: rgba(255,255,255,0.1); }
+      .mobile-drawer .nav-item.active { background: rgba(59,130,246,0.3); border-left: 3px solid #3b82f6; }
+      .mobile-drawer .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+      .mobile-drawer-footer { margin-top: auto; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 10px; color: rgba(255,255,255,0.4); }
       .content-grid { grid-template-columns: 1fr; }
       .kpi-row { flex-direction: column; }
       .prem-card { max-width: 100%; }
@@ -244,17 +256,26 @@
 
 <div id="personalHub">
   <div class="mobile-topbar">
+    <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <button class="menu-toggle" onclick="phToggleMenu()" id="ph-menu-btn">&#x2630;</button>
+    <div class="topbar-spacer"></div>
   </div>
-  <div class="mobile-nav" id="ph-mobile-nav">
-    <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
-    <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
-    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
-    <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
-    <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
-    <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
-    <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
+  <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
+  <div class="mobile-drawer" id="ph-drawer">
+    <div class="mobile-drawer-header">
+      <h2>Baker Hub</h2>
+      <button class="drawer-close" onclick="phCloseDrawer()">&#x2715;</button>
+    </div>
+    <div class="drawer-nav">
+      <button class="nav-item active" onclick="phNavDrawer('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
+      <button class="nav-item" onclick="phNavDrawer('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
+      <button class="nav-item" onclick="phNavDrawer('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+      <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
+      <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
+      <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+      <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
+    </div>
+    <div class="mobile-drawer-footer">Baker Hub v2.0</div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -1284,22 +1305,28 @@
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
-  window.phToggleMenu=function(){
-    const nav=$('#ph-mobile-nav');
-    nav.classList.toggle('open');
-    $('#ph-menu-btn').innerHTML=nav.classList.contains('open')?'\u2715':'\u2630';
+  window.phToggleDrawer=function(){
+    $('#ph-drawer').classList.toggle('open');
+    $('#ph-drawer-overlay').classList.toggle('open');
+  };
+
+  window.phCloseDrawer=function(){
+    $('#ph-drawer').classList.remove('open');
+    $('#ph-drawer-overlay').classList.remove('open');
+  };
+
+  window.phNavDrawer=function(name,btn){
+    phCloseDrawer();
+    phNav(name,btn);
   };
 
   window.phNav=function(name,btn){
     $$('#personalHub .screen').forEach(s=>s.classList.remove('active'));
     $$('#personalHub .nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('ph-'+name).classList.add('active');
-    // Highlight the clicked button and its counterpart in sidebar/mobile nav
+    // Highlight the clicked button and its counterpart in sidebar/drawer
     const allBtns=$$('#personalHub .nav-item');
     allBtns.forEach(b=>{if(b.textContent.trim()===btn.textContent.trim())b.classList.add('active');});
-    // Close mobile menu
-    const mobileNav=$('#ph-mobile-nav');
-    if(mobileNav.classList.contains('open')){mobileNav.classList.remove('open');$('#ph-menu-btn').innerHTML='\u2630';}
     if(name==='ndis')phNDIS();
     if(name==='insurance')phIns();
     if(name==='contacts')phContacts();

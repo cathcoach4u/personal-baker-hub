@@ -15,528 +15,132 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-    /* ───── HERO HEADER ───── */
-    .hero {
-      background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #065f46 100%);
-      color: white;
-      padding: 48px 24px 56px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -60%; left: -20%;
-      width: 140%; height: 200%;
-      background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.06) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -2px; left: 0; right: 0;
-      height: 32px;
-      background: #f8fafc;
-      border-radius: 24px 24px 0 0;
-    }
-    .hero-icon {
-      width: 64px; height: 64px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .hero-icon svg { width: 32px; height: 32px; }
-    .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; position: relative; }
-    .hero p { font-size: 14px; opacity: 0.8; position: relative; margin-bottom: 20px; }
-    .hero-install-bar {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 12px;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .hero-install-bar:hover { background: rgba(255,255,255,0.2); }
-    .hero-install-bar svg { width: 16px; height: 16px; flex-shrink: 0; }
-
-    /* ───── CONTAINER ───── */
-    .container { max-width: 960px; margin: 0 auto; padding: 0 20px 48px; }
-
-    /* ───── SECTION ───── */
-    .section { margin-bottom: 40px; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .section-icon {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .section-icon.personal { background: #f0fdfa; color: #0d9488; }
-    .section-icon.coach4u  { background: #e6edf5; color: #003366; }
-    .section-label { flex: 1; }
-    .section-label h2 { font-size: 16px; font-weight: 700; color: #1e293b; }
-    .section-label span { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* ───── CARD GRID ───── */
-    .apps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    /* ───── APP CARD ───── */
-    .app-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .app-card:hover {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-      border-color: transparent;
-    }
-
-    /* Card colour accent stripe */
-    .app-card .accent { height: 4px; flex-shrink: 0; }
-    .accent.teal    { background: linear-gradient(90deg, #0d9488, #14b8a6); }
-    .accent.coach4u { background: linear-gradient(90deg, #003366, #004d99); }
-
-    .app-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-
-    .app-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
-    .app-icon-wrap {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-weight: 800;
-      font-size: 20px;
-      color: white;
-      overflow: hidden;
-    }
-    .app-icon-wrap.teal  { background: none; }
-    .app-icon-wrap.coach4u { background: linear-gradient(135deg, #003366, #004d99); }
-
-    .app-meta { flex: 1; min-width: 0; }
-    .app-name { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
-    .app-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .app-tag.pwa     { background: #ecfdf5; color: #059669; }
-    .app-tag.web     { background: #e6edf5; color: #003366; }
-    .app-tag.link    { background: #e6edf5; color: #003366; }
-
-    .app-desc { font-size: 13px; color: #64748b; margin-bottom: 16px; flex: 1; }
-
-    /* Install toggle */
-    .install-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #94a3b8;
-      cursor: pointer;
-      margin-bottom: 8px;
-      user-select: none;
-      transition: color 0.15s;
-    }
-    .install-toggle:hover { color: #64748b; }
-    .install-toggle svg { width: 14px; height: 14px; transition: transform 0.2s; }
-    .install-toggle.open svg { transform: rotate(90deg); }
-    .install-panel {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.25s ease;
-    }
-    .install-panel.open { max-height: 200px; }
-    .install-panel-inner {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 11px;
-      color: #475569;
-      line-height: 1.7;
-      margin-bottom: 12px;
-    }
-    .install-panel-inner .step { display: flex; gap: 6px; align-items: baseline; }
-    .install-panel-inner .num {
-      width: 18px; height: 18px;
+    .topbar {
       background: #0d9488;
       color: white;
-      border-radius: 50%;
+      padding: 16px 20px;
+      padding-top: calc(16px + env(safe-area-inset-top, 0px));
+      text-align: center;
+    }
+    .topbar h1 { font-size: 18px; font-weight: 700; }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+    .section-label {
       font-size: 10px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 0 8px;
     }
 
-    /* Open button */
-    .app-open {
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .app-tile {
+      background: white;
+      border: 1px solid #e8edf2;
+      border-radius: 14px;
+      padding: 14px 8px;
+      text-align: center;
+      text-decoration: none;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .app-tile:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); border-color: #0d9488; }
+    .app-tile:active { transform: scale(0.97); }
+
+    .tile-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 11px 16px;
-      background: #1e293b;
+      font-weight: 800;
+      font-size: 18px;
       color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-      margin-top: auto;
     }
-    .app-open:hover { background: #334155; }
-    .app-open svg { width: 14px; height: 14px; }
+    .tile-icon.coach4u { background: linear-gradient(135deg, #003366, #004d99); }
+    .tile-icon svg { width: 100%; height: 100%; }
 
-    /* ───── FOOTER ───── */
-    .footer {
-      text-align: center;
-      padding: 24px 20px 32px;
-      font-size: 11px;
-      color: #94a3b8;
-    }
+    .tile-name { font-size: 11px; font-weight: 600; line-height: 1.3; }
+    .tile-tag { font-size: 8px; font-weight: 600; padding: 1px 6px; border-radius: 99px; text-transform: uppercase; }
+    .tile-tag.pwa { background: #ecfdf5; color: #059669; }
+    .tile-tag.web { background: #e6edf5; color: #003366; }
+    .tile-tag.link { background: #e6edf5; color: #003366; }
+
+    .footer { text-align: center; padding: 20px; font-size: 10px; color: #94a3b8; }
     .footer a { color: #0d9488; text-decoration: none; font-weight: 600; }
 
-    /* ───── RESPONSIVE ───── */
-    @media (max-width: 640px) {
-      .hero { padding: 36px 20px 48px; }
-      .hero h1 { font-size: 24px; }
-      .apps-grid { grid-template-columns: 1fr; }
-      .container { padding: 0 16px 40px; }
-    }
-    @media (min-width: 641px) and (max-width: 960px) {
-      .apps-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    @media (max-width: 360px) { .apps-grid { grid-template-columns: repeat(2, 1fr); } }
   </style>
 </head>
 <body>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-icon">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-    </div>
-    <h1>Apps Hub</h1>
-    <p>Baker Personal & Coach4U apps in one place</p>
-    <div class="hero-install-bar" id="installBtn" style="display:none;">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/></svg>
-      Install this Apps Hub
-    </div>
-  </div>
+  <div class="topbar"><h1>Apps Hub</h1></div>
 
-  <!-- CONTENT -->
   <div class="container">
 
-    <!-- ══════ PERSONAL HUBS ══════ -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-icon personal">&#127968;</div>
-        <div class="section-label">
-          <h2>Personal Hubs</h2>
-          <span>Home & lifestyle management</span>
-        </div>
-      </div>
-      <div class="apps-grid">
+    <div class="section-label">Personal Hubs</div>
+    <div class="apps-grid">
+      <a class="app-tile" href="https://cathcoach4u.github.io/personal-baker-hub/">
+        <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="42" fill="#0d9488"/><text x="96" y="130" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-size="120" font-weight="700" fill="white">B</text></svg></div>
+        <div class="tile-name">Baker Hub</div>
+        <span class="tile-tag pwa">PWA</span>
+      </a>
+      <a class="app-tile" href="https://cathcoach4u.github.io/personal-cath-hub/">
+        <div class="tile-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="42" fill="#0d9488"/><text x="96" y="130" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-size="120" font-weight="700" fill="white">C</text></svg></div>
+        <div class="tile-name">Cath Hub</div>
+        <span class="tile-tag pwa">PWA</span>
+      </a>
+    </div>
 
-        <!-- Baker Hub -->
-        <div class="app-card">
-          <div class="accent teal"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap teal"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="100%" height="100%"><rect width="192" height="192" rx="42" fill="#0d9488"/><text x="96" y="130" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-size="120" font-weight="700" fill="white">B</text></svg></div>
-              <div class="app-meta">
-                <div class="app-name">Baker Hub</div>
-                <span class="app-tag pwa">PWA</span>
-              </div>
-            </div>
-            <div class="app-desc">Personal organising hub &mdash; zones, rhythms, NDIS budgets, contacts, and task management.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://cathcoach4u.github.io/personal-baker-hub/" class="app-open" target="_blank" rel="noopener">
-              Open Baker Hub
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
+    <div class="section-label">Coach4U — Clients</div>
+    <div class="apps-grid">
+      <a class="app-tile" href="https://cathcoach4u.github.io/client_IAS/">
+        <div class="tile-icon coach4u">I</div>
+        <div class="tile-name">IAS</div>
+        <span class="tile-tag pwa">PWA</span>
+      </a>
+    </div>
 
-        <!-- Cath Hub -->
-        <div class="app-card">
-          <div class="accent teal"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap teal"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="100%" height="100%"><rect width="192" height="192" rx="42" fill="#0d9488"/><text x="96" y="130" text-anchor="middle" font-family="'Segoe UI',system-ui,-apple-system,sans-serif" font-size="120" font-weight="700" fill="white">C</text></svg></div>
-              <div class="app-meta">
-                <div class="app-name">Cath Hub</div>
-                <span class="app-tag pwa">PWA</span>
-              </div>
-            </div>
-            <div class="app-desc">Cath's personal hub &mdash; shopping lists, habits, workouts, medical records, and household zones.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://cathcoach4u.github.io/personal-cath-hub/" class="app-open" target="_blank" rel="noopener">
-              Open Cath Hub
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
+    <div class="section-label">Coach4U — Internal</div>
+    <div class="apps-grid">
+      <a class="app-tile" href="https://www.coach4u.com.au/appspersonalprofessional/coach4uhub/">
+        <div class="tile-icon coach4u">C4U</div>
+        <div class="tile-name">Coach4U Hub</div>
+        <span class="tile-tag web">WEB</span>
+      </a>
+      <a class="app-tile" href="https://cathcoach4u.github.io/Internal-Resources-Training/">
+        <div class="tile-icon coach4u">P</div>
+        <div class="tile-name">Professional Dev</div>
+        <span class="tile-tag pwa">PWA</span>
+      </a>
+    </div>
 
-      </div>
-    </section>
-
-    <!-- ══════ COACH4U — CLIENTS ══════ -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-icon coach4u">&#128101;</div>
-        <div class="section-label">
-          <h2>Coach4U &mdash; Clients</h2>
-          <span>Client-facing apps</span>
-        </div>
-      </div>
-      <div class="apps-grid">
-
-        <!-- IAS -->
-        <div class="app-card">
-          <div class="accent coach4u"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap coach4u">I</div>
-              <div class="app-meta">
-                <div class="app-name">IAS</div>
-                <span class="app-tag pwa">PWA</span>
-              </div>
-            </div>
-            <div class="app-desc">Client engagement and session management platform for IAS coaching.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://cathcoach4u.github.io/client_IAS/" class="app-open" target="_blank" rel="noopener">
-              Open IAS
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════ COACH4U — INTERNAL ══════ -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-icon coach4u">&#128188;</div>
-        <div class="section-label">
-          <h2>Coach4U &mdash; Internal</h2>
-          <span>Team tools & administration</span>
-        </div>
-      </div>
-      <div class="apps-grid">
-
-        <!-- Coach4U Hub -->
-        <div class="app-card">
-          <div class="accent coach4u"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap coach4u">C4U</div>
-              <div class="app-meta">
-                <div class="app-name">Coach4U Hub</div>
-                <span class="app-tag web">WEB</span>
-              </div>
-            </div>
-            <div class="app-desc">Central professional hub for coaches and supervisors &mdash; scheduling, resources, and admin.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://www.coach4u.com.au/appspersonalprofessional/coach4uhub/" class="app-open" target="_blank" rel="noopener">
-              Open Coach4U Hub
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Coach4U Professional Development -->
-        <div class="app-card">
-          <div class="accent coach4u"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap coach4u">P</div>
-              <div class="app-meta">
-                <div class="app-name">Coach4U Professional Development</div>
-                <span class="app-tag pwa">PWA</span>
-              </div>
-            </div>
-            <div class="app-desc">Training materials, supervision resources, and professional development for the Coach4U team.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://cathcoach4u.github.io/Internal-Resources-Training/" class="app-open" target="_blank" rel="noopener">
-              Open Professional Development
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════ COACH4U — EXTERNAL ══════ -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-icon coach4u">&#127793;</div>
-        <div class="section-label">
-          <h2>Coach4U &mdash; External</h2>
-          <span>Public-facing resources</span>
-        </div>
-      </div>
-      <div class="apps-grid">
-
-        <!-- Coach4U Resources -->
-        <div class="app-card">
-          <div class="accent coach4u"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap coach4u">R</div>
-              <div class="app-meta">
-                <div class="app-name">Coach4U Resources</div>
-                <span class="app-tag pwa">PWA</span>
-              </div>
-            </div>
-            <div class="app-desc">Public coaching resources, workbooks, toolkits, and guides for clients and partners.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in Chrome / Safari</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://cathcoach4u.github.io/external-Coach4U-resources/" class="app-open" target="_blank" rel="noopener">
-              Open Resources
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- ThriveHQ -->
-        <div class="app-card">
-          <div class="accent coach4u"></div>
-          <div class="app-body">
-            <div class="app-top">
-              <div class="app-icon-wrap coach4u">TH</div>
-              <div class="app-meta">
-                <div class="app-name">ThriveHQ</div>
-                <span class="app-tag link">LINK</span>
-              </div>
-            </div>
-            <div class="app-desc">External resource and community hub for holistic wellness &mdash; hosted on Linktree.</div>
-            <div class="install-toggle" onclick="toggleInstall(this)">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-              Install instructions
-            </div>
-            <div class="install-panel">
-              <div class="install-panel-inner">
-                <div class="step"><span class="num">1</span> Open the link below in your browser</div>
-                <div class="step"><span class="num">2</span> <strong>Android:</strong> Tap menu &#8942; &rarr; <em>Add to Home screen</em></div>
-                <div class="step"><span class="num">3</span> <strong>iOS:</strong> Tap Share &rarr; <em>Add to Home Screen</em></div>
-              </div>
-            </div>
-            <a href="https://linktr.ee/thrivehq" class="app-open" target="_blank" rel="noopener">
-              Open ThriveHQ
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5m0 0v5m0-5L10 14"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </section>
+    <div class="section-label">Coach4U — External</div>
+    <div class="apps-grid">
+      <a class="app-tile" href="https://cathcoach4u.github.io/external-Coach4U-resources/">
+        <div class="tile-icon coach4u">R</div>
+        <div class="tile-name">Resources</div>
+        <span class="tile-tag pwa">PWA</span>
+      </a>
+      <a class="app-tile" href="https://linktr.ee/thrivehq">
+        <div class="tile-icon coach4u">TH</div>
+        <div class="tile-name">ThriveHQ</div>
+        <span class="tile-tag link">LINK</span>
+      </a>
+    </div>
 
   </div>
 
@@ -545,38 +149,10 @@
   </div>
 
   <script>
-    /* ── Install toggle ── */
-    function toggleInstall(el) {
-      el.classList.toggle('open');
-      el.nextElementSibling.classList.toggle('open');
-    }
-
-    /* ── PWA install prompt ── */
     let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'inline-flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      if (outcome === 'accepted') installBtn.style.display = 'none';
-    });
-
-    window.addEventListener('appinstalled', () => {
-      installBtn.style.display = 'none';
-    });
-
-    /* ── Service worker ── */
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('apps-sw.js').catch(() => {});
-    }
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('apps-sw.js').catch(()=>{});
   </script>
+
 </body>
 </html>

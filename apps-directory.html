@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Apps Hub - Coach4U & Baker Personal</title>
+  <link rel="manifest" href="apps-manifest.json">
+  <meta name="theme-color" content="#0d9488">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Apps Hub">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230d9488' width='180' height='180'/><text x='90' y='110' font-size='80' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>A</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230d9488' width='192' height='192'/><text x='96' y='135' font-size='100' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>A</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 42px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0d9488;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .install-hint {
+      display: inline-block;
+      font-size: 12px;
+      padding: 8px 12px;
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 6px;
+      color: #0d7377;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #1e293b;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #0d9488;
+      display: inline-block;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      margin-left: 0;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .app-card {
+      background: white;
+      border: 1px solid #e8edf2;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .app-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #0d9488;
+    }
+
+    .app-header {
+      padding: 20px;
+      background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .app-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .app-name {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .app-category {
+      font-size: 11px;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .app-content {
+      padding: 16px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-description {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .install-instructions {
+      font-size: 11px;
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      color: #475569;
+    }
+
+    .install-instructions strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+
+    .install-instructions ol {
+      margin-left: 18px;
+      line-height: 1.6;
+    }
+
+    .install-instructions li {
+      margin-bottom: 2px;
+    }
+
+    .app-button {
+      display: inline-block;
+      padding: 10px 14px;
+      background: #0d9488;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .app-button:hover {
+      background: #059669;
+    }
+
+    .app-button.secondary {
+      background: #e2e8f0;
+      color: #334155;
+      margin-top: 6px;
+    }
+
+    .app-button.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .apps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 20px 16px;
+      }
+    }
+
+    .pwa-badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Apps Hub</h1>
+      <p>Your Baker Personal & Coach4U apps in one place</p>
+      <div class="install-hint">
+        💡 Tip: Add this page to your home screen for quick access
+      </div>
+    </div>
+
+    <!-- Personal Hubs -->
+    <section class="section">
+      <h2 class="section-title">Personal Hubs</h2>
+      <div class="apps-grid">
+        <!-- Baker Hub -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">🍰</div>
+            <div class="app-name">Baker Hub</div>
+            <div class="app-category">Personal</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Your personal organizing hub with zones, rhythms, and task management.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li><strong>Android:</strong> Open menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://cathcoach4u.github.io/personal-baker-hub/" class="app-button">Open Baker Hub</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cath Hub -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">📚</div>
+            <div class="app-name">Cath Hub</div>
+            <div class="app-category">Personal</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Cath's personal organizing hub with rhythm cards and zone management.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li><strong>Android:</strong> Open menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://cathcoach4u.github.io/personal-cath-hub/" class="app-button">Open Cath Hub</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coach4U Clients -->
+    <section class="section">
+      <h2 class="section-title">Coach4U - Clients</h2>
+      <div class="apps-grid">
+        <!-- IAS -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">👥</div>
+            <div class="app-name">IAS</div>
+            <div class="app-category">Client App</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Coach4U client management and engagement platform.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li><strong>Android:</strong> Open menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://cathcoach4u.github.io/client_IAS/" class="app-button">Open IAS</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coach4U Internal -->
+    <section class="section">
+      <h2 class="section-title">Coach4U - Internal</h2>
+      <div class="apps-grid">
+        <!-- Coach4U Hub -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">💼</div>
+            <div class="app-name">Coach4U Hub</div>
+            <div class="app-category">Internal</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Main Coach4U professional hub for coaches and supervisors.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li>Open in your web browser</li>
+                <li><strong>Android:</strong> Menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://www.coach4u.com.au/appspersonalprofessional/coach4uhub/" class="app-button">Open Coach4U Hub</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Training & Supervision -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">🎓</div>
+            <div class="app-name">Training & Supervision</div>
+            <div class="app-category">Internal</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Training materials and supervision resources for Coach4U team.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li><strong>Android:</strong> Open menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://cathcoach4u.github.io/Internal-Resources-Training/" class="app-button">Open Training</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coach4U External -->
+    <section class="section">
+      <h2 class="section-title">Coach4U - External</h2>
+      <div class="apps-grid">
+        <!-- Coach4U Resources -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">📖</div>
+            <div class="app-name">Coach4U Resources</div>
+            <div class="app-category">External</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">Public coaching resources and tools for clients and partners.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li><strong>Android:</strong> Open menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://cathcoach4u.github.io/external-Coach4U-resources/" class="app-button">Open Resources</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ThriveHQ -->
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">🌟</div>
+            <div class="app-name">ThriveHQ</div>
+            <div class="app-category">External</div>
+          </div>
+          <div class="app-content">
+            <div class="app-description">External resource and community hub for holistic wellness.</div>
+            <div class="install-instructions">
+              <strong>To Install:</strong>
+              <ol>
+                <li>Open in your web browser</li>
+                <li><strong>Android:</strong> Menu (⋮) → Add to Home screen</li>
+                <li><strong>iOS:</strong> Share → Add to Home Screen</li>
+              </ol>
+            </div>
+            <div class="button-group">
+              <a href="https://linktr.ee/thrivehq" class="app-button">Open ThriveHQ</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('apps-sw.js').catch(() => {
+        // Service worker registration failed, but app still works
+      });
+    }
+
+    // Prompt to install PWA on Android
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    // Optional: Add install button functionality if needed later
+    window.addEventListener('appinstalled', () => {
+      console.log('Apps Hub installed successfully');
+    });
+  </script>
+</body>
+</html>

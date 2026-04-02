@@ -4,31 +4,23 @@
   "description": "Central hub for all your Baker Personal and Coach4U apps",
   "start_url": "./apps-directory.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0d9488",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
   "orientation": "portrait-primary",
   "scope": "./",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230d9488' width='192' height='192'/><text x='96' y='135' font-size='100' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>A</text></svg>",
+      "src": "apps-icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%230d9488' width='512' height='512'/><text x='256' y='380' font-size='280' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>A</text></svg>",
+      "src": "apps-icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     }
   ],
-  "categories": ["productivity", "lifestyle"],
-  "screenshots": [
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23f8fafc' width='540' height='720'/><rect fill='%230d9488' width='540' height='140'/><text x='270' y='90' font-size='48' font-weight='bold' text-anchor='middle' fill='white' font-family='system-ui'>Apps Hub</text></svg>",
-      "sizes": "540x720",
-      "type": "image/svg+xml",
-      "form_factor": "narrow"
-    }
-  ]
+  "categories": ["productivity", "lifestyle"]
 }

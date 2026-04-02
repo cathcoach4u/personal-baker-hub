@@ -678,7 +678,7 @@
     const thuStr=nextThursday.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
     const isToday=daysToThursday===0;
 
-    let html='<div class="bin-header"><h3>This Week <span style="font-weight:400;color:#64748b;font-size:12px;">\u2014 Week '+week+'</span></h3><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
+    let html='<div class="bin-header"><h3>This Week</h3><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
     html+='<div class="weekly-row">';
     // Who is coming
     html+='<div class="weekly-item"><span class="wi-icon">'+whoIcon+'</span><div><div class="wi-label">'+whoName+'</div><div class="wi-value">This week</div><a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';

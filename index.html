@@ -138,6 +138,13 @@
     .date-badge.other { background: #f1f5f9; color: #64748b; }
     .date-upcoming { background: #fef9c3; color: #a16207; font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 600; margin-left: 8px; }
 
+    .month-section { margin-bottom: 8px; }
+    .month-header { font-size: 14px; font-weight: 700; color: #1e293b; padding: 12px 14px; background: #f1f5f9; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .month-header .month-count { font-size: 11px; font-weight: 600; color: #64748b; }
+    .month-header.current { background: #f0fdf4; color: #16a34a; }
+    .month-header.past { color: #94a3b8; background: #fafafa; }
+    .month-empty { font-size: 11px; color: #cbd5e1; padding: 6px 14px 14px; font-style: italic; }
+
     .proj-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .proj-card:hover { border-color: #3b82f6; }
     .proj-card .pc-left { flex: 1; }
@@ -1226,16 +1233,57 @@
     let fl=DATES;
     if(df)fl=fl.filter(d=>d.cat===df);
     if(ds)fl=fl.filter(d=>d.title.toLowerCase().includes(ds)||(d.desc&&d.desc.toLowerCase().includes(ds)));
-    fl.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
     $('#ph-dc').textContent=fl.length+' date'+(fl.length!==1?'s':'');
-    $('#ph-dg').innerHTML=fl.map(d=>{
-      let dateStr='';
-      if(d.start&&d.end&&d.start!==d.end)dateStr=fmtD(d.start)+' \u2013 '+fmtD(d.end);
-      else if(d.start)dateStr=fmtD(d.start);
-      else dateStr='Ongoing';
-      const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=30;
-      return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
-    }).join('');
+
+    // Build month timeline from Apr 2026 to Mar 2027
+    const months=[];
+    for(let y=2026;y<=2027;y++){
+      const startM=y===2026?3:0; // Apr 2026 (month 3) to Mar 2027 (month 2)
+      const endM=y===2027?3:12;
+      for(let m=startM;m<endM;m++){
+        months.push({year:y,month:m});
+      }
+    }
+
+    const now=new Date();
+    const currentMonth=now.getMonth();
+    const currentYear=now.getFullYear();
+
+    let html='';
+    months.forEach(mo=>{
+      const moName=new Date(mo.year,mo.month,1).toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+      const isCurrent=mo.month===currentMonth&&mo.year===currentYear;
+      const isPast=new Date(mo.year,mo.month+1,0)<now&&!isCurrent;
+      const headerClass=isCurrent?'current':isPast?'past':'';
+
+      // Find dates in this month
+      const inMonth=fl.filter(d=>{
+        if(!d.start)return false;
+        const dt=new Date(d.start+'T00:00:00');
+        return dt.getMonth()===mo.month&&dt.getFullYear()===mo.year;
+      });
+
+      // Also include ongoing items (no start date) in current month only
+      const ongoing=isCurrent?fl.filter(d=>!d.start):[];
+      const all=[...inMonth,...ongoing];
+
+      html+='<div class="month-section">';
+      html+='<div class="month-header '+headerClass+'"><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span>'+(all.length?'<span class="month-count">'+all.length+' event'+(all.length!==1?'s':'')+'</span>':'')+'</div>';
+      if(all.length){
+        html+=all.map(d=>{
+          let dateStr='';
+          if(d.start&&d.end&&d.start!==d.end)dateStr=fmtD(d.start)+' \u2013 '+fmtD(d.end);
+          else if(d.start)dateStr=fmtD(d.start);
+          else dateStr='Ongoing';
+          const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=30;
+          return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
+        }).join('');
+      } else if(!isPast){
+        html+='<div class="month-empty">No events</div>';
+      }
+      html+='</div>';
+    });
+    $('#ph-dg').innerHTML=html;
   };
 
   let editingDateId=null;

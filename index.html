@@ -125,26 +125,33 @@
     .person-tag { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; margin-top: 2px; margin-left: 4px; font-weight: 600; background: #f1f5f9; color: #475569; }
     .cat-count { font-size: 11px; color: #94a3b8; margin-bottom: 16px; }
 
-    .date-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .date-card { background: white; border: 1px solid #e8edf2; border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
     .date-card:hover { border-color: #3b82f6; }
-    .date-card .dc-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-    .date-card .dc-desc { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-    .date-card .dc-meta { font-size: 11px; color: #94a3b8; display: flex; gap: 16px; flex-wrap: wrap; }
-    .date-card .dc-meta span { display: flex; align-items: center; gap: 4px; }
-    .date-badge { font-size: 9px; padding: 2px 7px; border-radius: 5px; display: inline-block; font-weight: 600; }
+    .date-card .dc-title { font-weight: 700; font-size: 12px; margin-bottom: 2px; }
+    .date-card .dc-desc { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+    .date-card .dc-meta { font-size: 10px; color: #94a3b8; display: flex; gap: 12px; flex-wrap: wrap; }
+    .date-card .dc-meta span { display: flex; align-items: center; gap: 3px; }
+    .date-badge { font-size: 8px; padding: 1px 6px; border-radius: 5px; display: inline-block; font-weight: 600; }
     .date-badge.council { background: #eff6ff; color: #2563eb; }
     .date-badge.family { background: #faf5ff; color: #9333ea; }
     .date-badge.financial { background: #fefce8; color: #ca8a04; }
     .date-badge.other { background: #f1f5f9; color: #64748b; }
-    .date-upcoming { background: #fef9c3; color: #a16207; font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 600; margin-left: 8px; }
+    .date-upcoming { background: #fef9c3; color: #a16207; font-size: 8px; padding: 1px 6px; border-radius: 5px; font-weight: 600; margin-left: 4px; }
 
-    .month-section { margin-bottom: 8px; }
-    .month-header { font-size: 14px; font-weight: 700; color: #1e293b; padding: 12px 14px; background: #f1f5f9; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .month-header .month-count { font-size: 11px; font-weight: 600; color: #64748b; }
+    .month-section { margin-bottom: 4px; }
+    .month-header { font-size: 13px; font-weight: 700; color: #1e293b; padding: 10px 14px; background: #f1f5f9; border-radius: 8px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .month-header:hover { background: #e8edf2; }
+    .month-header .month-left { display: flex; align-items: center; gap: 6px; }
+    .month-header .month-arrow { font-size: 10px; color: #94a3b8; transition: transform 0.2s; }
+    .month-header.collapsed .month-arrow { transform: rotate(-90deg); }
+    .month-header .month-count { font-size: 10px; font-weight: 600; color: #64748b; }
     .month-header.current { background: #f0fdf4; color: #16a34a; }
+    .month-header.current:hover { background: #dcfce7; }
     .month-header.past { color: #94a3b8; background: #fafafa; }
-    .month-empty { font-size: 11px; color: #cbd5e1; padding: 6px 14px 14px; font-style: italic; }
-    .week-header { font-size: 11px; font-weight: 600; color: #94a3b8; padding: 8px 14px 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .month-body { }
+    .month-body.collapsed { display: none; }
+    .month-empty { font-size: 10px; color: #cbd5e1; padding: 4px 14px 8px; font-style: italic; }
+    .week-header { font-size: 10px; font-weight: 600; color: #94a3b8; padding: 6px 14px 2px; text-transform: uppercase; letter-spacing: 0.3px; }
     .week-header.this-week { color: #16a34a; }
 
     .proj-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -744,11 +751,6 @@
       h+='<div class="fund-card"><div class="fund-label">NDIS Funding</div><div class="fund-name">'+f+'</div><div class="fund-remaining '+c+'">'+money(r)+'</div><div class="fund-detail">Budget: <span>'+money(b)+'</span></div><div class="fund-detail">Spent: <span>'+money(s)+'</span></div><div class="progress-bar"><div class="fill '+c+'" style="width:'+pct+'%"></div></div><div class="progress-pct">'+pct+'% used</div></div>';
     }
 
-    const in7=INS.filter(p=>p.due&&daysUntil(p.due)>=0&&daysUntil(p.due)<=7);
-    h+='<div class="prem-card"><div class="label">Premiums Due \u2014 Next 7 Days</div>';
-    if(!in7.length)h+='<div class="prem-none">No premiums due this week</div>';
-    else{in7.forEach(p=>{h+='<div class="premium-item"><span class="p-name">'+p.name+' \u2014 '+p.cover+'</span><span class="p-due">'+shortD(p.due)+'</span></div>';});h+='<div class="prem-total"><span>Total due</span><span style="font-weight:700;color:#eab308">'+money(in7.reduce((s,p)=>s+p.prem,0))+'</span></div>';}
-    h+='</div>';
     $('#ph-kpis').innerHTML=h;
 
   }
@@ -961,6 +963,11 @@
       html+='</tbody></table></div></div></div>';
     }
     $('#ph-ins-groups').innerHTML=html;
+  };
+
+  window.phToggleMonth=function(id,header){
+    document.getElementById(id).classList.toggle('collapsed');
+    header.classList.toggle('collapsed');
   };
 
   window.phToggleGroup=function(id,header){
@@ -1294,11 +1301,13 @@
       const all=[...inMonth,...ongoing];
       all.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
 
+      const mid='mo-'+mo.year+'-'+mo.month;
+      const startCollapsed=isPast;
       html+='<div class="month-section">';
-      html+='<div class="month-header '+headerClass+'"><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span>'+(all.length?'<span class="month-count">'+all.length+' event'+(all.length!==1?'s':'')+'</span>':'')+'</div>';
+      html+='<div class="month-header '+headerClass+(startCollapsed?' collapsed':'')+'" onclick="phToggleMonth(\''+mid+'\',this)"><span class="month-left"><span class="month-arrow">\u25BC</span><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span></span>'+(all.length?'<span class="month-count">'+all.length+'</span>':'')+'</div>';
+      html+='<div class="month-body'+(startCollapsed?' collapsed':'')+'" id="'+mid+'">';
 
       if(all.length){
-        // Group by week
         const weeks={};
         all.forEach(d=>{
           const wk=d.start?getWeekNum(d.start):'ongoing';
@@ -1315,6 +1324,7 @@
       } else if(!isPast){
         html+='<div class="month-empty">No events</div>';
       }
+      html+='</div>';
       html+='</div>';
     });
     $('#ph-dg').innerHTML=html;

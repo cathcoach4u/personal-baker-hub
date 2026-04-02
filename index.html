@@ -309,10 +309,6 @@
       </div>
       <div style="font-size:13px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">NDIS Funding</div>
       <div class="kpi-row" id="ph-kpis"></div>
-      <div class="panel" style="margin-bottom:20px;">
-        <div class="panel-header">Upcoming Premiums <span class="badge amber">Next 7 days</span></div>
-        <div id="ph-prem-list"></div>
-      </div>
     </div>
     <div class="screen" id="ph-ndis">
       <h2>NDIS Transactions 2026</h2>
@@ -752,8 +748,6 @@
     h+='</div>';
     $('#ph-kpis').innerHTML=h;
 
-    if(!in7.length)$('#ph-prem-list').innerHTML='<div class="empty-msg">No premiums due in the next 7 days</div>';
-    else $('#ph-prem-list').innerHTML=in7.map(p=>'<div class="list-item"><div class="left"><div class="title">'+p.name+' \u2014 '+p.cover+'</div><div class="meta">'+p.ins+' | '+money(p.prem)+'/'+p.freq.toLowerCase()+'</div></div><div class="right"><span class="due-tag soon">Due '+shortD(p.due)+'</span></div></div>').join('');
   }
 
   window.phNDIS=function(){

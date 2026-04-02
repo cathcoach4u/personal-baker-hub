@@ -235,6 +235,36 @@
     .weekly-item .wi-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px; }
     .weekly-item .wi-value { font-weight: 700; color: #1e293b; }
 
+    .todo-input-card { background: white; border: 1px solid #e8edf2; border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .todo-input-card input[type="text"] { width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e293b; margin-bottom: 10px; }
+    .todo-input-card input[type="text"]:focus { border-color: #0d9488; outline: none; }
+    .todo-input-row { display: flex; gap: 8px; }
+    .todo-input-row select { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-family: inherit; background: white; color: #1e293b; }
+    .todo-input-row input[type="date"] { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-family: inherit; color: #1e293b; }
+    .todo-add-btn { width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; }
+    .todo-add-btn:hover { background: #2563eb; }
+    .todo-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .todo-filter-btn { padding: 6px 14px; border-radius: 99px; border: 1px solid #e2e8f0; background: white; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; color: #64748b; }
+    .todo-filter-btn.active { background: #0d9488; color: white; border-color: #0d9488; }
+    .todo-stats { font-size: 12px; color: #94a3b8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .todo-clear-btn { padding: 6px 14px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .todo-clear-btn:hover { background: #dc2626; }
+    .todo-section-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 0 4px; }
+    .todo-item { background: white; border: 1px solid #e8edf2; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .todo-item.done { opacity: 0.5; }
+    .todo-item.done .todo-text { text-decoration: line-through; color: #94a3b8; }
+    .todo-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid #d1d5db; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+    .todo-check.checked { background: #0d9488; border-color: #0d9488; color: white; }
+    .todo-content { flex: 1; min-width: 0; }
+    .todo-text { font-size: 13px; font-weight: 600; color: #1e293b; }
+    .todo-meta { font-size: 10px; color: #94a3b8; display: flex; gap: 8px; align-items: center; margin-top: 2px; }
+    .todo-cat-badge { font-size: 10px; }
+    .todo-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .todo-edit-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 4px; }
+    .todo-del-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px; color: #94a3b8; }
+    .todo-del-btn:hover { color: #ef4444; }
+    .todo-empty { text-align: center; color: #94a3b8; font-size: 13px; padding: 20px 0; }
+
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
 
@@ -405,6 +435,7 @@
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
+      <button class="nav-item" onclick="phNavDrawer('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
     <div class="mobile-drawer-footer">Baker Hub v2.0</div>
@@ -418,6 +449,7 @@
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
+    <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
@@ -576,6 +608,33 @@
       </div>
       <div class="cat-count" id="ph-dc"></div>
       <div id="ph-dg"></div>
+    </div>
+    <div class="screen" id="ph-todo">
+      <h2>&#x2705; My To-Do</h2>
+      <div class="todo-input-card">
+        <input type="text" id="td-text" placeholder="What needs doing?" onkeydown="if(event.key==='Enter')phAddTodo()">
+        <div class="todo-input-row">
+          <select id="td-cat">
+            <option value="General">&#x1F4E6; General</option>
+            <option value="Health">&#x1F9D1;&#x200D;&#x2695;&#xFE0F; Health</option>
+            <option value="Home">&#x1F3E0; Home</option>
+            <option value="Work">&#x1F4BC; Work</option>
+            <option value="Shopping">&#x1F6D2; Shopping</option>
+            <option value="Finance">&#x1F4B0; Finance</option>
+            <option value="Family">&#x1F46A; Family</option>
+            <option value="Admin">&#x1F4CB; Admin</option>
+            <option value="Personal">&#x1F9D1; Personal</option>
+          </select>
+          <input type="date" id="td-due">
+        </div>
+        <button class="todo-add-btn" onclick="phAddTodo()">+ Add Task</button>
+      </div>
+      <div class="todo-filters" id="td-filters"></div>
+      <div class="todo-stats" id="td-stats"></div>
+      <div class="todo-section-label">TO DO</div>
+      <div id="td-pending"></div>
+      <div class="todo-section-label">DONE</div>
+      <div id="td-done"></div>
     </div>
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
@@ -852,19 +911,21 @@
   let PROJECTS = [];
   let DATES = [];
   let PROVIDERS = [];
+  let TODOS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   try {
 
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
       sb.from('contacts').select('*').order('name'),
       sb.from('house_projects').select('*').order('priority'),
       sb.from('important_dates').select('*').order('date_start'),
-      sb.from('ndis_providers').select('*').order('name')
+      sb.from('ndis_providers').select('*').order('name'),
+      sb.from('todos').select('*').order('created_at', { ascending: false })
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
@@ -874,6 +935,7 @@
     if (projectsRes.error) throw projectsRes.error;
     if (datesRes.error) throw datesRes.error;
     if (providersRes.error) throw providersRes.error;
+    if (todosRes.error) throw todosRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -941,6 +1003,15 @@
       name: r.name,
       ndis: r.ndis_number || '',
       fund: r.default_fund || ''
+    }));
+
+    TODOS = (todosRes.data || []).map(r => ({
+      id: r.id,
+      text: r.text,
+      cat: r.category || 'General',
+      due: r.due_date || '',
+      done: r.done || false,
+      created: r.created_at
     }));
 
   } catch (err) {
@@ -1727,6 +1798,111 @@
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
+  // ── To-Do Functions ──
+  const TODO_CATS={General:'\u{1F4E6}',Health:'\u{1F9D1}\u200D\u2695\uFE0F',Home:'\u{1F3E0}',Work:'\u{1F4BC}',Shopping:'\u{1F6D2}',Finance:'\u{1F4B0}',Family:'\u{1F46A}',Admin:'\u{1F4CB}',Personal:'\u{1F9D1}'};
+  let todoFilter='All';
+
+  window.phTodos=function(){
+    const pending=TODOS.filter(t=>!t.done);
+    const done=TODOS.filter(t=>t.done);
+
+    // Filters
+    const cats=['All',...new Set(TODOS.map(t=>t.cat))];
+    $('#td-filters').innerHTML=cats.map(c=>{
+      const count=c==='All'?TODOS.length:TODOS.filter(t=>t.cat===c).length;
+      const icon=c==='All'?'':((TODO_CATS[c]||'')+' ');
+      return '<button class="todo-filter-btn'+(todoFilter===c?' active':'')+'" onclick="todoFilter=\''+c+'\';phTodos()">'+icon+c+' ('+count+')</button>';
+    }).join('');
+
+    // Stats
+    $('#td-stats').innerHTML='<span>'+pending.length+' pending, '+done.length+' done</span>'+(done.length?'<button class="todo-clear-btn" onclick="phClearDone()">Clear completed</button>':'');
+
+    // Filter
+    const fp=todoFilter==='All'?pending:pending.filter(t=>t.cat===todoFilter);
+    const fd=todoFilter==='All'?done:done.filter(t=>t.cat===todoFilter);
+
+    // Pending
+    if(!fp.length)$('#td-pending').innerHTML='<div class="todo-empty">No pending tasks'+(todoFilter!=='All'?' in '+todoFilter:'')+'</div>';
+    else $('#td-pending').innerHTML=fp.map(t=>renderTodoItem(t)).join('');
+
+    // Done
+    if(!fd.length)$('#td-done').innerHTML='<div class="todo-empty">No completed tasks</div>';
+    else $('#td-done').innerHTML=fd.map(t=>renderTodoItem(t)).join('');
+  };
+
+  function renderTodoItem(t){
+    const icon=TODO_CATS[t.cat]||'\u{1F4E6}';
+    const dueStr=t.due?fmtD(t.due):'';
+    const isToday=t.due&&daysUntil(t.due)===0;
+    const isOverdue=t.due&&!t.done&&daysUntil(t.due)<0;
+    const dueColor=isOverdue?'color:#ef4444;':isToday?'color:#f59e0b;':'';
+    return '<div class="todo-item'+(t.done?' done':'')+'"><div class="todo-check'+(t.done?' checked':'')+'" onclick="phToggleTodo('+t.id+')">'+(t.done?'\u2713':'')+'</div><div class="todo-content"><div class="todo-text">'+t.text+'</div><div class="todo-meta"><span class="todo-cat-badge">'+icon+' '+t.cat+'</span>'+(dueStr?'<span style="'+dueColor+'">\u{1F4C5} '+(isToday?'Today':dueStr)+'</span>':'')+'</div></div><div class="todo-actions"><button class="todo-edit-btn" onclick="phEditTodoPrompt('+t.id+')">\u{270F}\u{FE0F}</button><button class="todo-del-btn" onclick="phDeleteTodo('+t.id+')">\u{1F5D1}</button></div></div>';
+  }
+
+  window.phAddTodo=async function(){
+    const text=$('#td-text').value.trim();
+    if(!text)return;
+    const cat=$('#td-cat').value;
+    const due=$('#td-due').value||null;
+    try {
+      const {data:inserted,error}=await sb.from('todos').insert({text:text,category:cat,due_date:due,done:false}).select().single();
+      if(error)throw error;
+      TODOS.unshift({id:inserted.id,text:text,cat:cat,due:due||'',done:false,created:inserted.created_at});
+      $('#td-text').value='';$('#td-due').value='';
+      phTodos();
+    } catch(e){console.error(e);}
+  };
+
+  window.phToggleTodo=async function(id){
+    const t=TODOS.find(x=>x.id===id);
+    if(!t)return;
+    const newDone=!t.done;
+    try {
+      const {error}=await sb.from('todos').update({done:newDone}).eq('id',id);
+      if(error)throw error;
+      t.done=newDone;
+      phTodos();
+    } catch(e){console.error(e);}
+  };
+
+  window.phDeleteTodo=async function(id){
+    try {
+      const {error}=await sb.from('todos').delete().eq('id',id);
+      if(error)throw error;
+      TODOS=TODOS.filter(t=>t.id!==id);
+      phTodos();
+    } catch(e){console.error(e);}
+  };
+
+  window.phClearDone=async function(){
+    const doneIds=TODOS.filter(t=>t.done).map(t=>t.id);
+    if(!doneIds.length)return;
+    try {
+      const {error}=await sb.from('todos').delete().in('id',doneIds);
+      if(error)throw error;
+      TODOS=TODOS.filter(t=>!t.done);
+      phTodos();
+    } catch(e){console.error(e);}
+  };
+
+  window.phEditTodoPrompt=function(id){
+    const t=TODOS.find(x=>x.id===id);
+    if(!t)return;
+    const newText=prompt('Edit task:',t.text);
+    if(newText===null||!newText.trim())return;
+    phUpdateTodoText(id,newText.trim());
+  };
+
+  window.phUpdateTodoText=async function(id,text){
+    try {
+      const {error}=await sb.from('todos').update({text:text}).eq('id',id);
+      if(error)throw error;
+      const t=TODOS.find(x=>x.id===id);
+      if(t)t.text=text;
+      phTodos();
+    } catch(e){console.error(e);}
+  };
+
   window.phToggleDrawer=function(){
     $('#ph-drawer').classList.toggle('open');
     $('#ph-drawer-overlay').classList.toggle('open');
@@ -1754,6 +1930,7 @@
     if(name==='contacts')phContacts();
     if(name==='projects')phProjects();
     if(name==='dates')phDates();
+    if(name==='todo')phTodos();
     if(name==='aislemate')amGo('home');
   };
 
@@ -1792,6 +1969,7 @@
   phContacts();
   phProjects();
   phDates();
+  phTodos();
 })();
 </script>
 

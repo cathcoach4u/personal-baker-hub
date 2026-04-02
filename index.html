@@ -144,6 +144,8 @@
     .month-header.current { background: #f0fdf4; color: #16a34a; }
     .month-header.past { color: #94a3b8; background: #fafafa; }
     .month-empty { font-size: 11px; color: #cbd5e1; padding: 6px 14px 14px; font-style: italic; }
+    .week-header { font-size: 11px; font-weight: 600; color: #94a3b8; padding: 8px 14px 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .week-header.this-week { color: #16a34a; }
 
     .proj-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .proj-card:hover { border-color: #3b82f6; }
@@ -606,7 +608,8 @@
       time: r.time_info || '',
       loc: r.location || '',
       cat: r.category,
-      notes: r.notes || ''
+      notes: r.notes || '',
+      recurring: r.recurring || ''
     }));
 
     PROVIDERS = (providersRes.data || []).map(r => ({
@@ -1228,6 +1231,36 @@
     } catch(e){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
+  function getWeekNum(d){
+    // ISO week number
+    const dt=new Date(d+'T00:00:00');
+    const dayNum=dt.getDay()||7;
+    dt.setDate(dt.getDate()+4-dayNum);
+    const yearStart=new Date(dt.getFullYear(),0,1);
+    return Math.ceil(((dt-yearStart)/86400000+1)/7);
+  }
+
+  function getWeekLabel(dateStr){
+    const dt=new Date(dateStr+'T00:00:00');
+    // Monday of that week
+    const day=dt.getDay()||7;
+    const mon=new Date(dt);mon.setDate(dt.getDate()-(day-1));
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    return mon.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+' \u2013 '+sun.toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+  }
+
+  function renderDateCard(d){
+    let dateStr='';
+    if(d.start&&d.end&&d.start!==d.end)dateStr=fmtD(d.start)+' \u2013 '+fmtD(d.end);
+    else if(d.start)dateStr=fmtD(d.start);
+    else dateStr='Ongoing';
+    const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=7;
+    const isToday=d.start&&daysUntil(d.start)===0;
+    const dayName=d.start?new Date(d.start+'T00:00:00').toLocaleDateString('en-AU',{weekday:'short'}):'';
+    const recurBadge=d.recurring?'<span style="font-size:9px;color:#94a3b8;margin-left:4px;">\u{1F501} yearly</span>':'';
+    return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+recurBadge+(isToday?'<span class="date-upcoming" style="background:#f0fdf4;color:#16a34a;">Today</span>':upcoming?'<span class="date-upcoming">This week</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta">'+(dayName?'<span><strong>'+dayName+'</strong></span>':'')+'<span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
+  }
+
   window.phDates=function(){
     const df=$('#ph-df').value,ds=$('#ph-ds').value.toLowerCase();
     let fl=DATES;
@@ -1238,16 +1271,15 @@
     // Build month timeline from Apr 2026 to Mar 2027
     const months=[];
     for(let y=2026;y<=2027;y++){
-      const startM=y===2026?3:0; // Apr 2026 (month 3) to Mar 2027 (month 2)
+      const startM=y===2026?3:0;
       const endM=y===2027?3:12;
-      for(let m=startM;m<endM;m++){
-        months.push({year:y,month:m});
-      }
+      for(let m=startM;m<endM;m++){months.push({year:y,month:m});}
     }
 
     const now=new Date();
     const currentMonth=now.getMonth();
     const currentYear=now.getFullYear();
+    const currentWeek=getWeekNum(now.toISOString().split('T')[0]);
 
     let html='';
     months.forEach(mo=>{
@@ -1256,28 +1288,33 @@
       const isPast=new Date(mo.year,mo.month+1,0)<now&&!isCurrent;
       const headerClass=isCurrent?'current':isPast?'past':'';
 
-      // Find dates in this month
       const inMonth=fl.filter(d=>{
         if(!d.start)return false;
         const dt=new Date(d.start+'T00:00:00');
         return dt.getMonth()===mo.month&&dt.getFullYear()===mo.year;
       });
-
-      // Also include ongoing items (no start date) in current month only
       const ongoing=isCurrent?fl.filter(d=>!d.start):[];
       const all=[...inMonth,...ongoing];
+      all.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
 
       html+='<div class="month-section">';
       html+='<div class="month-header '+headerClass+'"><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span>'+(all.length?'<span class="month-count">'+all.length+' event'+(all.length!==1?'s':'')+'</span>':'')+'</div>';
+
       if(all.length){
-        html+=all.map(d=>{
-          let dateStr='';
-          if(d.start&&d.end&&d.start!==d.end)dateStr=fmtD(d.start)+' \u2013 '+fmtD(d.end);
-          else if(d.start)dateStr=fmtD(d.start);
-          else dateStr='Ongoing';
-          const upcoming=d.start&&daysUntil(d.start)>=0&&daysUntil(d.start)<=30;
-          return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+(upcoming?'<span class="date-upcoming">Coming up</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta"><span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
-        }).join('');
+        // Group by week
+        const weeks={};
+        all.forEach(d=>{
+          const wk=d.start?getWeekNum(d.start):'ongoing';
+          if(!weeks[wk])weeks[wk]={label:d.start?getWeekLabel(d.start):'Ongoing',num:wk,items:[]};
+          weeks[wk].items.push(d);
+        });
+        const weekKeys=Object.keys(weeks).sort((a,b)=>a==='ongoing'?1:b==='ongoing'?-1:a-b);
+        weekKeys.forEach(wk=>{
+          const w=weeks[wk];
+          const isThisWeek=wk!=='ongoing'&&parseInt(wk)===currentWeek&&isCurrent;
+          html+='<div class="week-header'+(isThisWeek?' this-week':'')+'">'+( isThisWeek?'\u{25B6} This week \u2014 ':'')+w.label+'</div>';
+          html+=w.items.map(d=>renderDateCard(d)).join('');
+        });
       } else if(!isPast){
         html+='<div class="month-empty">No events</div>';
       }

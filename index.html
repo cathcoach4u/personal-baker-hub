@@ -12,6 +12,7 @@
   <link rel="apple-touch-icon" href="icon-192.svg">
   <link rel="icon" type="image/svg+xml" href="icon-192.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <script src="config.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -271,6 +272,115 @@
       .filter-bar { flex-wrap: wrap; }
       .form-grid { grid-template-columns: 1fr; }
     }
+
+    /* ───── AISLEMATE ───── */
+    #personalHub .am-search { width: 100% !important; padding: 14px 18px 14px 44px !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; font-size: 14px !important; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2394a3b8' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 14px center no-repeat !important; outline: none !important; margin-bottom: 24px !important; }
+    #personalHub .am-search:focus { border-color: #3b82f6 !important; }
+    #personalHub .am-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; margin-bottom: 24px !important; }
+    #personalHub .am-tile { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; padding: 28px 20px !important; text-align: center !important; cursor: pointer !important; transition: all 0.15s !important; }
+    #personalHub .am-tile:hover { border-color: #3b82f6 !important; box-shadow: 0 2px 8px rgba(59,130,246,0.1) !important; }
+    #personalHub .am-tile.highlight { background: #fef9ee !important; border-color: #f59e0b !important; }
+    #personalHub .am-tile .tile-icon { font-size: 32px !important; margin-bottom: 10px !important; }
+    #personalHub .am-tile .tile-title { font-size: 16px !important; font-weight: 700 !important; margin-bottom: 4px !important; }
+    #personalHub .am-tile .tile-sub { font-size: 12px !important; color: #64748b !important; }
+    #personalHub .am-progress { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; padding: 18px 24px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 24px !important; }
+    #personalHub .am-progress .prog-label { font-weight: 700 !important; font-size: 14px !important; }
+    #personalHub .am-progress .prog-count { font-size: 13px !important; color: #64748b !important; }
+    #personalHub .am-progress-bar { height: 6px !important; background: #e2e8f0 !important; border-radius: 3px !important; flex: 1 !important; margin: 0 16px !important; overflow: hidden !important; }
+    #personalHub .am-progress-fill { height: 100% !important; background: #10b981 !important; border-radius: 3px !important; transition: width 0.3s !important; }
+    #personalHub .am-subscreen { display: none !important; }
+    #personalHub .am-subscreen.active { display: block !important; }
+    #personalHub .am-header-bar { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; padding: 18px 24px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 8px !important; flex-wrap: wrap !important; gap: 10px !important; }
+    #personalHub .am-header-bar h3 { font-size: 18px !important; font-weight: 700 !important; }
+    #personalHub .am-header-actions { display: flex !important; align-items: center !important; gap: 12px !important; }
+    #personalHub .am-header-actions .check-count { color: #10b981 !important; font-size: 13px !important; font-weight: 600 !important; }
+    #personalHub .am-btn { padding: 8px 16px !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important; background: white !important; display: flex !important; align-items: center !important; gap: 6px !important; color: #1e293b !important; cursor: pointer !important; }
+    #personalHub .am-btn:hover { background: #f8fafc !important; }
+    #personalHub .am-btn.primary { background: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+    #personalHub .am-back { font-size: 13px !important; color: #3b82f6 !important; cursor: pointer !important; margin-bottom: 16px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-weight: 600 !important; }
+    #personalHub .list-progress { height: 6px !important; background: #e2e8f0 !important; border-radius: 3px !important; margin: 16px 0 24px !important; overflow: hidden !important; }
+    #personalHub .list-progress-fill { height: 100% !important; background: #10b981 !important; border-radius: 3px !important; transition: width 0.3s !important; }
+    #personalHub .cat-group { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; margin-bottom: 16px !important; overflow: hidden !important; }
+    #personalHub .cat-header { padding: 16px 20px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; font-weight: 700 !important; font-size: 14px !important; }
+    #personalHub .cat-count { font-size: 12px !important; color: #94a3b8 !important; font-weight: 500 !important; }
+    #personalHub .shop-item { padding: 14px 20px !important; border-top: 1px solid #f1f5f9 !important; display: flex !important; align-items: center !important; gap: 12px !important; }
+    #personalHub .shop-check { width: 22px !important; height: 22px !important; border: 2px solid #cbd5e1 !important; border-radius: 6px !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; transition: all 0.15s !important; background: white !important; }
+    #personalHub .shop-check:hover { border-color: #10b981 !important; }
+    #personalHub .shop-check.done { background: #10b981 !important; border-color: #10b981 !important; }
+    #personalHub .shop-check.done::after { content: '\2713' !important; color: white !important; font-size: 12px !important; font-weight: 700 !important; }
+    #personalHub .shop-name { font-size: 14px !important; font-weight: 600 !important; flex: 1 !important; }
+    #personalHub .shop-name.checked { text-decoration: line-through !important; color: #94a3b8 !important; }
+    #personalHub .store-tag { font-size: 10px !important; padding: 2px 8px !important; border-radius: 99px !important; font-weight: 600 !important; background: #ecfdf5 !important; color: #059669 !important; }
+    #personalHub .store-tag.aldi { background: #eff6ff !important; color: #2563eb !important; }
+    #personalHub .store-tag.woolies { background: #f0fdf4 !important; color: #16a34a !important; }
+    #personalHub .store-tag.coles { background: #fef2f2 !important; color: #ef4444 !important; }
+    #personalHub .shop-delete { color: #94a3b8 !important; cursor: pointer !important; font-size: 16px !important; padding: 4px !important; }
+    #personalHub .shop-delete:hover { color: #ef4444 !important; }
+    #personalHub .family-section { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; margin-bottom: 16px !important; overflow: hidden !important; }
+    #personalHub .family-header { padding: 20px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; cursor: pointer !important; }
+    #personalHub .family-header .fam-left { display: flex !important; align-items: center !important; gap: 12px !important; }
+    #personalHub .family-header .fam-avatar { font-size: 28px !important; }
+    #personalHub .family-header .fam-name { font-size: 16px !important; font-weight: 700 !important; }
+    #personalHub .family-header .fam-count { font-size: 12px !important; color: #94a3b8 !important; }
+    #personalHub .family-header .fam-badge { font-size: 12px !important; padding: 4px 12px !important; border-radius: 99px !important; background: #eff6ff !important; color: #3b82f6 !important; font-weight: 600 !important; }
+    #personalHub .family-body { padding: 0 20px 20px !important; }
+    #personalHub .family-empty { text-align: center !important; padding: 24px !important; color: #94a3b8 !important; font-size: 13px !important; }
+    #personalHub .fam-item { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 14px 16px !important; margin-bottom: 8px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; }
+    #personalHub .fam-item-left { display: flex !important; flex-direction: column !important; gap: 4px !important; }
+    #personalHub .fam-item-name { font-weight: 600 !important; font-size: 14px !important; }
+    #personalHub .fam-item-tags { display: flex !important; gap: 6px !important; align-items: center !important; }
+    #personalHub .fam-item-tags .tag { font-size: 10px !important; padding: 2px 8px !important; border-radius: 99px !important; font-weight: 600 !important; }
+    #personalHub .tag.store { background: #eff6ff !important; color: #2563eb !important; }
+    #personalHub .tag.type { background: #f1f5f9 !important; color: #64748b !important; }
+    #personalHub .fam-add-btn { width: 32px !important; height: 32px !important; border-radius: 50% !important; background: #10b981 !important; color: white !important; font-size: 18px !important; display: flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; flex-shrink: 0 !important; }
+    #personalHub .settings-card { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; padding: 24px !important; margin-bottom: 16px !important; }
+    #personalHub .settings-card h3 { font-size: 16px !important; font-weight: 700 !important; margin-bottom: 4px !important; }
+    #personalHub .settings-card .settings-desc { font-size: 13px !important; color: #64748b !important; margin-bottom: 16px !important; }
+    #personalHub .user-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    #personalHub .user-option { padding: 10px 16px !important; border: 2px solid #e2e8f0 !important; border-radius: 10px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 8px !important; font-size: 14px !important; font-weight: 500 !important; transition: all 0.15s !important; }
+    #personalHub .user-option:hover { border-color: #94a3b8 !important; }
+    #personalHub .user-option.selected { border-color: #10b981 !important; background: #ecfdf5 !important; }
+    #personalHub .user-dot { width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 2px solid #cbd5e1 !important; }
+    #personalHub .user-option.selected .user-dot { background: #10b981 !important; border-color: #10b981 !important; }
+    #personalHub .qr-card { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 14px !important; padding: 32px 24px !important; text-align: center !important; max-width: 400px !important; margin: 0 auto !important; }
+    #personalHub .qr-card h4 { font-size: 16px !important; font-weight: 700 !important; margin-bottom: 4px !important; }
+    #personalHub .qr-card p { font-size: 13px !important; color: #64748b !important; margin-bottom: 20px !important; }
+    #personalHub .qr-card canvas { border-radius: 8px !important; }
+    #personalHub .qr-url { font-size: 11px !important; color: #94a3b8 !important; word-break: break-all !important; margin-top: 16px !important; background: #f8fafc !important; padding: 8px 12px !important; border-radius: 6px !important; }
+    #personalHub .am-add-form { display: flex !important; gap: 8px !important; align-items: center !important; margin-top: 12px !important; flex-wrap: wrap !important; }
+    #personalHub .am-add-input { flex: 1 !important; min-width: 140px !important; padding: 8px 12px !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; font-size: 13px !important; }
+    #personalHub .am-add-select { padding: 8px !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; font-size: 13px !important; background: white !important; }
+    #personalHub .am-suggest-list { position: absolute !important; top: 100% !important; left: 0 !important; right: 0 !important; background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; max-height: 180px !important; overflow-y: auto !important; z-index: 10 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; }
+    #personalHub .am-suggest-item { padding: 8px 12px !important; cursor: pointer !important; font-size: 13px !important; border-bottom: 1px solid #f1f5f9 !important; }
+    #personalHub .am-suggest-item:hover { background: #f0f4f8 !important; }
+    #personalHub .am-suggest-item .suggest-price { font-size: 11px !important; color: #94a3b8 !important; }
+    #personalHub .receipt-card { background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; padding: 16px !important; margin-bottom: 12px !important; }
+    #personalHub .receipt-header { display: flex !important; align-items: center !important; gap: 10px !important; cursor: pointer !important; }
+    #personalHub .receipt-items { margin-top: 12px !important; border-top: 1px solid #f1f5f9 !important; padding-top: 12px !important; }
+    #personalHub .receipt-item-row { display: flex !important; justify-content: space-between !important; padding: 4px 0 !important; font-size: 13px !important; }
+    #personalHub .receipt-item-row .ri-price { font-weight: 600 !important; color: #1e293b !important; }
+    #personalHub .master-item { display: flex !important; align-items: center !important; gap: 10px !important; padding: 10px 12px !important; background: white !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; margin-bottom: 6px !important; cursor: pointer !important; transition: border-color 0.15s !important; }
+    #personalHub .master-item.selected { border-color: #3b82f6 !important; background: #eff6ff !important; }
+    #personalHub .master-item .mi-check { width: 20px !important; height: 20px !important; border: 2px solid #cbd5e1 !important; border-radius: 4px !important; flex-shrink: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 12px !important; }
+    #personalHub .master-item.selected .mi-check { background: #3b82f6 !important; border-color: #3b82f6 !important; color: white !important; }
+    #personalHub .mi-store { font-size: 10px !important; padding: 2px 6px !important; border-radius: 4px !important; font-weight: 600 !important; text-transform: uppercase !important; }
+    #personalHub .mi-store.aldi { background: #fef3c7 !important; color: #92400e !important; }
+    #personalHub .mi-store.woolworths { background: #dcfce7 !important; color: #166534 !important; }
+    #personalHub .mi-store.coles { background: #fce7f3 !important; color: #9d174d !important; }
+    #personalHub .mi-store.bakersdelight { background: #fff7ed !important; color: #9a3412 !important; }
+    #personalHub .mi-store.belrosepharmacy { background: #ede9fe !important; color: #5b21b6 !important; }
+    #personalHub .mi-store.amazon { background: #fff7ed !important; color: #9a3412 !important; }
+
+    body.dark-mode #personalHub .cat-group,
+    body.dark-mode #personalHub .am-tile,
+    body.dark-mode #personalHub .am-header-bar,
+    body.dark-mode #personalHub .am-progress { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+    body.dark-mode #personalHub .am-tile .tile-title { color: #f1f5f9 !important; }
+    body.dark-mode #personalHub .shop-item { border-color: #334155 !important; }
+    body.dark-mode #personalHub .shop-name { color: #f1f5f9 !important; }
+    body.dark-mode #personalHub .am-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+    body.dark-mode #personalHub .am-btn.primary { background: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+    body.dark-mode #personalHub .am-search { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
   </style>
 </head>
 <body>
@@ -294,6 +404,7 @@
       <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+      <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
     <div class="mobile-drawer-footer">Baker Hub v2.0</div>
@@ -306,6 +417,7 @@
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+    <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
@@ -518,6 +630,210 @@
           <li><strong>house_projects</strong> — House project tracking</li>
           <li><strong>important_dates</strong> — Important dates & council events</li>
         </ul>
+      </div>
+    </div>
+
+    <!-- ═══ AISLEMATE ═══ -->
+    <div class="screen" id="ph-aislemate">
+      <h2>&#x1F6D2; AisleMate</h2>
+      <div class="am-subscreen active" id="am-home">
+        <input class="am-search" type="text" placeholder="Search items to add...">
+        <div style="display:flex !important;flex-direction:column !important;gap:8px !important;margin-bottom:12px !important;">
+          <div style="display:flex !important;gap:8px !important;">
+            <button class="am-btn" onclick="amGo('weekly')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F6D2; Weekly Shop</button>
+            <button class="am-btn" onclick="amGo('select')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x2705; Master List</button>
+          </div>
+          <div style="display:flex !important;gap:8px !important;">
+            <button class="am-btn" onclick="amGo('shopinfo')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x2139; Shop Info</button>
+            <button class="am-btn" onclick="amGo('family')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F46A; Family</button>
+          </div>
+          <div style="display:flex !important;gap:8px !important;">
+            <button class="am-btn" onclick="amGo('receipts')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F9FE; Receipts</button>
+            <button class="am-btn" onclick="amGo('spending')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F4B0; Spending</button>
+          </div>
+          <div style="display:flex !important;gap:8px !important;">
+            <button class="am-btn" onclick="amGo('history')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F4C5; History</button>
+            <button class="am-btn" onclick="amGo('meals')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F372; Meal Plan</button>
+          </div>
+          <div style="display:flex !important;gap:8px !important;">
+            <button class="am-btn" onclick="amGo('qrcode')" style="flex:1 !important;padding:12px 10px !important;font-size:13px !important;text-align:center !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;color:#1e293b !important;">&#x1F4F1; QR Code</button>
+            <div style="flex:1 !important;"></div>
+          </div>
+        </div>
+        <div class="am-progress">
+          <span class="prog-label">Shopping Progress</span>
+          <div class="am-progress-bar"><div class="am-progress-fill" id="am-prog-fill" style="width:0%"></div></div>
+          <span class="prog-count" id="am-prog-text">0 of 0 checked</span>
+        </div>
+        <!-- Quick Access Link -->
+        <div style="margin-top:16px !important;padding:14px 16px !important;background:#f8fafc !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;">
+          <div style="font-size:12px !important;font-weight:600 !important;color:#64748b !important;margin-bottom:6px !important;">&#x1F517; Quick Access Link</div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;margin-bottom:8px !important;">Open shopping list without logging in. Use in Apple Shortcuts to quick-add items.</div>
+          <div style="display:flex !important;gap:8px !important;align-items:center !important;">
+            <input type="text" readonly id="am-quick-link" style="flex:1 !important;padding:8px 10px !important;border:1px solid #e2e8f0 !important;border-radius:6px !important;font-size:11px !important;color:#475569 !important;background:white !important;">
+            <button class="am-btn" onclick="(function(){var i=document.getElementById('am-quick-link');i.select();document.execCommand('copy');alert('Link copied!')})()" style="padding:8px 12px !important;font-size:12px !important;white-space:nowrap !important;">Copy</button>
+          </div>
+        </div>
+      </div>
+      <div class="am-subscreen" id="am-weekly">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <div class="am-header-bar">
+          <h3>&#x1F6D2; This Week's List</h3>
+          <div class="am-header-actions">
+            <span class="check-count" id="am-wk-count">&#x2713; 0 of 2</span>
+            <button class="am-btn" onclick="amRefresh()">&#x1F504; Refresh</button>
+            <button class="am-btn" onclick="amShareList()">&#x1F4E4; Share</button>
+            <button class="am-btn">&#x1F5A8; Print</button>
+          </div>
+        </div>
+        <div class="list-progress"><div class="list-progress-fill" id="am-wk-prog" style="width:0%"></div></div>
+        <div id="am-items-container"></div>
+        <div class="am-add-form" id="am-add-form" style="display:flex !important;margin-top:12px !important;">
+          <div style="position:relative !important;flex:1 !important;min-width:140px !important;">
+            <input class="am-add-input" id="am-add-name" type="text" placeholder="Type any item or pick from suggestions..." autocomplete="off" oninput="amSuggest(this.value)" onkeydown="if(event.key==='Enter')amAddItem()">
+            <div class="am-suggest-list" id="am-suggest-list"></div>
+          </div>
+          <select class="am-add-select" id="am-add-cat">
+            <option>Pantry</option><option>Dairy</option><option>Meat</option><option>Fruit &amp; Veg</option><option>Frozen</option><option>Drinks</option><option>Household</option><option>Other</option>
+          </select>
+          <select class="am-add-select" id="am-add-store">
+            <option>Aldi</option><option>Woolworths</option><option>Coles</option><option>Bakers Delight</option><option>Belrose Pharmacy</option><option>Other</option>
+          </select>
+          <div style="display:flex !important;align-items:center !important;gap:4px !important;background:white !important;border:1px solid #e2e8f0 !important;border-radius:8px !important;padding:2px 6px !important;">
+            <button class="am-btn" onclick="amQtyChange(-1)" style="padding:4px 8px !important;font-size:16px !important;font-weight:700 !important;color:#64748b !important;">&minus;</button>
+            <span id="am-add-qty" style="font-size:14px !important;font-weight:600 !important;min-width:20px !important;text-align:center !important;">1</span>
+            <button class="am-btn" onclick="amQtyChange(1)" style="padding:4px 8px !important;font-size:16px !important;font-weight:700 !important;color:#64748b !important;">+</button>
+          </div>
+          <button class="am-btn" onclick="amAddItem()" style="background:#3b82f6 !important;color:white !important;">Add</button>
+        </div>
+        <button class="am-btn" id="am-repeat-btn" onclick="amRepeatLastShop()" style="margin-top:12px !important;width:100% !important;justify-content:center !important;background:#fef3c7 !important;border:1px solid #f59e0b !important;color:#92400e !important;padding:10px !important;font-weight:600 !important;">&#x1F504; Same as Last Week</button>
+      </div>
+      <div class="am-subscreen" id="am-family">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="margin-bottom:8px !important;font-size:18px !important;font-weight:700 !important;">&#x1F46A; Family Items</h3>
+        <p style="color:#64748b !important;font-size:13px !important;margin-bottom:20px !important;">Each person's regular items from the master list. Tap + to add to this week's shop.</p>
+        <div id="am-family-container"></div>
+      </div>
+      <div class="am-subscreen" id="am-select">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:8px !important;">&#x2705; Master Item List</h3>
+        <p style="color:#64748b !important;font-size:13px !important;margin-bottom:12px !important;">Tick items to add to this week's shopping list.</p>
+        <div style="display:flex !important;gap:8px !important;margin-bottom:12px !important;align-items:center !important;">
+          <input class="am-add-input" id="am-master-search" type="text" placeholder="Search items..." oninput="amFilterMaster(this.value)" style="flex:1 !important;">
+          <select class="am-add-select" id="am-master-store-filter" onchange="amFilterMaster(document.getElementById('am-master-search').value)">
+            <option value="">All stores</option><option>Aldi</option><option>Woolworths</option><option>Coles</option><option>Bakers Delight</option><option>Belrose Pharmacy</option>
+          </select>
+        </div>
+        <div id="am-master-add-bar" style="display:none !important;position:sticky !important;top:0 !important;z-index:5 !important;background:#3b82f6 !important;color:white !important;padding:10px 16px !important;border-radius:8px !important;margin-bottom:12px !important;display:none !important;align-items:center !important;justify-content:space-between !important;">
+          <span id="am-master-sel-count">0 selected</span>
+          <button onclick="amAddSelected()" style="background:white !important;color:#3b82f6 !important;border:none !important;padding:6px 14px !important;border-radius:6px !important;font-weight:600 !important;cursor:pointer !important;font-size:13px !important;">Add to list</button>
+        </div>
+        <div id="am-master-container"></div>
+      </div>
+      <div class="am-subscreen" id="am-receipts">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x1F9FE; Receipts</h3>
+        <div class="doc-drop-zone" id="am-receipt-drop" onclick="document.getElementById('am-receipt-input').click()">
+          <div class="doc-drop-icon">&#x1F4F7;</div>
+          <div class="doc-drop-title">Drop a receipt here or click to select</div>
+          <div class="doc-drop-sub">Photos or images of your receipts &mdash; items &amp; prices extracted automatically</div>
+        </div>
+        <input type="file" id="am-receipt-input" accept="image/*,.pdf" style="display:none !important;" onchange="amUploadReceipts(this.files)">
+        <div id="am-scan-status" style="display:none !important;text-align:center !important;padding:20px !important;"><div style="font-size:24px !important;margin-bottom:8px !important;">&#x1F50D;</div><div style="color:#3b82f6 !important;font-weight:600 !important;">Scanning receipt...</div><div style="color:#94a3b8 !important;font-size:12px !important;">Extracting items and prices</div></div>
+        <h4 style="font-size:15px !important;font-weight:600 !important;margin-top:24px !important;margin-bottom:12px !important;">Receipt History</h4>
+        <div id="am-receipt-list"></div>
+      </div>
+      <div class="am-subscreen" id="am-meals">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:8px !important;">&#x1F372; Meal Plan</h3>
+        <p style="color:#64748b !important;font-size:13px !important;margin-bottom:12px !important;">Plan meals for the week. Tap a day to add or edit.</p>
+        <button class="am-btn" onclick="amAskAIMeals()" style="width:auto !important;display:inline-flex !important;align-items:center !important;gap:6px !important;background:#7c3aed !important;color:white !important;padding:6px 14px !important;font-weight:600 !important;border-radius:6px !important;font-size:13px !important;margin-bottom:14px !important;">&#x1F916; Ask AI to plan meals</button>
+        <div id="am-meals-container"></div>
+      </div>
+      <div class="am-subscreen" id="am-spending">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x1F4B0; Spending</h3>
+        <div id="am-spending-container"></div>
+      </div>
+      <div class="am-subscreen" id="am-history">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x1F4C5; Shopping History</h3>
+        <p style="color:#64748b !important;font-size:13px !important;margin-bottom:16px !important;">Past purchases from scanned receipts. Tap a receipt to see items.</p>
+        <div id="am-history-container"></div>
+      </div>
+      <div class="am-subscreen" id="am-shopinfo">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x2139; Shopping Info</h3>
+
+        <div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;margin-bottom:12px !important;">
+          <div style="display:flex !important;align-items:center !important;gap:8px !important;margin-bottom:10px !important;">
+            <span class="mi-store woolworths">WOOLWORTHS</span>
+            <span style="font-size:14px !important;font-weight:600 !important;">Woolworths</span>
+          </div>
+          <div style="font-size:13px !important;color:#64748b !important;margin-bottom:8px !important;">
+            <a href="https://www.woolworths.com.au/shop/myaccount" target="_blank" style="color:#3b82f6 !important;">Login to My Account &rarr;</a>
+          </div>
+          <div style="font-size:13px !important;color:#64748b !important;margin-bottom:8px !important;">
+            <a href="https://www.everyday.com.au/" target="_blank" style="color:#3b82f6 !important;">Everyday Rewards &rarr;</a>
+          </div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;background:#f8fafc !important;border-radius:6px !important;padding:10px !important;">
+            <strong style="color:#64748b !important;">eReceipts:</strong> My Account &rarr; My Activity and Receipts. Scan your Everyday Rewards card when shopping. May take up to 20 min to appear.
+          </div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;background:#f8fafc !important;border-radius:6px !important;padding:10px !important;margin-top:6px !important;">
+            <strong style="color:#64748b !important;">Orders:</strong> My Account &rarr; My Orders &mdash; view invoices, tracking and resend gift cards.
+          </div>
+        </div>
+
+        <div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;margin-bottom:12px !important;">
+          <div style="display:flex !important;align-items:center !important;gap:8px !important;margin-bottom:10px !important;">
+            <span class="mi-store aldi">ALDI</span>
+            <span style="font-size:14px !important;font-weight:600 !important;">Aldi</span>
+          </div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;background:#f8fafc !important;border-radius:6px !important;padding:10px !important;">
+            Receipts only available in-store (paper). Take a photo of your receipt and upload in the Receipts section to scan items and prices.
+          </div>
+        </div>
+
+        <div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;margin-bottom:12px !important;">
+          <div style="display:flex !important;align-items:center !important;gap:8px !important;margin-bottom:10px !important;">
+            <span style="font-size:10px !important;padding:2px 6px !important;border-radius:4px !important;font-weight:600 !important;text-transform:uppercase !important;background:#fce7f3 !important;color:#9d174d !important;">BUNNINGS</span>
+            <span style="font-size:14px !important;font-weight:600 !important;">Bunnings</span>
+          </div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;background:#f8fafc !important;border-radius:6px !important;padding:10px !important;">
+            Dog &amp; cat food purchased here.
+          </div>
+        </div>
+
+        <div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;margin-bottom:12px !important;">
+          <div style="display:flex !important;align-items:center !important;gap:8px !important;margin-bottom:10px !important;">
+            <span style="font-size:10px !important;padding:2px 6px !important;border-radius:4px !important;font-weight:600 !important;text-transform:uppercase !important;background:#fff7ed !important;color:#9a3412 !important;">AMAZON</span>
+            <span style="font-size:14px !important;font-weight:600 !important;">Amazon</span>
+          </div>
+          <div style="font-size:13px !important;color:#64748b !important;margin-bottom:8px !important;">
+            <a href="https://www.amazon.com.au" target="_blank" style="color:#3b82f6 !important;">amazon.com.au &rarr;</a>
+          </div>
+          <div style="font-size:12px !important;color:#94a3b8 !important;background:#f8fafc !important;border-radius:6px !important;padding:10px !important;">
+            Bandaids, protein powder &amp; other useful items.
+          </div>
+        </div>
+
+      </div>
+      <div class="am-subscreen" id="am-qrcode">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x1F4F1; QR Code &mdash; Shopping List</h3>
+        <div class="qr-card">
+          <h4>Scan to open Shopping List</h4>
+          <p>Scan this QR code to open a simple shopping list tool &mdash; add items, check them off, no login needed.</p>
+          <div id="qr-canvas-wrap"></div>
+          <div class="qr-url" id="qr-url-display"></div>
+          <button class="am-btn primary" onclick="amCopyQRLink()" style="margin-top:14px !important;width:100% !important;justify-content:center !important;">&#x1F4CB; Copy Link</button>
+        </div>
+      </div>
+      <div class="am-subscreen" id="am-settings">
+        <button class="am-back" onclick="amGo('home')">&#x2190; Back</button>
+        <h3 style="font-size:18px !important;font-weight:700 !important;margin-bottom:16px !important;">&#x2699; Settings</h3>
+        <div class="settings-card"><h3>&#x1F464; Current User</h3><div class="settings-desc">Select who is adding items to the shopping list</div><div class="user-grid"><div class="user-option selected" onclick="amSelectUser(this)"><span class="user-dot"></span> Cath</div><div class="user-option" onclick="amSelectUser(this)"><span class="user-dot"></span> Andrew</div><div class="user-option" onclick="amSelectUser(this)"><span class="user-dot"></span> Sarah</div><div class="user-option" onclick="amSelectUser(this)"><span class="user-dot"></span> Russell</div></div></div>
+        <div class="settings-card"><h3>+ Add New Item</h3><div class="settings-desc">Add a new item to the master list</div><button class="am-btn" style="width:100% !important;justify-content:center !important;">Add New Item &#x203A;</button></div>
       </div>
     </div>
   </div>
@@ -1438,6 +1754,7 @@
     if(name==='contacts')phContacts();
     if(name==='projects')phProjects();
     if(name==='dates')phDates();
+    if(name==='aislemate')amGo('home');
   };
 
   // Populate insurance filters
@@ -1624,6 +1941,680 @@
     sendBtn.disabled = false;
     input.focus();
   };
+
+  // ═══════ AISLEMATE ═══════
+  var CAT_ICONS = {'Fruit & Veg':'&#x1F96C;','Meat':'&#x1F969;','Dairy':'&#x1F95B;','Pantry':'&#x1F96B;','Frozen':'&#x2744;','Drinks':'&#x1F964;','Household':'&#x1F9F9;','Other':'&#x1F4E6;'};
+  var CAT_ORDER = ['Fruit & Veg','Meat','Dairy','Pantry','Frozen','Drinks','Household','Other'];
+  var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  var FAMILY = [
+    { name: 'Cath', avatar: '&#x1F469;' },
+    { name: 'Andrew', avatar: '&#x1F468;' },
+    { name: 'Sarah', avatar: '&#x1F467;' },
+    { name: 'Russell', avatar: '&#x1F466;' }
+  ];
+  var masterItems = [];
+  var masterSelected = new Set();
+
+  window.amGo = function(sub){
+    document.querySelectorAll('#ph-aislemate .am-subscreen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('am-' + sub).classList.add('active');
+    if (sub === 'family') amLoadFamily();
+    if (sub === 'select') amLoadMaster();
+    if (sub === 'spending') amLoadSpending();
+    if (sub === 'history') amLoadHistory();
+    if (sub === 'qrcode') amGenerateQR();
+  };
+
+  window.amGenerateQR = function() {
+    var wrap = document.getElementById('qr-canvas-wrap');
+    var urlDisplay = document.getElementById('qr-url-display');
+    var basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+    var qrUrl = window.location.origin + basePath + 'shopping.html';
+    urlDisplay.textContent = qrUrl;
+    wrap.innerHTML = '';
+    var canvas = document.createElement('canvas');
+    wrap.appendChild(canvas);
+    if (window.QRious) {
+      new QRious({ element: canvas, value: qrUrl, size: 256, foreground: '#1e293b', background: '#ffffff', level: 'M' });
+    }
+  };
+
+  window.amCopyQRLink = function() {
+    var basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+    var qrUrl = window.location.origin + basePath + 'shopping.html';
+    navigator.clipboard.writeText(qrUrl).then(function() {
+      alert('Link copied to clipboard!');
+    });
+  };
+
+  window.amCheck = async function(el) {
+    var id = el.closest('.shop-item').dataset.id;
+    var isDone = !el.classList.contains('done');
+    await sb.from('shopping_items').update({ checked: isDone }).eq('id', id);
+    amLoadItems();
+  };
+
+  window.amDeleteItem = async function(id) {
+    await sb.from('shopping_items').delete().eq('id', id);
+    amLoadItems();
+  };
+
+  window.amUpdateCounts = function(){
+    var items = document.querySelectorAll('#am-weekly .shop-item');
+    var checked = document.querySelectorAll('#am-weekly .shop-check.done').length;
+    var total = items.length, pct = total ? Math.round((checked/total)*100) : 0;
+    document.getElementById('am-wk-count').innerHTML = '&#x2713; ' + checked + ' of ' + total;
+    document.getElementById('am-wk-prog').style.width = pct + '%';
+    document.getElementById('am-prog-fill').style.width = pct + '%';
+    document.getElementById('am-prog-text').textContent = checked + ' of ' + total + ' checked';
+  };
+
+  window.amRefresh = async function(){
+    await sb.from('shopping_items').delete().gte('id', '00000000-0000-0000-0000-000000000000');
+    amLoadItems();
+  };
+
+  window.amSelectUser = function(el){ document.querySelectorAll('#personalHub .user-option').forEach(function(u){ u.classList.remove('selected'); }); el.classList.add('selected'); };
+
+  function renderShopItem(item) {
+    var storeCls = (item.store || '').toLowerCase().replace(/[^a-z]/g,'');
+    var h = '<div class="shop-item" data-id="' + item.id + '" style="' + (item.checked ? 'opacity:0.5 !important;' : '') + '">';
+    h += '<div class="shop-check' + (item.checked ? ' done' : '') + '" onclick="amCheck(this)"></div>';
+    h += '<span class="shop-name' + (item.checked ? ' checked' : '') + '">' + esc(item.name) + '</span>';
+    if (item.store) h += '<span class="store-tag ' + storeCls + '">' + esc(item.store) + '</span>';
+    h += '<button class="shop-delete" onclick="amDeleteItem(\'' + item.id + '\')">&#x1F5D1;</button>';
+    h += '</div>';
+    return h;
+  }
+
+  async function amLoadItems() {
+    var { data: items } = await sb.from('shopping_items').select('*').order('created_at');
+    items = items || [];
+    var { data: masterData } = await sb.from('master_items').select('name');
+    var masterNames = (masterData || []).map(function(m) { return m.name.toLowerCase(); });
+    var container = document.getElementById('am-items-container');
+
+    var unchecked = items.filter(function(i) { return !i.checked; });
+    var checked = items.filter(function(i) { return i.checked; });
+
+    var html = '';
+
+    if (unchecked.length) {
+      var cats = {};
+      unchecked.forEach(function(item) {
+        var isMaster = masterNames.indexOf(item.name.toLowerCase()) !== -1;
+        var cat = isMaster ? (item.category || 'Other') : 'Other';
+        if (!cats[cat]) cats[cat] = [];
+        cats[cat].push(item);
+      });
+      CAT_ORDER.forEach(function(cat) {
+        if (!cats[cat] || !cats[cat].length) return;
+        var catIcon = CAT_ICONS[cat] || '&#x1F96B;';
+        html += '<div class="cat-group">';
+        html += '<div class="cat-header"><span>' + catIcon + ' ' + esc(cat) + '</span><span class="cat-count">' + cats[cat].length + '</span></div>';
+        cats[cat].forEach(function(item) { html += renderShopItem(item); });
+        html += '</div>';
+      });
+    }
+
+    if (checked.length) {
+      html += '<div class="cat-group" style="margin-top:16px !important;border-top:2px solid #e2e8f0 !important;padding-top:12px !important;">';
+      html += '<div class="cat-header"><span>&#x2705; Collected</span><span class="cat-count">' + checked.length + '</span></div>';
+      checked.forEach(function(item) { html += renderShopItem(item); });
+      html += '</div>';
+    }
+
+    if (!items.length) html = '<div style="text-align:center;padding:20px;color:#94a3b8;">No items yet — pick from the Master List or type below to add</div>';
+    container.innerHTML = html;
+    amUpdateCounts();
+  }
+
+  window.amRepeatLastShop = async function() {
+    var weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    var { data: receipts } = await sb.from('receipts').select('*, receipt_items(*)').gte('uploaded_at', weekAgo.toISOString()).order('uploaded_at', { ascending: false });
+    if (!receipts || !receipts.length) {
+      alert('No receipts from the last 7 days. Scan a receipt first to use this feature.');
+      return;
+    }
+    var { data: master } = await sb.from('master_items').select('name, category, store');
+    var masterMap = {};
+    (master || []).forEach(function(m) { masterMap[m.name.toLowerCase()] = m; });
+    var rows = [];
+    var seen = {};
+    var stores = [];
+    receipts.forEach(function(receipt) {
+      if (receipt.store && stores.indexOf(receipt.store) === -1) stores.push(receipt.store);
+      (receipt.receipt_items || []).forEach(function(item) {
+        if (item.price <= 0) return;
+        var key = item.item_name.toLowerCase();
+        if (seen[key]) return;
+        seen[key] = true;
+        var mi = masterMap[key];
+        rows.push({
+          name: item.item_name,
+          category: mi ? mi.category : 'Other',
+          store: mi ? mi.store : (receipt.store || '')
+        });
+      });
+    });
+    if (rows.length) {
+      await sb.from('shopping_items').insert(rows);
+      amLoadItems();
+      alert(rows.length + ' items added from last week (' + stores.join(' + ') + ')!');
+    }
+  };
+
+  window.amQtyChange = function(delta) {
+    var el = document.getElementById('am-add-qty');
+    var qty = parseInt(el.textContent) + delta;
+    if (qty < 1) qty = 1;
+    if (qty > 99) qty = 99;
+    el.textContent = qty;
+  };
+
+  window.amAddItem = async function() {
+    var name = document.getElementById('am-add-name').value.trim();
+    if (!name) return;
+    var cat = document.getElementById('am-add-cat').value;
+    var store = document.getElementById('am-add-store').value;
+    var qty = parseInt(document.getElementById('am-add-qty').textContent) || 1;
+    var displayName = qty > 1 ? name + ' x' + qty : name;
+    await sb.from('shopping_items').insert({ name: displayName, category: cat, store: store });
+    document.getElementById('am-add-name').value = '';
+    document.getElementById('am-add-qty').textContent = '1';
+    document.getElementById('am-add-form').style.display = 'none';
+    amLoadItems();
+  };
+
+  function fileToBase64(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() { resolve(reader.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function amScanReceipt(base64, mediaType) {
+    var resp = await fetch('https://ziwycymhaqghdiznyhhw.supabase.co/functions/v1/claude-proxy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 2048,
+        messages: [{
+          role: 'user',
+          content: [
+            mediaType === 'application/pdf'
+              ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
+              : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: 'Extract all items and prices from this receipt. Return ONLY valid JSON in this exact format, no other text:\n{"store":"Store Name","date":"DD/MM/YYYY","items":[{"name":"Item Name","price":1.99,"quantity":1}],"total":99.99}\n\nRules:\n- Use the actual store name from the receipt\n- Date in DD/MM/YYYY format\n- Price as a number (not string)\n- Include ALL items, even discounts (as negative prices)\n- Total is the final amount paid' }
+          ]
+        }]
+      })
+    });
+    if (!resp.ok) { var err = await resp.json().catch(function(){ return {}; }); throw new Error(err.error && err.error.message ? err.error.message : 'API error'); }
+    var data = await resp.json();
+    var text = data.content[0].text;
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Could not parse receipt data');
+    return JSON.parse(jsonMatch[0]);
+  }
+
+  window.amUploadReceipts = async function(files) {
+    var statusEl = document.getElementById('am-scan-status');
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      statusEl.style.display = 'block';
+
+      try {
+        var now = new Date();
+        var prefix = now.getFullYear() + '' + String(now.getMonth()+1).padStart(2,'0') + '' + String(now.getDate()).padStart(2,'0');
+        var fileName = prefix + '_' + Date.now() + '_' + file.name;
+        var { error: uploadErr } = await sb.storage.from('receipts').upload(fileName, file, { upsert: true });
+        if (uploadErr) { alert('Upload failed: ' + uploadErr.message); continue; }
+        var { data: urlData } = sb.storage.from('receipts').getPublicUrl(fileName);
+
+        var base64 = await fileToBase64(file);
+        var mediaType = file.type || 'image/jpeg';
+        var scanned = await amScanReceipt(base64, mediaType);
+
+        if (scanned) {
+          var { data: receiptRow } = await sb.from('receipts').insert({
+            filename: fileName,
+            url: urlData.publicUrl,
+            store: scanned.store || '',
+            receipt_date: scanned.date || '',
+            total: scanned.total || 0
+          }).select().single();
+
+          if (scanned.items && scanned.items.length && receiptRow) {
+            var itemRows = scanned.items.map(function(item) {
+              return { receipt_id: receiptRow.id, item_name: item.name, price: item.price || 0, quantity: item.quantity || 1 };
+            });
+            await sb.from('receipt_items').insert(itemRows);
+
+            var { data: existing } = await sb.from('master_items').select('name');
+            var existingNames = (existing || []).map(function(e) { return e.name.toLowerCase(); });
+            var newMasterItems = [];
+            scanned.items.forEach(function(item) {
+              if (item.price > 0 && existingNames.indexOf(item.name.toLowerCase()) === -1) {
+                existingNames.push(item.name.toLowerCase());
+                newMasterItems.push({
+                  name: item.name,
+                  category: 'Other',
+                  store: scanned.store || '',
+                  last_price: item.price,
+                  last_seen: now.toISOString().split('T')[0]
+                });
+              }
+            });
+            if (newMasterItems.length) await sb.from('master_items').insert(newMasterItems);
+
+            for (var j = 0; j < scanned.items.length; j++) {
+              var si = scanned.items[j];
+              if (si.price > 0) {
+                await sb.from('master_items').update({
+                  last_price: si.price,
+                  store: scanned.store || '',
+                  last_seen: now.toISOString().split('T')[0]
+                }).ilike('name', si.name);
+              }
+            }
+          }
+        }
+      } catch(e) {
+        alert('Scan failed: ' + e.message);
+      }
+    }
+    statusEl.style.display = 'none';
+    document.getElementById('am-receipt-input').value = '';
+    amLoadReceipts();
+  };
+
+  async function amLoadReceipts() {
+    var { data: receipts } = await sb.from('receipts').select('*, receipt_items(*)').order('uploaded_at', { ascending: false });
+    var container = document.getElementById('am-receipt-list');
+    if (!receipts || !receipts.length) {
+      container.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">No receipts yet. Upload a receipt photo to get started.</div>';
+      return;
+    }
+    var html = '';
+    receipts.forEach(function(r) {
+      var date = r.receipt_date || new Date(r.uploaded_at).toLocaleDateString('en-AU');
+      var items = r.receipt_items || [];
+      var itemCount = items.length;
+      html += '<div class="receipt-card">';
+      html += '<div class="receipt-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
+      html += '<span style="font-size:20px !important;">&#x1F9FE;</span>';
+      html += '<div style="flex:1 !important;">';
+      html += '<div style="font-size:14px !important;font-weight:600 !important;">' + esc(r.store || r.filename) + '</div>';
+      html += '<div style="font-size:12px !important;color:#94a3b8 !important;">' + esc(date) + ' &middot; ' + itemCount + ' items</div>';
+      html += '</div>';
+      if (r.total) html += '<div style="font-size:15px !important;font-weight:700 !important;color:#1e293b !important;">$' + Number(r.total).toFixed(2) + '</div>';
+      html += '<span style="color:#94a3b8 !important;font-size:12px !important;">&#x25BC;</span>';
+      html += '</div>';
+      html += '<div class="receipt-items" style="display:none !important;">';
+      items.forEach(function(item) {
+        html += '<div class="receipt-item-row">';
+        html += '<span>' + esc(item.item_name) + (item.quantity > 1 ? ' x' + item.quantity : '') + '</span>';
+        html += '<span class="ri-price">$' + Number(item.price).toFixed(2) + '</span>';
+        html += '</div>';
+      });
+      html += '<div style="display:flex !important;justify-content:flex-end !important;gap:8px !important;margin-top:8px !important;padding-top:8px !important;border-top:1px solid #f1f5f9 !important;">';
+      html += '<a href="' + esc(r.url) + '" target="_blank" style="font-size:12px !important;color:#3b82f6 !important;">View image</a>';
+      html += '<button onclick="amDeleteReceipt(\'' + r.id + '\',\'' + esc(r.filename) + '\')" style="font-size:12px !important;color:#ef4444 !important;background:none !important;border:none !important;cursor:pointer !important;">Delete</button>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  window.amDeleteReceipt = async function(id, filename) {
+    await sb.storage.from('receipts').remove([filename]);
+    await sb.from('receipt_items').delete().eq('receipt_id', id);
+    await sb.from('receipts').delete().eq('id', id);
+    amLoadReceipts();
+  };
+
+  var suggestTimeout = null;
+  window.amSuggest = function(query) {
+    clearTimeout(suggestTimeout);
+    var list = document.getElementById('am-suggest-list');
+    if (!query || query.length < 2) { list.innerHTML = ''; return; }
+    suggestTimeout = setTimeout(async function() {
+      var { data } = await sb.from('master_items').select('*').ilike('name', '%' + query + '%').limit(8);
+      if (!data || !data.length) { list.innerHTML = ''; return; }
+      var html = '';
+      data.forEach(function(item) {
+        html += '<div class="am-suggest-item" onclick="amPickSuggestion(\'' + esc(item.name).replace(/'/g, "\\'") + '\',\'' + esc(item.category || 'Other').replace(/'/g, "\\'") + '\',\'' + esc(item.store || 'Aldi').replace(/'/g, "\\'") + '\')">';
+        html += esc(item.name);
+        if (item.last_price) html += ' <span class="suggest-price">$' + Number(item.last_price).toFixed(2) + ' @ ' + esc(item.store || '?') + '</span>';
+        html += '</div>';
+      });
+      list.innerHTML = html;
+    }, 200);
+  };
+
+  window.amPickSuggestion = function(name, category, store) {
+    document.getElementById('am-add-name').value = name;
+    document.getElementById('am-add-cat').value = category;
+    document.getElementById('am-add-store').value = store;
+    document.getElementById('am-suggest-list').innerHTML = '';
+  };
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#am-add-form')) {
+      var list = document.getElementById('am-suggest-list');
+      if (list) list.innerHTML = '';
+    }
+  });
+
+  async function amLoadFamily() {
+    var { data: items } = await sb.from('master_items').select('*').neq('family_member', '').order('name');
+    items = items || [];
+    var container = document.getElementById('am-family-container');
+    var html = '';
+    FAMILY.forEach(function(fam) {
+      var memberItems = items.filter(function(i) { return i.family_member === fam.name; });
+      html += '<div class="family-section">';
+      html += '<div class="family-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
+      html += '<div class="fam-left"><span class="fam-avatar">' + fam.avatar + '</span><div><div class="fam-name">' + fam.name + '\'s Items</div><div class="fam-count">' + memberItems.length + ' item' + (memberItems.length !== 1 ? 's' : '') + '</div></div></div>';
+      html += '<span>&#x25BC;</span></div>';
+      html += '<div class="family-body">';
+      if (!memberItems.length) {
+        html += '<div class="family-empty">No items yet. Assign items from the Master List.</div>';
+      } else {
+        memberItems.forEach(function(item) {
+          html += '<div class="fam-item">';
+          html += '<div class="fam-item-left">';
+          html += '<div class="fam-item-name">' + esc(item.name) + '</div>';
+          html += '<div class="fam-item-tags">';
+          if (item.store) html += '<span class="tag store">' + esc(item.store) + '</span>';
+          if (item.last_price) html += '<span style="font-size:11px !important;color:#64748b !important;">$' + Number(item.last_price).toFixed(2) + '</span>';
+          html += '</div></div>';
+          html += '<div class="fam-add-btn" onclick="amAddFromFamily(\'' + esc(item.name).replace(/'/g, "\\'") + '\',\'' + esc(item.category || 'Other').replace(/'/g, "\\'") + '\',\'' + esc(item.store || 'Aldi').replace(/'/g, "\\'") + '\')">+</div>';
+          html += '</div>';
+        });
+      }
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+  }
+
+  window.amAddFromFamily = async function(name, category, store) {
+    await sb.from('shopping_items').insert({ name: name, category: category, store: store });
+    alert(name + ' added to shopping list!');
+  };
+
+  async function amLoadMaster() {
+    var { data } = await sb.from('master_items').select('*').order('name');
+    masterItems = data || [];
+    masterSelected.clear();
+    var stores = {};
+    masterItems.forEach(function(i) { if (i.store) stores[i.store] = true; });
+    var defaultStores = ['Aldi','Woolworths','Coles','Bakers Delight','Belrose Pharmacy'];
+    defaultStores.forEach(function(s) { stores[s] = true; });
+    var storeList = Object.keys(stores).sort();
+    var filterEl = document.getElementById('am-master-store-filter');
+    var curVal = filterEl.value;
+    filterEl.innerHTML = '<option value="">All stores</option>';
+    storeList.forEach(function(s) { filterEl.innerHTML += '<option' + (s === curVal ? ' selected' : '') + '>' + esc(s) + '</option>'; });
+    var addStoreEl = document.getElementById('am-add-store');
+    if (addStoreEl) {
+      var addVal = addStoreEl.value;
+      addStoreEl.innerHTML = '';
+      storeList.forEach(function(s) { addStoreEl.innerHTML += '<option' + (s === addVal ? ' selected' : '') + '>' + esc(s) + '</option>'; });
+      addStoreEl.innerHTML += '<option>Other</option>';
+    }
+    amRenderMaster(masterItems);
+  }
+
+  function amRenderMaster(items) {
+    var container = document.getElementById('am-master-container');
+    if (!items.length) {
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;">No items match your search.</div>';
+      amUpdateSelBar();
+      return;
+    }
+    var groups = {};
+    items.forEach(function(item) {
+      var cat = item.category || 'Other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    });
+    var html = '';
+    CAT_ORDER.forEach(function(cat) {
+      if (!groups[cat] || !groups[cat].length) return;
+      var icon = CAT_ICONS[cat] || '&#x1F4E6;';
+      html += '<div class="cat-group" style="margin-bottom:16px !important;">';
+      html += '<div class="cat-header" style="cursor:pointer !important;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
+      html += '<span>' + icon + ' ' + esc(cat) + '</span>';
+      html += '<span class="cat-count">' + groups[cat].length + ' items</span>';
+      html += '</div>';
+      html += '<div style="display:none !important;">';
+      groups[cat].forEach(function(item) {
+        var sel = masterSelected.has(item.id);
+        var storeCls = (item.store || '').toLowerCase().replace(/[^a-z]/g,'');
+        html += '<div class="master-item' + (sel ? ' selected' : '') + '" onclick="amToggleMaster(\'' + item.id + '\')">';
+        html += '<div class="mi-check">' + (sel ? '&#x2713;' : '') + '</div>';
+        html += '<div style="flex:1 !important;">';
+        html += '<div style="font-size:13px !important;font-weight:600 !important;">' + esc(item.name) + '</div>';
+        html += '<div style="font-size:11px !important;color:#94a3b8 !important;">';
+        if (item.last_price) html += '$' + Number(item.last_price).toFixed(2);
+        if (item.family_member) html += ' &middot; ' + esc(item.family_member);
+        html += '</div></div>';
+        if (item.store) html += '<span class="mi-store ' + storeCls + '">' + esc(item.store) + '</span>';
+        html += '<select class="am-add-select" style="font-size:10px !important;padding:3px 4px !important;width:70px !important;" onclick="event.stopPropagation()" onchange="amAssignFamily(\'' + item.id + '\',this.value)">';
+        html += '<option value="">Assign</option>';
+        FAMILY.forEach(function(f) {
+          html += '<option' + (item.family_member === f.name ? ' selected' : '') + '>' + f.name + '</option>';
+        });
+        html += '</select>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+    amUpdateSelBar();
+  }
+
+  window.amToggleMaster = function(id) {
+    if (masterSelected.has(id)) masterSelected.delete(id);
+    else masterSelected.add(id);
+    var storeFilter = document.getElementById('am-master-store-filter').value;
+    var query = document.getElementById('am-master-search').value;
+    amRenderMaster(amFilteredItems(query, storeFilter));
+  };
+
+  function amFilteredItems(query, storeFilter) {
+    var q = (query || '').toLowerCase();
+    return masterItems.filter(function(item) {
+      var matchName = !q || item.name.toLowerCase().indexOf(q) !== -1;
+      var matchStore = !storeFilter || item.store === storeFilter;
+      return matchName && matchStore;
+    });
+  }
+
+  window.amFilterMaster = function(query) {
+    var storeFilter = document.getElementById('am-master-store-filter').value;
+    amRenderMaster(amFilteredItems(query, storeFilter));
+  };
+
+  function amUpdateSelBar() {
+    var bar = document.getElementById('am-master-add-bar');
+    var count = masterSelected.size;
+    if (count > 0) {
+      bar.style.display = 'flex';
+      document.getElementById('am-master-sel-count').textContent = count + ' selected';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  window.amAddSelected = async function() {
+    var items = masterItems.filter(function(i) { return masterSelected.has(i.id); });
+    var rows = items.map(function(i) { return { name: i.name, category: i.category || 'Other', store: i.store || '' }; });
+    if (rows.length) await sb.from('shopping_items').insert(rows);
+    masterSelected.clear();
+    amRenderMaster(amFilteredItems(document.getElementById('am-master-search').value, document.getElementById('am-master-store-filter').value));
+    alert(rows.length + ' item' + (rows.length !== 1 ? 's' : '') + ' added to shopping list!');
+  };
+
+  window.amAssignFamily = async function(itemId, member) {
+    await sb.from('master_items').update({ family_member: member }).eq('id', itemId);
+    var item = masterItems.find(function(i) { return i.id === itemId; });
+    if (item) item.family_member = member;
+  };
+
+  async function amLoadSpending() {
+    var { data: receipts } = await sb.from('receipts').select('store, receipt_date, total, uploaded_at').order('uploaded_at', { ascending: false });
+    var container = document.getElementById('am-spending-container');
+    if (!receipts || !receipts.length) {
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;">No receipts yet. Scan a receipt to start tracking spending.</div>';
+      return;
+    }
+    var total = 0, byStore = {}, byMonth = {};
+    receipts.forEach(function(r) {
+      var amt = Number(r.total) || 0;
+      total += amt;
+      var s = r.store || 'Unknown';
+      byStore[s] = (byStore[s] || 0) + amt;
+      var d = r.receipt_date || '';
+      var parts = d.split('/');
+      var monthKey = parts.length === 3 ? parts[1] + '/' + parts[2] : 'Unknown';
+      byMonth[monthKey] = (byMonth[monthKey] || 0) + amt;
+    });
+    var html = '';
+    html += '<div style="background:#eff6ff !important;border-radius:10px !important;padding:16px !important;margin-bottom:16px !important;text-align:center !important;">';
+    html += '<div style="font-size:12px !important;color:#64748b !important;">Total Spend</div>';
+    html += '<div style="font-size:28px !important;font-weight:700 !important;color:#1e293b !important;">$' + total.toFixed(2) + '</div>';
+    html += '<div style="font-size:12px !important;color:#94a3b8 !important;">' + receipts.length + ' receipts</div>';
+    html += '</div>';
+    html += '<div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;margin-bottom:16px !important;">';
+    html += '<h4 style="font-size:14px !important;font-weight:600 !important;margin-bottom:10px !important;">By Store</h4>';
+    var stores = Object.keys(byStore).sort(function(a,b){ return byStore[b] - byStore[a]; });
+    stores.forEach(function(s) {
+      var pct = Math.round((byStore[s] / total) * 100);
+      var storeCls = s.toLowerCase().replace(/[^a-z]/g,'');
+      html += '<div style="display:flex !important;align-items:center !important;gap:8px !important;margin-bottom:8px !important;">';
+      html += '<span class="mi-store ' + storeCls + '">' + esc(s) + '</span>';
+      html += '<div style="flex:1 !important;height:8px !important;background:#f1f5f9 !important;border-radius:4px !important;"><div style="height:100% !important;background:#3b82f6 !important;border-radius:4px !important;width:' + pct + '% !important;"></div></div>';
+      html += '<span style="font-size:13px !important;font-weight:600 !important;min-width:70px !important;text-align:right !important;">$' + byStore[s].toFixed(2) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:10px !important;padding:16px !important;">';
+    html += '<h4 style="font-size:14px !important;font-weight:600 !important;margin-bottom:10px !important;">By Month</h4>';
+    Object.keys(byMonth).forEach(function(m) {
+      html += '<div style="display:flex !important;justify-content:space-between !important;padding:6px 0 !important;font-size:13px !important;border-bottom:1px solid #f1f5f9 !important;">';
+      html += '<span>' + esc(m) + '</span>';
+      html += '<span style="font-weight:600 !important;">$' + byMonth[m].toFixed(2) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  async function amLoadHistory() {
+    var { data: receipts } = await sb.from('receipts').select('*, receipt_items(*)').order('uploaded_at', { ascending: false });
+    var container = document.getElementById('am-history-container');
+    if (!receipts || !receipts.length) {
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;">No shopping history yet. Scan a receipt to get started.</div>';
+      return;
+    }
+    var html = '';
+    receipts.forEach(function(r) {
+      var date = r.receipt_date || new Date(r.uploaded_at).toLocaleDateString('en-AU');
+      var items = r.receipt_items || [];
+      var storeCls = (r.store || '').toLowerCase().replace(/[^a-z]/g,'');
+      html += '<div class="receipt-card">';
+      html += '<div class="receipt-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
+      html += '<span class="mi-store ' + storeCls + '">' + esc(r.store || 'Unknown') + '</span>';
+      html += '<div style="flex:1 !important;">';
+      html += '<div style="font-size:13px !important;font-weight:600 !important;">' + esc(date) + '</div>';
+      html += '<div style="font-size:11px !important;color:#94a3b8 !important;">' + items.length + ' items</div>';
+      html += '</div>';
+      if (r.total) html += '<div style="font-size:15px !important;font-weight:700 !important;">$' + Number(r.total).toFixed(2) + '</div>';
+      html += '<span style="color:#94a3b8 !important;font-size:12px !important;">&#x25BC;</span>';
+      html += '</div>';
+      html += '<div class="receipt-items" style="display:none !important;">';
+      items.forEach(function(item) {
+        html += '<div class="receipt-item-row">';
+        html += '<span>' + esc(item.item_name) + (item.quantity > 1 ? ' x' + item.quantity : '') + '</span>';
+        html += '<span class="ri-price">$' + Number(item.price).toFixed(2) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  async function amLoadMeals() {
+    var { data } = await sb.from('meal_plans').select('*').order('day_index');
+    var container = document.getElementById('am-meals-container');
+    var meals = {};
+    (data || []).forEach(function(m) { meals[m.day_index] = m; });
+    var html = '';
+    DAYS.forEach(function(day, i) {
+      var meal = meals[i];
+      html += '<div style="background:white !important;border:1px solid #e2e8f0 !important;border-radius:8px !important;padding:12px !important;margin-bottom:8px !important;">';
+      html += '<div style="display:flex !important;justify-content:space-between !important;align-items:center !important;">';
+      html += '<strong style="font-size:13px !important;">' + day + '</strong>';
+      if (meal && meal.who_home) html += '<span style="font-size:11px !important;color:#94a3b8 !important;">' + esc(meal.who_home) + '</span>';
+      html += '</div>';
+      if (meal && meal.meal) {
+        html += '<div style="font-size:13px !important;margin-top:6px !important;">' + esc(meal.meal) + '</div>';
+        if (meal.notes) html += '<div style="font-size:11px !important;color:#94a3b8 !important;margin-top:2px !important;">' + esc(meal.notes) + '</div>';
+      } else {
+        html += '<div style="font-size:12px !important;color:#94a3b8 !important;margin-top:4px !important;font-style:italic !important;">No meal planned</div>';
+      }
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  window.amAskAIMeals = function() {
+    // Open AI and pre-fill with meal planning prompt
+    window.aiFToggle();
+    setTimeout(function() {
+      var input = document.getElementById('ai-float-input');
+      if (input) {
+        input.value = 'Help me plan meals for this week. Ask me who will be home each night.';
+        input.focus();
+      }
+    }, 300);
+  };
+
+  var origAmGo = window.amGo;
+  window.amGo = function(sub) {
+    origAmGo(sub);
+    if (sub === 'meals') amLoadMeals();
+  };
+
+  (function(){
+    var zone = document.getElementById('am-receipt-drop');
+    if (zone) {
+      zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', function(){ zone.classList.remove('dragover'); });
+      zone.addEventListener('drop', function(e){ e.preventDefault(); zone.classList.remove('dragover'); amUploadReceipts(e.dataTransfer.files); });
+    }
+  })();
+
+  amLoadItems();
+  amLoadReceipts();
+
+  // Quick access link
+  var qlEl = document.getElementById('am-quick-link');
+  if (qlEl) {
+    var basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+    qlEl.value = window.location.origin + basePath + 'shopping.html';
+  }
 })();
 </script>
 

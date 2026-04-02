@@ -677,13 +677,16 @@
     const thuStr=nextThursday.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
     const isToday=daysToThursday===0;
 
-    let html='<div class="weekly-row" style="margin-bottom:10px;">';
-    // Week pill with who's coming
-    html+='<div class="weekly-item" style="background:#f0fdf4;border-color:#bbf7d0;border-radius:99px;padding:10px 20px;"><span class="wi-icon">\u{1F4C5}</span><div><strong style="color:#16a34a;">Week '+week+'</strong> \u2014 '+whoName+' <a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;margin-left:4px;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';
-    // Bins pill
-    html+='<div class="weekly-item" style="border-radius:99px;padding:10px 20px;"><span class="wi-icon">\u{1F5D1}</span><div>'+(isToday?'Bins today: ':'Next bins: ')+'Red'+(isA?' + Yellow (recycling)':' + Green (vegetation)')+'</div></div>';
+    // Week badge row
+    let html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+    html+='<span class="bin-week-label '+wClass+'" style="font-size:14px;">\u{1F4C5} Week '+week+'</span>';
+    html+='<span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span>';
     html+='</div>';
-    html+='<div style="text-align:right;"><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
+    // Items row
+    html+='<div class="weekly-row">';
+    html+='<div class="weekly-item"><span class="wi-icon">'+whoIcon+'</span><div><div class="wi-label">'+whoName+'</div><div class="wi-value">This week</div><a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';
+    html+='<div class="weekly-item"><span class="wi-icon">\u{1F5D1}</span><div><div class="wi-label">Bins \u2014 '+(isToday?'Today!':thuStr)+'</div><div class="wi-value">Red'+(isA?' + Yellow':' + Green')+'</div></div></div>';
+    html+='</div>';
     $('#ph-thisweek').innerHTML=html;
   }
 

@@ -151,8 +151,13 @@
     .month-body { }
     .month-body.collapsed { display: none; }
     .month-empty { font-size: 10px; color: #cbd5e1; padding: 4px 14px 8px; font-style: italic; }
-    .week-header { font-size: 10px; font-weight: 600; color: #94a3b8; padding: 6px 14px 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .week-header { font-size: 10px; font-weight: 600; color: #94a3b8; padding: 6px 14px 2px; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 4px; }
+    .week-header:hover { color: #64748b; }
+    .week-header .wk-arrow { font-size: 8px; transition: transform 0.2s; }
+    .week-header.collapsed .wk-arrow { transform: rotate(-90deg); }
     .week-header.this-week { color: #16a34a; }
+    .week-body { }
+    .week-body.collapsed { display: none; }
 
     .proj-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .proj-card:hover { border-color: #3b82f6; }
@@ -970,6 +975,11 @@
     header.classList.toggle('collapsed');
   };
 
+  window.phToggleWeek=function(id,header){
+    document.getElementById(id).classList.toggle('collapsed');
+    header.classList.toggle('collapsed');
+  };
+
   window.phToggleGroup=function(id,header){
     const body=document.getElementById(id);
     body.classList.toggle('open');
@@ -1302,10 +1312,10 @@
       all.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
 
       const mid='mo-'+mo.year+'-'+mo.month;
-      const startCollapsed=isPast;
+      const moCollapsed=!isCurrent; // Only current month open
       html+='<div class="month-section">';
-      html+='<div class="month-header '+headerClass+(startCollapsed?' collapsed':'')+'" onclick="phToggleMonth(\''+mid+'\',this)"><span class="month-left"><span class="month-arrow">\u25BC</span><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span></span>'+(all.length?'<span class="month-count">'+all.length+'</span>':'')+'</div>';
-      html+='<div class="month-body'+(startCollapsed?' collapsed':'')+'" id="'+mid+'">';
+      html+='<div class="month-header '+headerClass+(moCollapsed?' collapsed':'')+'" onclick="phToggleMonth(\''+mid+'\',this)"><span class="month-left"><span class="month-arrow">\u25BC</span><span>'+(isCurrent?'\u{25CF} ':'')+moName+'</span></span>'+(all.length?'<span class="month-count">'+all.length+'</span>':'')+'</div>';
+      html+='<div class="month-body'+(moCollapsed?' collapsed':'')+'" id="'+mid+'">';
 
       if(all.length){
         const weeks={};
@@ -1318,8 +1328,12 @@
         weekKeys.forEach(wk=>{
           const w=weeks[wk];
           const isThisWeek=wk!=='ongoing'&&parseInt(wk)===currentWeek&&isCurrent;
-          html+='<div class="week-header'+(isThisWeek?' this-week':'')+'">'+( isThisWeek?'\u{25B6} This week \u2014 ':'')+w.label+'</div>';
+          const wkCollapsed=!isThisWeek; // Only current week open
+          const wid=mid+'-wk-'+wk;
+          html+='<div class="week-header'+(isThisWeek?' this-week':'')+(wkCollapsed?' collapsed':'')+'" onclick="phToggleWeek(\''+wid+'\',this)"><span class="wk-arrow">\u25BC</span>'+( isThisWeek?'\u{25B6} This week \u2014 ':'')+w.label+' <span style="color:#cbd5e1;margin-left:4px;">'+w.items.length+'</span></div>';
+          html+='<div class="week-body'+(wkCollapsed?' collapsed':'')+'" id="'+wid+'">';
           html+=w.items.map(d=>renderDateCard(d)).join('');
+          html+='</div>';
         });
       } else if(!isPast){
         html+='<div class="month-empty">No events</div>';

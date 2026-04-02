@@ -32,7 +32,7 @@
     .main h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: #1e293b; border: none; padding: 0; }
 
     .kpi-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .fund-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; flex: 1; min-width: 180px; }
+    .fund-card { background: white; border: 1px solid #e8edf2; border-radius: 14px; padding: 14px; flex: 1; min-width: 180px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .fund-card .fund-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
     .fund-card .fund-name { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #1e293b; }
     .fund-card .fund-remaining { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
@@ -58,7 +58,7 @@
     .prem-none { font-size: 12px; color: #94a3b8; padding: 10px 0; }
 
     .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
-    .panel { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+    .panel { background: white; border: 1px solid #e8edf2; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .panel-header { padding: 14px 18px; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
     .badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 600; display: inline-block; }
     .badge.red { background: #fef2f2; color: #ef4444; }
@@ -196,13 +196,13 @@
     .file-input-wrap input[type="file"] { font-size: 11px; }
     .file-name { font-size: 11px; color: #16a34a; }
 
-    .bin-widget { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-    .bin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .bin-header h3 { font-size: 14px; font-weight: 700; color: #1e293b; }
-    .bin-week-label { font-size: 22px; font-weight: 800; padding: 4px 14px; border-radius: 8px; }
-    .bin-week-label.week-a { background: #fefce8; color: #a16207; }
-    .bin-week-label.week-b { background: #f0fdf4; color: #16a34a; }
-    .bin-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .bin-widget { background: transparent; padding: 0; margin-bottom: 16px; }
+    .bin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .bin-header h3 { font-size: 13px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bin-week-label { font-size: 13px; font-weight: 700; padding: 6px 18px; border-radius: 99px; }
+    .bin-week-label.week-a { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .bin-week-label.week-b { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .bin-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
     .bin-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; }
     .bin-item.red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
     .bin-item.yellow { background: #fefce8; color: #a16207; border: 1px solid #fef08a; }
@@ -214,8 +214,8 @@
     .bin-toggle { font-size: 10px; color: #94a3b8; cursor: pointer; text-decoration: underline; }
     .bin-toggle:hover { color: #64748b; }
     .bin-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
-    .weekly-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .weekly-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; border: 1px solid #e2e8f0; }
+    .weekly-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .weekly-item { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 14px; font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; background: white; border: 1px solid #e8edf2; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .weekly-item .wi-icon { font-size: 16px; }
     .weekly-item .wi-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px; }
     .weekly-item .wi-value { font-weight: 700; color: #1e293b; }
@@ -302,10 +302,10 @@
       <h2 id="ph-greeting">Dashboard</h2>
       <div class="bin-widget" id="ph-thisweek"></div>
       <div id="ph-reminders" style="margin-bottom:20px;">
-        <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:10px;">Important Reminders</div>
+        <div style="font-size:13px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Important Reminders</div>
         <div id="ph-reminders-list"></div>
       </div>
-      <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:10px;">NDIS Funding</div>
+      <div style="font-size:13px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">NDIS Funding</div>
       <div class="kpi-row" id="ph-kpis"></div>
       <div class="panel" style="margin-bottom:20px;">
         <div class="panel-header">Upcoming Premiums <span class="badge amber">Next 7 days</span></div>
@@ -667,7 +667,7 @@
     // Greeting
     const hour=new Date().getHours();
     const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
-    $('#ph-greeting').innerHTML=greeting+' <span class="bin-week-label '+wClass+'" style="font-size:14px;vertical-align:middle;margin-left:8px;">Week '+week+'</span>';
+    $('#ph-greeting').textContent=greeting;
 
     // Bin day
     const today=new Date();
@@ -678,13 +678,13 @@
     const thuStr=nextThursday.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
     const isToday=daysToThursday===0;
 
-    let html='<div class="bin-header"><h3>This Week</h3><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
-    html+='<div class="weekly-row">';
-    // Who is coming
-    html+='<div class="weekly-item"><span class="wi-icon">'+whoIcon+'</span><div><div class="wi-label">'+whoName+'</div><div class="wi-value">This week</div><a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';
-    // Bins
-    html+='<div class="weekly-item red"><span class="bin-dot red"></span><div><div class="wi-label">Bins \u2014 '+(isToday?'Today!':thuStr)+'</div><div class="wi-value">Red'+(isA?' + Yellow':' + Green')+'</div></div></div>';
+    let html='<div class="weekly-row" style="margin-bottom:10px;">';
+    // Week pill with who's coming
+    html+='<div class="weekly-item" style="background:#f0fdf4;border-color:#bbf7d0;border-radius:99px;padding:10px 20px;"><span class="wi-icon">\u{1F4C5}</span><div><strong style="color:#16a34a;">Week '+week+'</strong> \u2014 '+whoName+' <a href="tel:'+whoPhone+'" style="font-size:11px;color:#0d9488;text-decoration:none;margin-left:4px;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div></div>';
+    // Bins pill
+    html+='<div class="weekly-item" style="border-radius:99px;padding:10px 20px;"><span class="wi-icon">\u{1F5D1}</span><div>'+(isToday?'Bins today: ':'Next bins: ')+'Red'+(isA?' + Yellow (recycling)':' + Green (vegetation)')+'</div></div>';
     html+='</div>';
+    html+='<div style="text-align:right;"><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
     $('#ph-thisweek').innerHTML=html;
   }
 

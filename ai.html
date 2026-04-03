@@ -4,18 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Baker AI</title>
-  <meta name="theme-color" content="#0d9488">
+  <link rel="manifest" href="ai-manifest.json">
+  <meta name="theme-color" content="#7c3aed">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Baker AI">
-  <link rel="icon" type="image/svg+xml" href="icon-192.svg">
+  <link rel="apple-touch-icon" href="ai-icon-192.svg">
+  <link rel="icon" type="image/svg+xml" href="ai-icon-192.svg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;height:100vh;display:flex;flex-direction:column;}
 
-    .topbar{background:#0d9488;color:white;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:12px;flex-shrink:0;}
+    .topbar{background:#7c3aed;color:white;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:12px;flex-shrink:0;}
     .topbar a{color:white;text-decoration:none;font-size:20px;padding:4px 8px;}
     .topbar h1{font-size:17px;font-weight:700;flex:1;}
     .topbar .clear-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;}

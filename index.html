@@ -1975,152 +1975,170 @@
 })();
 </script>
 
-<!-- Baker AI Chat Widget -->
+<!-- Baker AI Chat Popup -->
 <style>
-  .bai-toggle { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; font-size: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-  .bai-toggle:hover { transform: scale(1.1); }
-
-  .bai-panel { position: fixed; bottom: 92px; right: 24px; width: 400px; max-height: 520px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 9999; display: none; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
-  .bai-panel.open { display: flex; }
-
-  .bai-header { background: #1e293b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .bai-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
-  .bai-header span { font-size: 11px; color: rgba(255,255,255,0.5); }
-  .bai-close { background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 4px; }
-
-  .bai-messages { flex: 1; overflow-y: auto; padding: 16px; max-height: 340px; }
-  .bai-msg { margin-bottom: 12px; max-width: 85%; }
-  .bai-msg.user { margin-left: auto; }
-  .bai-msg .bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
-  .bai-msg.ai .bubble { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 4px; }
-  .bai-msg.user .bubble { background: #1e293b; color: white; border-bottom-right-radius: 4px; }
-  .bai-msg .bubble ul, .bai-msg .bubble ol { padding-left: 18px; margin: 6px 0; }
-  .bai-msg .bubble li { margin-bottom: 3px; }
-  .bai-msg .bubble strong { font-weight: 700; }
-  .bai-msg .bubble p { margin-bottom: 8px; }
-  .bai-msg .bubble p:last-child { margin-bottom: 0; }
-  .bai-typing { color: #94a3b8; font-size: 12px; padding: 4px 14px; }
-  .bai-typing .dots { display: inline-block; }
-  .bai-typing .dots span { animation: baiDot 1.4s infinite; opacity: 0.3; }
-  .bai-typing .dots span:nth-child(2) { animation-delay: 0.2s; }
-  .bai-typing .dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes baiDot { 0%,100%{opacity:0.3} 50%{opacity:1} }
-
-  .bai-input { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #e2e8f0; }
-  .bai-input input { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; outline: none; }
-  .bai-input input:focus { border-color: #3b82f6; }
-  .bai-input button { padding: 10px 16px; background: #1e293b; color: white; border: none; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
-  .bai-input button:hover { background: #334155; }
-  .bai-input button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .bai-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
-  .bai-sug { font-size: 11px; padding: 5px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; color: #475569; }
-  .bai-sug:hover { background: #e2e8f0; }
+  .bai-toggle{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:#7c3aed;color:white;border:none;cursor:pointer;font-size:24px;box-shadow:0 4px 16px rgba(124,58,237,0.35);z-index:9999;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;}
+  .bai-toggle:hover{transform:scale(1.1);}
+  .bai-panel{position:fixed;bottom:92px;right:24px;width:380px;max-height:520px;background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:9999;display:none;flex-direction:column;overflow:hidden;border:1px solid #e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;}
+  .bai-panel.open{display:flex;}
+  .bai-hdr{background:#7c3aed;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;}
+  .bai-hdr h3{font-size:15px;font-weight:700;margin:0;}
+  .bai-hdr span{font-size:11px;color:rgba(255,255,255,0.6);}
+  .bai-close{background:none;border:none;color:white;font-size:18px;cursor:pointer;padding:4px;}
+  .bai-msgs{flex:1;overflow-y:auto;padding:14px;max-height:340px;}
+  .bai-m{margin-bottom:10px;max-width:85%;}
+  .bai-m.user{margin-left:auto;}
+  .bai-m .bub{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;}
+  .bai-m.ai .bub{background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px;}
+  .bai-m.user .bub{background:#7c3aed;color:white;border-bottom-right-radius:4px;}
+  .bai-m.sys .bub{background:#fef9c3;color:#92400e;font-size:11px;text-align:center;border-radius:8px;}
+  .bai-m .bub strong{font-weight:700;}
+  .bai-m .bub ul{padding-left:16px;margin:4px 0;}
+  .bai-m .bub p{margin-bottom:6px;}
+  .bai-m .bub p:last-child{margin-bottom:0;}
+  .bai-typ{color:#94a3b8;font-size:12px;padding:4px 14px;}
+  .bai-typ .dots span{animation:baiD 1.4s infinite;opacity:0.3;}
+  .bai-typ .dots span:nth-child(2){animation-delay:0.2s;}
+  .bai-typ .dots span:nth-child(3){animation-delay:0.4s;}
+  @keyframes baiD{0%,100%{opacity:0.3}50%{opacity:1}}
+  .bai-sugs{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 8px;}
+  .bai-sg{font-size:10px;padding:5px 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;color:#475569;font-family:inherit;}
+  .bai-sg:hover{background:#f0fdf4;border-color:#0d9488;}
+  .bai-inp{display:flex;gap:6px;padding:10px 14px;border-top:1px solid #e2e8f0;}
+  .bai-inp input{flex:1;padding:10px 12px;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;font-family:inherit;}
+  .bai-inp input:focus{border-color:#7c3aed;}
+  .bai-inp button{padding:10px 14px;background:#7c3aed;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;}
+  .bai-inp button:disabled{opacity:0.4;}
+  @media(max-width:480px){.bai-panel{right:8px;left:8px;width:auto;bottom:84px;max-height:70vh;}}
 </style>
 
 <button class="bai-toggle" onclick="baiToggle()" title="Baker AI">&#x1F916;</button>
 
 <div class="bai-panel" id="baiPanel">
-  <div class="bai-header">
-    <div><h3>Baker AI</h3><span>Your personal finance assistant</span></div>
+  <div class="bai-hdr">
+    <div><h3>Baker AI</h3><span>Ask anything or tell me to do something</span></div>
     <button class="bai-close" onclick="baiToggle()">&#x2715;</button>
   </div>
-  <div class="bai-messages" id="baiMessages">
-    <div class="bai-msg ai"><div class="bubble">G'day! I'm Baker AI. I can see your NDIS funding, insurance policies, and super data. Ask me anything &#8212; or try one of the suggestions below.</div></div>
+  <div class="bai-msgs" id="baiMsgs">
+    <div class="bai-m ai"><div class="bub">G'day! I can answer questions about your data or take actions — add to-dos, update transactions, add dates. Try the suggestions below.</div></div>
   </div>
-  <div class="bai-suggestions" id="baiSugs">
-    <span class="bai-sug" onclick="baiAsk(this.textContent)">What's my NDIS budget status?</span>
-    <span class="bai-sug" onclick="baiAsk(this.textContent)">Which premiums are due soon?</span>
-    <span class="bai-sug" onclick="baiAsk(this.textContent)">How can I optimise my insurance?</span>
-    <span class="bai-sug" onclick="baiAsk(this.textContent)">Summarise my spending</span>
+  <div class="bai-sugs" id="baiSugs">
+    <span class="bai-sg" onclick="baiAsk(this.textContent)">NDIS budget?</span>
+    <span class="bai-sg" onclick="baiAsk(this.textContent)">Outstanding invoices</span>
+    <span class="bai-sg" onclick="baiAsk(this.textContent)">Premiums due?</span>
+    <span class="bai-sg" onclick="baiAsk(this.textContent)">Add a to-do</span>
+    <span class="bai-sg" onclick="baiAsk(this.textContent)">What's on this week?</span>
   </div>
-  <div class="bai-input">
-    <input type="text" id="baiInput" placeholder="Ask Baker AI..." onkeydown="if(event.key==='Enter')baiSend()">
-    <button onclick="baiSend()" id="baiSendBtn">Send</button>
+  <div class="bai-inp">
+    <input type="text" id="baiInp" placeholder="Ask Baker AI..." onkeydown="if(event.key==='Enter')baiSend()">
+    <button onclick="baiSend()" id="baiBtn">Send</button>
   </div>
 </div>
 
 <script>
 (function(){
-  const PROXY_URL = 'https://yourdomain.com/baker-ai-proxy.php';
+  const PROXY='https://ziwycymhaqghdiznyhhw.supabase.co/functions/v1/claude-proxy';
+  const msgsEl=document.getElementById('baiMsgs');
+  const inpEl=document.getElementById('baiInp');
+  const btnEl=document.getElementById('baiBtn');
+  const sugsEl=document.getElementById('baiSugs');
+  let baiHistory=[];
 
-  const msgs = document.getElementById('baiMessages');
-  const input = document.getElementById('baiInput');
-  const sendBtn = document.getElementById('baiSendBtn');
-  const sugs = document.getElementById('baiSugs');
-
-  window.baiToggle = function(){
+  window.baiToggle=function(){
     document.getElementById('baiPanel').classList.toggle('open');
-    if(document.getElementById('baiPanel').classList.contains('open')) input.focus();
+    if(document.getElementById('baiPanel').classList.contains('open'))inpEl.focus();
   };
 
-  function addMsg(text, role){
-    const div = document.createElement('div');
-    div.className = 'bai-msg ' + role;
-    let html = text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n- /g, '\n<li>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-    if(html.includes('<li>')) html = '<ul>' + html.replace(/<li>/g, '<li>') + '</ul>';
-    div.innerHTML = '<div class="bubble"><p>' + html + '</p></div>';
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
+  function baiAddMsg(text,role){
+    const div=document.createElement('div');
+    div.className='bai-m '+role;
+    let html=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'\n<li>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
+    if(html.includes('<li>'))html='<ul>'+html+'</ul>';
+    div.innerHTML='<div class="bub"><p>'+html+'</p></div>';
+    msgsEl.appendChild(div);msgsEl.scrollTop=msgsEl.scrollHeight;
   }
 
-  function showTyping(){
-    const div = document.createElement('div');
-    div.className = 'bai-typing';
-    div.id = 'baiTyping';
-    div.innerHTML = 'Baker AI is thinking <span class="dots"><span>.</span><span>.</span><span>.</span></span>';
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-  function hideTyping(){
-    const el = document.getElementById('baiTyping');
-    if(el) el.remove();
+  function baiTyping(show){
+    if(show){const d=document.createElement('div');d.className='bai-typ';d.id='baiTyp';d.innerHTML='Thinking <span class="dots"><span>.</span><span>.</span><span>.</span></span>';msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;}
+    else{const el=document.getElementById('baiTyp');if(el)el.remove();}
   }
 
-  window.baiAsk = function(text){
-    input.value = text;
-    baiSend();
-  };
+  async function baiGetData(){
+    const [funds,ndis,ins,contacts,projects,dates,todos]=await Promise.all([
+      sb.from('ndis_funds').select('*'),
+      sb.from('ndis_transactions').select('*').order('date',{ascending:false}).limit(20),
+      sb.from('insurance_policies').select('*'),
+      sb.from('contacts').select('*'),
+      sb.from('house_projects').select('*'),
+      sb.from('important_dates').select('*').order('date_start'),
+      sb.from('todos').select('*')
+    ]);
+    let s='';
+    s+='NDIS FUNDING:\n';
+    const spent={};(funds.data||[]).forEach(f=>{spent[f.fund_name]=0;});
+    (ndis.data||[]).forEach(t=>{if(spent[t.funded_support]!==undefined)spent[t.funded_support]+=parseFloat(t.amount);});
+    (funds.data||[]).forEach(f=>{const b=parseFloat(f.budget_amount);s+='- '+f.fund_name+': Budget $'+b.toFixed(2)+', Spent $'+(spent[f.fund_name]||0).toFixed(2)+', Remaining $'+(b-(spent[f.fund_name]||0)).toFixed(2)+'\n';});
+    const out=(ndis.data||[]).filter(t=>t.status==='Outstanding');
+    if(out.length){s+='\nOUTSTANDING ('+out.length+'):\n';out.forEach(t=>{s+='- '+t.provider_name+' Inv '+t.invoice_number+' $'+parseFloat(t.amount).toFixed(2)+' '+t.date+'\n';});}
+    s+='\nINSURANCE ('+((ins.data||[]).length)+'):\n';
+    (ins.data||[]).forEach(p=>{s+='- '+p.person_name+', '+p.insurer+', '+p.cover_type+', $'+parseFloat(p.premium).toFixed(2)+' '+p.premium_frequency+', Due '+(p.due_date||'N/A')+'\n';});
+    s+='\nCONTACTS ('+((contacts.data||[]).length)+'):\n';
+    (contacts.data||[]).forEach(c=>{s+='- '+c.name+(c.contact_person?', '+c.contact_person:'')+(c.phone?', '+c.phone:'')+' ['+c.category+']'+(c.for_person?' ('+c.for_person+')':'')+'\n';});
+    s+='\nPROJECTS: ';(projects.data||[]).forEach(p=>{s+=p.title+' ['+p.status+'], ';});
+    s+='\nDATES: ';(dates.data||[]).forEach(d=>{s+=d.title+(d.date_start?' ('+d.date_start+')':'')+', ';});
+    const pt=(todos.data||[]).filter(t=>!t.done);
+    s+='\nTO-DOS ('+pt.length+' pending): ';pt.forEach(t=>{s+=t.text+' ['+t.category+'], ';});
+    s+='\nToday: '+new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    return s;
+  }
 
-  window.baiSend = async function(){
-    const text = input.value.trim();
-    if(!text) return;
+  async function baiExecAction(a){
+    try{
+      if(a.type==='add_todo'){await sb.from('todos').insert({text:a.text,category:a.category||'General',due_date:a.due_date||null,done:false});return 'Added to-do: "'+a.text+'"';}
+      if(a.type==='complete_todo'){const{data}=await sb.from('todos').select('*').ilike('text','%'+a.search+'%').eq('done',false).limit(1);if(data&&data.length){await sb.from('todos').update({done:true}).eq('id',data[0].id);return 'Completed: "'+data[0].text+'"';}return 'Not found.';}
+      if(a.type==='add_date'){await sb.from('important_dates').insert({title:a.title,description:a.description||null,date_start:a.date_start||null,category:a.category||'Other'});return 'Added date: "'+a.title+'"';}
+      if(a.type==='add_project'){await sb.from('house_projects').insert({title:a.title,status:a.status||'Not Started',priority:a.priority||'Medium',due_date:a.due_date||null});return 'Added project: "'+a.title+'"';}
+      if(a.type==='update_ndis_status'){const{data}=await sb.from('ndis_transactions').select('*').ilike('provider_name','%'+a.provider+'%').limit(1);if(data&&data.length){await sb.from('ndis_transactions').update({status:a.status}).eq('id',data[0].id);return 'Updated '+data[0].provider_name+' to '+a.status;}return 'Not found.';}
+    }catch(e){return 'Error: '+e.message;}
+    return '';
+  }
 
-    addMsg(text, 'user');
-    input.value = '';
-    sendBtn.disabled = true;
-    sugs.style.display = 'none';
-    showTyping();
+  window.baiAsk=function(t){inpEl.value=t;baiSend();};
 
-    try {
-      const dataSummary = typeof phGetDataSummary === 'function' ? phGetDataSummary() : '';
-      const res = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ message: text, data: dataSummary })
-      });
+  window.baiSend=async function(){
+    const text=inpEl.value.trim();if(!text)return;
+    baiAddMsg(text,'user');inpEl.value='';btnEl.disabled=true;sugsEl.style.display='none';baiTyping(true);
+    try{
+      const data=await baiGetData();
+      baiHistory.push({role:'user',content:text});
+      const sys=`You are Baker AI, the Baker family's assistant. You have their live data below. Be concise, friendly, Australian English. Use $ for currency.
 
-      hideTyping();
+DATA:
+${data}
 
-      if(!res.ok){
-        const err = await res.json().catch(()=>({}));
-        addMsg(err.error || 'Sorry, something went wrong. Please try again.', 'ai');
-      } else {
-        const data = await res.json();
-        addMsg(data.reply, 'ai');
+You can take actions with <action> tags:
+<action>{"type":"add_todo","text":"...","category":"General","due_date":"2026-04-10"}</action>
+<action>{"type":"complete_todo","search":"partial name"}</action>
+<action>{"type":"add_date","title":"...","date_start":"2026-05-01","category":"Family"}</action>
+<action>{"type":"add_project","title":"...","priority":"High"}</action>
+<action>{"type":"update_ndis_status","provider":"Fiona","status":"Paid"}</action>`;
+
+      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:1024,system:sys,messages:baiHistory.slice(-8)})});
+      baiTyping(false);
+      if(!res.ok){baiAddMsg('Error: '+res.status,'sys');}
+      else{
+        const d=await res.json();
+        let reply=d.content?d.content[0].text:d.reply||'No response';
+        const actions=reply.match(/<action>(.*?)<\/action>/gs);
+        if(actions){for(const m of actions){try{const r=await baiExecAction(JSON.parse(m.replace(/<\/?action>/g,'')));if(r)baiAddMsg(r,'sys');}catch(e){}}reply=reply.replace(/<action>.*?<\/action>/gs,'').trim();}
+        if(reply)baiAddMsg(reply,'ai');
+        baiHistory.push({role:'assistant',content:reply});
       }
-    } catch(e) {
-      hideTyping();
-      addMsg('Could not reach Baker AI. Check that the proxy URL is configured correctly.', 'ai');
-    }
-
-    sendBtn.disabled = false;
-    input.focus();
+    }catch(e){baiTyping(false);baiAddMsg('Error: '+e.message,'sys');}
+    btnEl.disabled=false;inpEl.focus();
   };
+})();
+</script>
 
   // ═══════ AISLEMATE ═══════
   var CAT_ICONS = {'Fruit & Veg':'&#x1F96C;','Meat':'&#x1F969;','Dairy':'&#x1F95B;','Pantry':'&#x1F96B;','Frozen':'&#x2744;','Drinks':'&#x1F964;','Household':'&#x1F9F9;','Other':'&#x1F4E6;'};

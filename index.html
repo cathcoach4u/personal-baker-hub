@@ -1044,12 +1044,14 @@
   // Reference: Thursday 2 April 2026 = Week A (from ThursdayA.pdf filename).
   // User can toggle if wrong — saved in localStorage.
   function getBinWeek(){
-    const refDate=new Date('2026-04-02T00:00:00'); // Known Week A Thursday
+    const refDate=new Date('2026-03-30T00:00:00'); // Known Week A Monday
     const now=new Date();
-    const diffMs=now-refDate;
-    const diffWeeks=Math.floor(diffMs/604800000);
+    // Get Monday of current week
+    const day=now.getDay()||7; // Sun=7
+    const monday=new Date(now);monday.setDate(now.getDate()-(day-1));monday.setHours(0,0,0,0);
+    const diffMs=monday-refDate;
+    const diffWeeks=Math.round(diffMs/604800000);
     const isA=(diffWeeks%2===0);
-    // Check if user has flipped it
     const flipped=localStorage.getItem('binWeekFlipped')==='true';
     return flipped?!isA:isA;
   }

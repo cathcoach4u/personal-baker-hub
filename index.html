@@ -2093,14 +2093,58 @@
   }
 
   async function baiExecAction(a){
-    try{
-      if(a.type==='add_todo'){await sb.from('todos').insert({text:a.text,category:a.category||'General',due_date:a.due_date||null,done:false});return 'Added to-do: "'+a.text+'"';}
-      if(a.type==='complete_todo'){const{data}=await sb.from('todos').select('*').ilike('text','%'+a.search+'%').eq('done',false).limit(1);if(data&&data.length){await sb.from('todos').update({done:true}).eq('id',data[0].id);return 'Completed: "'+data[0].text+'"';}return 'Not found.';}
-      if(a.type==='add_date'){await sb.from('important_dates').insert({title:a.title,description:a.description||null,date_start:a.date_start||null,category:a.category||'Other'});return 'Added date: "'+a.title+'"';}
-      if(a.type==='add_project'){await sb.from('house_projects').insert({title:a.title,status:a.status||'Not Started',priority:a.priority||'Medium',due_date:a.due_date||null});return 'Added project: "'+a.title+'"';}
-      if(a.type==='update_ndis_status'){const{data}=await sb.from('ndis_transactions').select('*').ilike('provider_name','%'+a.provider+'%').limit(1);if(data&&data.length){await sb.from('ndis_transactions').update({status:a.status}).eq('id',data[0].id);return 'Updated '+data[0].provider_name+' to '+a.status;}return 'Not found.';}
-    }catch(e){return 'Error: '+e.message;}
-    return '';
+    if(a.type==='add_todo'){
+      if(!a.text)return 'Error: Missing task text.';
+      const {data,error}=await sb.from('todos').insert({text:a.text,category:a.category||'General',due_date:a.due_date||null,done:false}).select().single();
+      if(error)return 'Error: '+error.message;
+      return 'Added to-do: "'+a.text+'"';
+    }
+    if(a.type==='complete_todo'){
+      if(!a.search)return 'Error: Missing search term.';
+      const {data,error:fe}=await sb.from('todos').select('*').ilike('text','%'+a.search+'%').eq('done',false).limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!data||!data.length)return 'No pending to-do matching "'+a.search+'".';
+      const {error:ue}=await sb.from('todos').update({done:true}).eq('id',data[0].id);
+      if(ue)return 'Error: '+ue.message;
+      return 'Completed: "'+data[0].text+'"';
+    }
+    if(a.type==='delete_todo'){
+      if(!a.search)return 'Error: Missing search term.';
+      const {data,error:fe}=await sb.from('todos').select('*').ilike('text','%'+a.search+'%').limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!data||!data.length)return 'No to-do matching "'+a.search+'".';
+      const {error:de}=await sb.from('todos').delete().eq('id',data[0].id);
+      if(de)return 'Error: '+de.message;
+      return 'Deleted: "'+data[0].text+'"';
+    }
+    if(a.type==='add_date'){
+      if(!a.title)return 'Error: Missing title.';
+      const {data,error}=await sb.from('important_dates').insert({title:a.title,description:a.description||null,date_start:a.date_start||null,date_end:a.date_end||null,time_info:a.time_info||null,location:a.location||null,category:a.category||'Other',notes:a.notes||null,recurring:a.recurring||null}).select().single();
+      if(error)return 'Error: '+error.message;
+      return 'Added date: "'+a.title+'"';
+    }
+    if(a.type==='add_project'){
+      if(!a.title)return 'Error: Missing title.';
+      const {data,error}=await sb.from('house_projects').insert({title:a.title,description:a.description||null,status:a.status||'Not Started',priority:a.priority||'Medium',due_date:a.due_date||null,notes:a.notes||null}).select().single();
+      if(error)return 'Error: '+error.message;
+      return 'Added project: "'+a.title+'"';
+    }
+    if(a.type==='update_ndis_status'){
+      if(!a.provider)return 'Error: Missing provider.';
+      const {data,error:fe}=await sb.from('ndis_transactions').select('*').ilike('provider_name','%'+a.provider+'%').order('date',{ascending:false}).limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!data||!data.length)return 'No transaction matching "'+a.provider+'".';
+      const {error:ue}=await sb.from('ndis_transactions').update({status:a.status}).eq('id',data[0].id);
+      if(ue)return 'Error: '+ue.message;
+      return 'Updated '+data[0].provider_name+' Inv '+data[0].invoice_number+' to '+a.status;
+    }
+    if(a.type==='add_contact'){
+      if(!a.name)return 'Error: Missing name.';
+      const {data,error}=await sb.from('contacts').insert({name:a.name,contact_person:a.contact_person||null,phone:a.phone||null,category:a.category||'Medical',for_person:a.for_person||null}).select().single();
+      if(error)return 'Error: '+error.message;
+      return 'Added contact: "'+a.name+'"';
+    }
+    return 'Unknown action: '+a.type;
   }
 
   window.baiAsk=function(t){inpEl.value=t;baiSend();};
@@ -2111,17 +2155,24 @@
     try{
       const data=await baiGetData();
       baiHistory.push({role:'user',content:text});
-      const sys=`You are Baker AI, the Baker family's assistant. You have their live data below. Be concise, friendly, Australian English. Use $ for currency.
+      const now=new Date();
+      const todayStr=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const timeStr=now.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+      const sys=`You are Baker AI, the Baker family's assistant. Sydney, Australia (AEST). Today: ${todayStr} at ${timeStr}. Currency: AUD ($). Family: Cath, Andrew, Sarah, Russell.
 
 DATA:
 ${data}
 
-You can take actions with <action> tags:
-<action>{"type":"add_todo","text":"...","category":"General","due_date":"2026-04-10"}</action>
-<action>{"type":"complete_todo","search":"partial name"}</action>
-<action>{"type":"add_date","title":"...","date_start":"2026-05-01","category":"Family"}</action>
-<action>{"type":"add_project","title":"...","priority":"High"}</action>
-<action>{"type":"update_ndis_status","provider":"Fiona","status":"Paid"}</action>`;
+TOOLS — use <action> tags:
+add_todo: {"type":"add_todo","text":"...","category":"General","due_date":"YYYY-MM-DD"}
+complete_todo: {"type":"complete_todo","search":"partial name"}
+delete_todo: {"type":"delete_todo","search":"partial name"}
+add_date: {"type":"add_date","title":"...","date_start":"YYYY-MM-DD","category":"Family"}
+add_project: {"type":"add_project","title":"...","priority":"High"}
+update_ndis_status: {"type":"update_ndis_status","provider":"Fiona","status":"Paid"}
+add_contact: {"type":"add_contact","name":"Dr Smith","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}
+
+ALWAYS use the dedicated tool. Be concise, friendly, Australian English. If a tool fails, tell the user the error.`;
 
       const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:1024,system:sys,messages:baiHistory.slice(-8)})});
       baiTyping(false);
@@ -2130,7 +2181,7 @@ You can take actions with <action> tags:
         const d=await res.json();
         let reply=d.content?d.content[0].text:d.reply||'No response';
         const actions=reply.match(/<action>(.*?)<\/action>/gs);
-        if(actions){for(const m of actions){try{const r=await baiExecAction(JSON.parse(m.replace(/<\/?action>/g,'')));if(r)baiAddMsg(r,'sys');}catch(e){}}reply=reply.replace(/<action>.*?<\/action>/gs,'').trim();}
+        if(actions){for(const m of actions){try{const r=await baiExecAction(JSON.parse(m.replace(/<\/?action>/g,'')));if(r)baiAddMsg(r,'sys');}catch(e){baiAddMsg('Action error: '+e.message,'sys');}}reply=reply.replace(/<action>.*?<\/action>/gs,'').trim();}
         if(reply)baiAddMsg(reply,'ai');
         baiHistory.push({role:'assistant',content:reply});
       }

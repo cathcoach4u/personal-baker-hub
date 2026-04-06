@@ -157,42 +157,83 @@
   }
   function hideTyping(){const el=document.getElementById('typing');if(el)el.remove();}
 
-  // Execute actions returned by AI
+  // Execute actions returned by AI — dedicated handlers with full error checking
   async function executeAction(action){
-    try{
-      if(action.type==='add_todo'){
-        const {error}=await sb.from('todos').insert({text:action.text,category:action.category||'General',due_date:action.due_date||null,done:false});
-        if(error)throw error;
-        return 'Added to-do: "'+action.text+'"';
-      }
-      if(action.type==='complete_todo'){
-        const {data}=await sb.from('todos').select('*').ilike('text','%'+action.search+'%').eq('done',false).limit(1);
-        if(data&&data.length){
-          await sb.from('todos').update({done:true}).eq('id',data[0].id);
-          return 'Completed: "'+data[0].text+'"';
-        }
-        return 'Could not find a matching to-do.';
-      }
-      if(action.type==='add_date'){
-        const {error}=await sb.from('important_dates').insert({title:action.title,description:action.description||null,date_start:action.date_start||null,date_end:action.date_end||null,time_info:action.time_info||null,location:action.location||null,category:action.category||'Other',notes:action.notes||null});
-        if(error)throw error;
-        return 'Added date: "'+action.title+'"';
-      }
-      if(action.type==='add_project'){
-        const {error}=await sb.from('house_projects').insert({title:action.title,description:action.description||null,status:action.status||'Not Started',priority:action.priority||'Medium',due_date:action.due_date||null,notes:action.notes||null});
-        if(error)throw error;
-        return 'Added house project: "'+action.title+'"';
-      }
-      if(action.type==='update_ndis_status'){
-        const {data}=await sb.from('ndis_transactions').select('*').ilike('provider_name','%'+action.provider+'%').limit(1);
-        if(data&&data.length){
-          await sb.from('ndis_transactions').update({status:action.status}).eq('id',data[0].id);
-          return 'Updated '+data[0].provider_name+' Inv '+data[0].invoice_number+' to '+action.status;
-        }
-        return 'Could not find matching transaction.';
-      }
-    }catch(e){return 'Error: '+e.message;}
-    return 'Unknown action.';
+    // ── ADD TODO ──
+    if(action.type==='add_todo'){
+      if(!action.text)return 'Error: Missing task text.';
+      const row={text:action.text,category:action.category||'General',due_date:action.due_date||null,done:false};
+      const {data,error}=await sb.from('todos').insert(row).select().single();
+      if(error)return 'Error adding to-do: '+error.message;
+      if(!data)return 'Error: Insert returned no data.';
+      return 'Added to-do: "'+data.text+'" ['+data.category+']'+(data.due_date?' due '+data.due_date:'');
+    }
+
+    // ── COMPLETE TODO ──
+    if(action.type==='complete_todo'){
+      if(!action.search)return 'Error: Missing search term.';
+      const {data:matches,error:findErr}=await sb.from('todos').select('*').ilike('text','%'+action.search+'%').eq('done',false).limit(1);
+      if(findErr)return 'Error searching to-dos: '+findErr.message;
+      if(!matches||!matches.length)return 'Could not find a pending to-do matching "'+action.search+'".';
+      const {error:updateErr}=await sb.from('todos').update({done:true}).eq('id',matches[0].id);
+      if(updateErr)return 'Error completing to-do: '+updateErr.message;
+      return 'Completed: "'+matches[0].text+'"';
+    }
+
+    // ── DELETE TODO ──
+    if(action.type==='delete_todo'){
+      if(!action.search)return 'Error: Missing search term.';
+      const {data:matches,error:findErr}=await sb.from('todos').select('*').ilike('text','%'+action.search+'%').limit(1);
+      if(findErr)return 'Error searching to-dos: '+findErr.message;
+      if(!matches||!matches.length)return 'Could not find a to-do matching "'+action.search+'".';
+      const {error:delErr}=await sb.from('todos').delete().eq('id',matches[0].id);
+      if(delErr)return 'Error deleting to-do: '+delErr.message;
+      return 'Deleted: "'+matches[0].text+'"';
+    }
+
+    // ── ADD DATE ──
+    if(action.type==='add_date'){
+      if(!action.title)return 'Error: Missing date title.';
+      const row={title:action.title,description:action.description||null,date_start:action.date_start||null,date_end:action.date_end||null,time_info:action.time_info||null,location:action.location||null,category:action.category||'Other',notes:action.notes||null,recurring:action.recurring||null};
+      const {data,error}=await sb.from('important_dates').insert(row).select().single();
+      if(error)return 'Error adding date: '+error.message;
+      if(!data)return 'Error: Insert returned no data.';
+      return 'Added date: "'+data.title+'"'+(data.date_start?' on '+data.date_start:'');
+    }
+
+    // ── ADD PROJECT ──
+    if(action.type==='add_project'){
+      if(!action.title)return 'Error: Missing project title.';
+      const row={title:action.title,description:action.description||null,status:action.status||'Not Started',priority:action.priority||'Medium',due_date:action.due_date||null,notes:action.notes||null};
+      const {data,error}=await sb.from('house_projects').insert(row).select().single();
+      if(error)return 'Error adding project: '+error.message;
+      if(!data)return 'Error: Insert returned no data.';
+      return 'Added project: "'+data.title+'" ['+data.priority+', '+data.status+']';
+    }
+
+    // ── UPDATE NDIS STATUS ──
+    if(action.type==='update_ndis_status'){
+      if(!action.provider)return 'Error: Missing provider name.';
+      if(!action.status)return 'Error: Missing status (Paid or Outstanding).';
+      const {data:matches,error:findErr}=await sb.from('ndis_transactions').select('*').ilike('provider_name','%'+action.provider+'%').order('date',{ascending:false}).limit(1);
+      if(findErr)return 'Error searching transactions: '+findErr.message;
+      if(!matches||!matches.length)return 'Could not find a transaction matching "'+action.provider+'".';
+      const {error:updateErr}=await sb.from('ndis_transactions').update({status:action.status}).eq('id',matches[0].id);
+      if(updateErr)return 'Error updating transaction: '+updateErr.message;
+      return 'Updated '+matches[0].provider_name+' Inv '+matches[0].invoice_number+' to '+action.status;
+    }
+
+    // ── ADD CONTACT ──
+    if(action.type==='add_contact'){
+      if(!action.name)return 'Error: Missing contact name.';
+      const row={name:action.name,contact_person:action.contact_person||null,phone:action.phone||null,category:action.category||'Medical',for_person:action.for_person||null};
+      const {data,error}=await sb.from('contacts').insert(row).select().single();
+      if(error)return 'Error adding contact: '+error.message;
+      if(!data)return 'Error: Insert returned no data.';
+      return 'Added contact: "'+data.name+'"';
+    }
+
+    return 'Unknown action type: '+action.type;
   }
 
   window.ask=function(text){inp.value=text;send();};
@@ -209,28 +250,60 @@
 
       history.push({role:'user',content:text});
 
-      const systemPrompt=`You are Baker AI, a helpful assistant for the Baker family's personal dashboard. You have access to their NDIS funding, insurance, contacts, important dates, house projects, and to-dos.
+      const now=new Date();
+      const todayStr=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      const timeStr=now.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+
+      const systemPrompt=`You are Baker AI, a helpful assistant for the Baker family's personal dashboard.
+Location: Sydney, Australia (AEST timezone).
+Current date/time: ${todayStr} at ${timeStr}.
+Currency: Australian Dollars (AUD, $).
+Family members: Cath, Andrew, Sarah, Russell.
 
 CURRENT DATA:
 ${dataSummary}
 
-You can take actions by including a JSON block in your response. Wrap it in <action> tags:
-<action>{"type":"add_todo","text":"Task description","category":"General","due_date":"2026-04-10"}</action>
-<action>{"type":"complete_todo","search":"partial task name"}</action>
-<action>{"type":"add_date","title":"Event name","date_start":"2026-05-01","category":"Family","description":"Details"}</action>
-<action>{"type":"add_project","title":"Project name","priority":"High","status":"Not Started"}</action>
+## AVAILABLE TOOLS
+You MUST use these dedicated tools for actions. Include the JSON in <action> tags.
+
+### add_todo — ALWAYS use this to add tasks
+Required: text. Optional: category, due_date.
+<action>{"type":"add_todo","text":"Call the dentist","category":"Health","due_date":"2026-04-10"}</action>
+Categories: General, Health, Home, Work, Shopping, Finance, Family, Admin, Personal.
+
+### complete_todo — ALWAYS use this to mark tasks done
+Required: search (partial text match).
+<action>{"type":"complete_todo","search":"dentist"}</action>
+
+### delete_todo — ALWAYS use this to remove tasks
+Required: search (partial text match).
+<action>{"type":"delete_todo","search":"dentist"}</action>
+
+### add_date — ALWAYS use this to add events/dates
+Required: title. Optional: date_start, date_end, time_info, location, category, description, notes, recurring.
+<action>{"type":"add_date","title":"School pickup","date_start":"2026-05-01","category":"Family","recurring":"yearly"}</action>
+Categories: Council, Family, Financial, Other.
+
+### add_project — ALWAYS use this to add house projects
+Required: title. Optional: description, priority, status, due_date, notes.
+<action>{"type":"add_project","title":"Fix deck railing","priority":"High","status":"Not Started"}</action>
+Priorities: Low, Medium, High, Urgent. Statuses: Not Started, In Progress, Complete.
+
+### update_ndis_status — ALWAYS use this to change NDIS payment status
+Required: provider (partial name), status (Paid or Outstanding).
 <action>{"type":"update_ndis_status","provider":"Fiona","status":"Paid"}</action>
 
-Rules:
+### add_contact — ALWAYS use this to add contacts
+Required: name. Optional: contact_person, phone, category, for_person.
+<action>{"type":"add_contact","name":"Dr Smith","contact_person":"GP","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}</action>
+
+## RULES
 - Be concise and friendly. Use Australian English.
-- When asked about data, reference the actual numbers above.
-- When asked to do something, include the action tag AND explain what you did.
-- Dates should be YYYY-MM-DD format in actions.
-- Categories for to-dos: General, Health, Home, Work, Shopping, Finance, Family, Admin, Personal
-- Categories for dates: Council, Family, Financial, Other
-- Project priorities: Low, Medium, High, Urgent
-- Project statuses: Not Started, In Progress, Complete
-- Currency is AUD ($).`;
+- When asked about data, reference the actual numbers from CURRENT DATA above.
+- When asked to do something, use the appropriate tool above AND explain what you did.
+- All dates in YYYY-MM-DD format in action JSON.
+- Never guess field values — ask the user if unclear.
+- If a tool fails, tell the user the exact error message.`;
 
       const res=await fetch(PROXY,{
         method:'POST',

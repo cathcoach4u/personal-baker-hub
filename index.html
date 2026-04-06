@@ -1989,8 +1989,11 @@
   .bai-m{margin-bottom:10px;max-width:85%;}
   .bai-m.user{margin-left:auto;}
   .bai-m .bub{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;}
-  .bai-m.ai .bub{background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px;}
+  .bai-m.ai .bub{background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px;position:relative;}
   .bai-m.user .bub{background:#7c3aed;color:white;border-bottom-right-radius:4px;}
+  .bai-m .bub .bai-copy{position:absolute;top:4px;right:4px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:12px;padding:2px;opacity:0;transition:opacity 0.15s;}
+  .bai-m .bub:hover .bai-copy{opacity:1;}
+  .bai-m .bub .bai-copy.copied{color:#16a34a;}
   .bai-m.sys .bub{background:#fef9c3;color:#92400e;font-size:11px;text-align:center;border-radius:8px;}
   .bai-m .bub strong{font-weight:700;}
   .bai-m .bub ul{padding-left:16px;margin:4px 0;}
@@ -2054,9 +2057,21 @@
     div.className='bai-m '+role;
     let html=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'\n<li>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
     if(html.includes('<li>'))html='<ul>'+html+'</ul>';
-    div.innerHTML='<div class="bub"><p>'+html+'</p></div>';
+    if(role==='ai'){
+      div.innerHTML='<div class="bub"><button class="bai-copy" onclick="baiCopy(this)" title="Copy">\u{1F4CB}</button><p>'+html+'</p></div>';
+    } else {
+      div.innerHTML='<div class="bub"><p>'+html+'</p></div>';
+    }
     msgsEl.appendChild(div);msgsEl.scrollTop=msgsEl.scrollHeight;
   }
+
+  window.baiCopy=function(btn){
+    const text=btn.parentElement.innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='\u2705';btn.classList.add('copied');
+      setTimeout(()=>{btn.textContent='\u{1F4CB}';btn.classList.remove('copied');},1500);
+    });
+  };
 
   function baiTyping(show){
     if(show){const d=document.createElement('div');d.className='bai-typ';d.id='baiTyp';d.innerHTML='Thinking <span class="dots"><span>.</span><span>.</span><span>.</span></span>';msgsEl.appendChild(d);msgsEl.scrollTop=msgsEl.scrollHeight;}

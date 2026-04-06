@@ -2041,6 +2041,7 @@
 <script>
 (function(){
   const PROXY='https://ziwycymhaqghdiznyhhw.supabase.co/functions/v1/claude-proxy';
+  const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
   const msgsEl=document.getElementById('baiMsgs');
   const inpEl=document.getElementById('baiInp');
   const btnEl=document.getElementById('baiBtn');

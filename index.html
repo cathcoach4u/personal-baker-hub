@@ -544,7 +544,7 @@
           <div class="form-group"><label>Contact Person</label><input type="text" id="cf-person" placeholder="Optional"></div>
           <div class="form-group"><label>Phone</label><input type="tel" id="cf-phone" placeholder="e.g. 02 9123 4567"></div>
           <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Health & Wellness</option><option>Pharmacy</option><option>Home & Services</option><option>Entertainment</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option></select></div>
-          <div class="form-group"><label>For Person</label><select id="cf-for"><option value="">None</option><option>Family</option><option>Cath</option><option>Andrew</option><option>Sarah</option><option>Russell</option></select></div>
+          <div class="form-group"><label>For Person</label><div id="cf-for" style="display:flex;gap:6px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Family" style="accent-color:#0d9488;"> Family</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Cath" style="accent-color:#0d9488;"> Cath</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Andrew" style="accent-color:#0d9488;"> Andrew</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah" style="accent-color:#0d9488;"> Sarah</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Russell" style="accent-color:#0d9488;"> Russell</label></div></div>
         </div>
         <div class="form-actions">
           <button class="add-btn" id="cf-save-btn" onclick="phSaveContact()">Save Contact</button>
@@ -1489,7 +1489,7 @@
     const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
     let fl=CONTACTS;
     if(cf)fl=fl.filter(c=>c.cat===cf);
-    if(cpf)fl=fl.filter(c=>c.forPerson===cpf);
+    if(cpf)fl=fl.filter(c=>c.forPerson&&c.forPerson.split(', ').includes(cpf));
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     fl.sort((a,b)=>a.name.localeCompare(b.name));
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
@@ -1526,7 +1526,7 @@
   function renderContactCards(items){
     return items.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
-      const personTag=c.forPerson?'<span class="person-tag">'+c.forPerson+'</span>':'';
+      const personTag=c.forPerson?c.forPerson.split(', ').map(p=>'<span class="person-tag">'+p+'</span>').join(''):'';
       return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()">'+phoneLink+'</div>'+personTag+'</div>';
     }).join('');
   }
@@ -1538,7 +1538,7 @@
     $('#cf-title').textContent='New Contact';
     $('#cf-save-btn').textContent='Save Contact';
     $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';
-    $('#cf-cat').value='Medical';$('#cf-for').value='';
+    $('#cf-cat').value='Medical';$$('#cf-for input[type=checkbox]').forEach(cb=>cb.checked=false);
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
   }
 
@@ -1558,7 +1558,9 @@
     $('#cf-title').textContent='Edit \u2014 '+c.name;
     $('#cf-save-btn').textContent='Update Contact';
     $('#cf-name').value=c.name;$('#cf-person').value=c.person;$('#cf-phone').value=c.phone;
-    $('#cf-cat').value=c.cat;$('#cf-for').value=c.forPerson;
+    $('#cf-cat').value=c.cat;
+    const personVals=c.forPerson?c.forPerson.split(', '):[];
+    $$('#cf-for input[type=checkbox]').forEach(cb=>{cb.checked=personVals.includes(cb.value);});
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
     form.scrollIntoView({behavior:'smooth',block:'start'});
   };
@@ -1568,7 +1570,7 @@
     const person=$('#cf-person').value.trim();
     const phone=$('#cf-phone').value.trim();
     const cat=$('#cf-cat').value;
-    const forPerson=$('#cf-for').value;
+    const forPerson=[...$$('#cf-for input[type=checkbox]')].filter(cb=>cb.checked).map(cb=>cb.value).join(', ');
 
     if(!name){
       $('#cf-msg').className='form-msg error';

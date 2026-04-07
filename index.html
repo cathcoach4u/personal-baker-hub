@@ -1569,7 +1569,7 @@
     $('#ph-pe').style.display='none';
     $('#ph-pg').innerHTML=fl.map(p=>{
       const sc=p.status==='Complete'?'complete':p.status==='In Progress'?'in-progress':'not-started';
-      return '<div class="proj-card" onclick="phEditProj('+p.id+')" style="cursor:pointer;"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div>';
+      return '<div class="proj-card" style="cursor:pointer;position:relative;"><div onclick="phEditProj('+p.id+')" style="display:flex;align-items:center;flex:1;gap:10px;"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div><button onclick="event.stopPropagation();phDeleteProj('+p.id+')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
     }).join('');
   };
 
@@ -1661,7 +1661,7 @@
     const isToday=d.start&&daysUntil(d.start)===0;
     const dayName=d.start?new Date(d.start+'T00:00:00').toLocaleDateString('en-AU',{weekday:'short'}):'';
     const recurBadge=d.recurring?'<span style="font-size:9px;color:#94a3b8;margin-left:4px;">\u{1F501} yearly</span>':'';
-    return '<div class="date-card" onclick="phEditDate('+d.id+')" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+recurBadge+(isToday?'<span class="date-upcoming" style="background:#f0fdf4;color:#16a34a;">Today</span>':upcoming?'<span class="date-upcoming">This week</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta">'+(dayName?'<span><strong>'+dayName+'</strong></span>':'')+'<span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div>';
+    return '<div class="date-card" style="cursor:pointer;position:relative;"><div onclick="phEditDate('+d.id+')" style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+recurBadge+(isToday?'<span class="date-upcoming" style="background:#f0fdf4;color:#16a34a;">Today</span>':upcoming?'<span class="date-upcoming">This week</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta">'+(dayName?'<span><strong>'+dayName+'</strong></span>':'')+'<span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div><button onclick="event.stopPropagation();phDeleteDate('+d.id+')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
   }
 
   window.phDates=function(){
@@ -1798,6 +1798,26 @@
       $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
       setTimeout(()=>{$('#ph-date-form').classList.remove('open');resetDateForm();},1500);
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
+  };
+
+  window.phDeleteDate=async function(id){
+    if(!confirm('Delete this date?'))return;
+    try{
+      const {error}=await sb.from('important_dates').delete().eq('id',id);
+      if(error)throw error;
+      DATES=DATES.filter(d=>d.id!==id);
+      phDates();
+    }catch(e){alert('Error: '+e.message);}
+  };
+
+  window.phDeleteProj=async function(id){
+    if(!confirm('Delete this project?'))return;
+    try{
+      const {error}=await sb.from('house_projects').delete().eq('id',id);
+      if(error)throw error;
+      PROJECTS=PROJECTS.filter(p=>p.id!==id);
+      phProjects();
+    }catch(e){alert('Error: '+e.message);}
   };
 
   // ── To-Do Functions ──

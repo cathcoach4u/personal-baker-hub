@@ -549,6 +549,7 @@
         <div class="form-actions">
           <button class="add-btn" id="cf-save-btn" onclick="phSaveContact()">Save Contact</button>
           <button class="add-btn cancel" onclick="phToggleContactForm()">Cancel</button>
+          <button class="add-btn" id="cf-del-btn" onclick="phDeleteContact()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="cf-msg"></div>
       </div>
@@ -1491,6 +1492,19 @@
     }
   };
 
+  window.phDeleteContact=async function(){
+    if(!editingContactId)return;
+    if(!confirm('Delete this contact?'))return;
+    try{
+      const {error}=await sb.from('contacts').delete().eq('id',editingContactId);
+      if(error){alert('Error: '+error.message);return;}
+      CONTACTS=CONTACTS.filter(c=>c.id!==editingContactId);
+      $('#ph-contact-form').classList.remove('open');
+      resetContactForm();
+      phContacts();
+    }catch(e){alert('Error: '+e.message);}
+  };
+
   const catClass=c=>c==='Medical'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Recreation'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
 
   const CAT_DISPLAY_ORDER=['Medical','Massage','Pharmacy','NDIS','Home & Services','Recreation','Government','Food & Lifestyle'];
@@ -1574,6 +1588,7 @@
     $('#cf-save-btn').textContent='Save Contact';
     $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';
     $('#cf-cat').value='Medical';$$('#cf-for input[type=checkbox]').forEach(cb=>cb.checked=false);
+    $('#cf-del-btn').style.display='none';
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
   }
 
@@ -1596,6 +1611,7 @@
     $('#cf-cat').value=c.cat;
     const personVals=c.forPerson?c.forPerson.split(', '):[];
     $$('#cf-for input[type=checkbox]').forEach(cb=>{cb.checked=personVals.includes(cb.value);});
+    $('#cf-del-btn').style.display='inline-block';
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
     form.scrollIntoView({behavior:'smooth',block:'start'});
   };

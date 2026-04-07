@@ -2174,7 +2174,12 @@
       const now=new Date();
       const todayStr=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
       const timeStr=now.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+      const calRef=[];
+      for(let i=0;i<14;i++){const d=new Date(now);d.setDate(now.getDate()+i);calRef.push(d.toLocaleDateString('en-AU',{weekday:'short'})+' '+d.toISOString().split('T')[0]);}
       const sys=`You are Baker AI, the Baker family's assistant. Sydney, Australia (AEST). Today: ${todayStr} at ${timeStr}. Currency: AUD ($). Family: Cath, Andrew, Sarah, Russell.
+
+CALENDAR (next 14 days — use these EXACT dates, do NOT calculate days yourself):
+${calRef.join('\\n')}
 
 DATA:
 ${data}

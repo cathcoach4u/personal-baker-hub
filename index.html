@@ -574,6 +574,7 @@
         <div class="form-actions">
           <button class="add-btn" id="pf-save-btn" onclick="phSaveProj()">Save Project</button>
           <button class="add-btn cancel" onclick="phToggleProjForm()">Cancel</button>
+          <button class="add-btn" id="pf-del-btn" onclick="phDeleteProjFromForm()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="pf-msg"></div>
       </div>
@@ -603,6 +604,7 @@
         <div class="form-actions">
           <button class="add-btn" id="dtf-save-btn" onclick="phSaveDate()">Save Date</button>
           <button class="add-btn cancel" onclick="phToggleDateForm()">Cancel</button>
+          <button class="add-btn" id="dtf-del-btn" onclick="phDeleteDateFromForm()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="dtf-msg"></div>
       </div>
@@ -1581,6 +1583,7 @@
     $('#pf-save-btn').textContent='Save Project';
     $('#pf-title-input').value='';$('#pf-desc').value='';$('#pf-notes').value='';
     $('#pf-priority').value='Medium';$('#pf-status').value='Not Started';$('#pf-due').value='';
+    $('#pf-del-btn').style.display='none';
     $('#pf-msg').className='form-msg';$('#pf-msg').textContent='';
   }
 
@@ -1600,6 +1603,7 @@
     $('#pf-save-btn').textContent='Update Project';
     $('#pf-title-input').value=p.title;$('#pf-desc').value=p.desc;$('#pf-notes').value=p.notes;
     $('#pf-priority').value=p.priority;$('#pf-status').value=p.status;$('#pf-due').value=p.due;
+    $('#pf-del-btn').style.display='inline-block';
     $('#pf-msg').className='form-msg';$('#pf-msg').textContent='';
     form.scrollIntoView({behavior:'smooth',block:'start'});
   };
@@ -1742,6 +1746,7 @@
     $('#dtf-title-input').value='';$('#dtf-desc').value='';$('#dtf-notes').value='';
     $('#dtf-cat').value='Council';$('#dtf-start').value='';$('#dtf-end').value='';
     $('#dtf-time').value='';$('#dtf-loc').value='';
+    $('#dtf-del-btn').style.display='none';
     $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
   }
 
@@ -1762,6 +1767,7 @@
     $('#dtf-title-input').value=d.title;$('#dtf-desc').value=d.desc;$('#dtf-notes').value=d.notes;
     $('#dtf-cat').value=d.cat;$('#dtf-start').value=d.start;$('#dtf-end').value=d.end;
     $('#dtf-time').value=d.time;$('#dtf-loc').value=d.loc;
+    $('#dtf-del-btn').style.display='inline-block';
     $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
     form.scrollIntoView({behavior:'smooth',block:'start'});
   };
@@ -1800,6 +1806,13 @@
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
+  window.phDeleteDateFromForm=function(){
+    if(!editingDateId)return;
+    phDeleteDate(editingDateId);
+    $('#ph-date-form').classList.remove('open');
+    resetDateForm();
+  };
+
   window.phDeleteDate=async function(id){
     if(!confirm('Delete this date?'))return;
     try{
@@ -1808,6 +1821,13 @@
       DATES=DATES.filter(d=>d.id!==id);
       phDates();
     }catch(e){alert('Error: '+e.message);}
+  };
+
+  window.phDeleteProjFromForm=function(){
+    if(!editingProjId)return;
+    phDeleteProj(editingProjId);
+    $('#ph-proj-form').classList.remove('open');
+    resetProjForm();
   };
 
   window.phDeleteProj=async function(id){

@@ -543,7 +543,7 @@
           <div class="form-group"><label>Name</label><input type="text" id="cf-name" placeholder="e.g. Dr Smith"></div>
           <div class="form-group"><label>Contact Person</label><input type="text" id="cf-person" placeholder="Optional"></div>
           <div class="form-group"><label>Phone</label><input type="tel" id="cf-phone" placeholder="e.g. 02 9123 4567"></div>
-          <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Massage</option><option>Pharmacy</option><option>Home & Services</option><option>Entertainment</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option></select></div>
+          <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Massage</option><option>Pharmacy</option><option>Home & Services</option><option>Recreation</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option></select></div>
           <div class="form-group"><label>For Person</label><div id="cf-for" style="display:flex;gap:6px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Family" style="accent-color:#0d9488;"> Family</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Cath" style="accent-color:#0d9488;"> Cath</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Andrew" style="accent-color:#0d9488;"> Andrew</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah" style="accent-color:#0d9488;"> Sarah</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Russell" style="accent-color:#0d9488;"> Russell</label></div></div>
         </div>
         <div class="form-actions">
@@ -552,8 +552,14 @@
         </div>
         <div class="form-msg" id="cf-msg"></div>
       </div>
-      <div class="cat-count" id="ph-cc"></div>
-      <div class="contact-grid" id="ph-cg"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="cat-count" id="ph-cc"></div>
+        <div style="display:flex;gap:4px;">
+          <button class="todo-filter-btn" id="cg-by-person" onclick="contactGroupBy='person';phContacts();" style="font-size:10px;padding:4px 10px;">By Person</button>
+          <button class="todo-filter-btn" id="cg-by-cat" onclick="contactGroupBy='category';phContacts();" style="font-size:10px;padding:4px 10px;">By Category</button>
+        </div>
+      </div>
+      <div id="ph-cg"></div>
     </div>
     <div class="screen" id="ph-projects">
       <h2>House Projects</h2>
@@ -1485,9 +1491,11 @@
     }
   };
 
-  const catClass=c=>c==='Medical'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Entertainment'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
+  const catClass=c=>c==='Medical'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Recreation'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
 
-  const CAT_DISPLAY_ORDER=['Medical','Massage','Pharmacy','NDIS','Home & Services','Government','Food & Lifestyle','Entertainment'];
+  const CAT_DISPLAY_ORDER=['Medical','Massage','Pharmacy','NDIS','Home & Services','Recreation','Government','Food & Lifestyle'];
+  const PERSON_ORDER=['Family','Cath','Andrew','Sarah','Russell'];
+  let contactGroupBy='person';
 
   window.phContacts=function(){
     const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
@@ -1498,33 +1506,56 @@
     fl.sort((a,b)=>a.name.localeCompare(b.name));
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
 
-    // Group by category
-    const groups={};
-    fl.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
+    // Toggle button active states
+    $('#cg-by-person').className='todo-filter-btn'+(contactGroupBy==='person'?' active':'');
+    $('#cg-by-cat').className='todo-filter-btn'+(contactGroupBy==='category'?' active':'');
 
-    // Sort categories by display order
-    const catKeys=Object.keys(groups).sort((a,b)=>{
-      const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);
-      return (ai===-1?99:ai)-(bi===-1?99:bi);
-    });
-
-    // If filtering by specific category, show flat grid
-    if(cf||cs){
-      $('#ph-cg').innerHTML=renderContactCards(fl);
+    // If searching, show flat grid
+    if(cs){
+      $('#ph-cg').innerHTML='<div class="contact-grid">'+renderContactCards(fl)+'</div>';
       return;
     }
 
-    // Grouped view with collapsible headers
-    let html='';
-    catKeys.forEach(cat=>{
-      const items=groups[cat];
-      const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
-      html+='<div class="group-section" style="margin-bottom:12px;">';
-      html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
-      html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
-      html+='</div>';
-    });
-    $('#ph-cg').innerHTML=html;
+    if(contactGroupBy==='person'){
+      // Group by person
+      const groups={};
+      fl.forEach(c=>{
+        const people=c.forPerson?c.forPerson.split(', '):['Unassigned'];
+        people.forEach(p=>{if(!groups[p])groups[p]=[];groups[p].push(c);});
+      });
+      const keys=Object.keys(groups).sort((a,b)=>{
+        const ai=PERSON_ORDER.indexOf(a),bi=PERSON_ORDER.indexOf(b);
+        return (ai===-1?99:ai)-(bi===-1?99:bi);
+      });
+      let html='';
+      keys.forEach(person=>{
+        const items=groups[person];
+        const gid='cp-'+person.replace(/[^a-zA-Z]/g,'');
+        html+='<div class="group-section" style="margin-bottom:12px;">';
+        html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span style="font-size:14px;font-weight:700;">'+person+'</span><span style="color:#64748b;font-size:12px;margin-left:8px;">'+items.length+'</span></span></div>';
+        html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+        html+='</div>';
+      });
+      $('#ph-cg').innerHTML=html;
+    } else {
+      // Group by category
+      const groups={};
+      fl.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
+      const catKeys=Object.keys(groups).sort((a,b)=>{
+        const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);
+        return (ai===-1?99:ai)-(bi===-1?99:bi);
+      });
+      let html='';
+      catKeys.forEach(cat=>{
+        const items=groups[cat];
+        const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
+        html+='<div class="group-section" style="margin-bottom:12px;">';
+        html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
+        html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+        html+='</div>';
+      });
+      $('#ph-cg').innerHTML=html;
+    }
   };
 
   function renderContactCards(items){

@@ -1482,6 +1482,8 @@
 
   const catClass=c=>c==='Medical'?'medical':c==='Health & Wellness'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Entertainment'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
 
+  const CAT_DISPLAY_ORDER=['Medical','Health & Wellness','Pharmacy','NDIS','Home & Services','Government','Food & Lifestyle','Entertainment'];
+
   window.phContacts=function(){
     const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
     let fl=CONTACTS;
@@ -1490,12 +1492,43 @@
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     fl.sort((a,b)=>a.name.localeCompare(b.name));
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
-    $('#ph-cg').innerHTML=fl.map(c=>{
+
+    // Group by category
+    const groups={};
+    fl.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
+
+    // Sort categories by display order
+    const catKeys=Object.keys(groups).sort((a,b)=>{
+      const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);
+      return (ai===-1?99:ai)-(bi===-1?99:bi);
+    });
+
+    // If filtering by specific category, show flat grid
+    if(cf||cs){
+      $('#ph-cg').innerHTML=renderContactCards(fl);
+      return;
+    }
+
+    // Grouped view with collapsible headers
+    let html='';
+    catKeys.forEach(cat=>{
+      const items=groups[cat];
+      const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
+      html+='<div class="group-section" style="margin-bottom:12px;">';
+      html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
+      html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+      html+='</div>';
+    });
+    $('#ph-cg').innerHTML=html;
+  };
+
+  function renderContactCards(items){
+    return items.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
       const personTag=c.forPerson?'<span class="person-tag">'+c.forPerson+'</span>':'';
-      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()">'+phoneLink+'</div><span class="cat-tag '+catClass(c.cat)+'">'+c.cat+'</span>'+personTag+'</div>';
+      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()">'+phoneLink+'</div>'+personTag+'</div>';
     }).join('');
-  };
+  }
 
   let editingContactId=null;
 

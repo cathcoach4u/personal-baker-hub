@@ -647,6 +647,10 @@
         <button class="todo-add-btn" onclick="phAddFiona()" style="background:#0d9488;">+ Add Task</button>
       </div>
       <div class="todo-stats" id="fi-stats"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="phPrintFiona()" style="flex:1;padding:10px;background:white;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#1e293b;">&#x1F5A8; Print List</button>
+        <button onclick="phClearAllFiona()" style="flex:1;padding:10px;background:#ef4444;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:white;">&#x1F5D1; Clear All</button>
+      </div>
       <div id="fi-list"></div>
     </div>
     <div class="screen" id="ph-about">
@@ -2137,6 +2141,42 @@
     if(error){alert('Error: '+error.message);return;}
     FIONA_TASKS=FIONA_TASKS.filter(t=>!t.done);
     phRenderFiona();
+  };
+
+  window.phClearAllFiona=async function(){
+    if(!confirm('Delete ALL Fiona tasks? This cannot be undone.'))return;
+    const allIds=FIONA_TASKS.map(t=>t.id);
+    if(!allIds.length)return;
+    const {error}=await sb.from('fiona_tasks').delete().in('id',allIds);
+    if(error){alert('Error: '+error.message);return;}
+    FIONA_TASKS=[];
+    phRenderFiona();
+  };
+
+  window.phPrintFiona=function(){
+    const pending=FIONA_TASKS.filter(t=>!t.done);
+    const done=FIONA_TASKS.filter(t=>t.done);
+    const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    let html='<html><head><title>Fiona Tasks</title><style>';
+    html+='body{font-family:Segoe UI,system-ui,sans-serif;padding:24px;max-width:600px;margin:0 auto;}';
+    html+='h1{font-size:20px;margin-bottom:4px;}';
+    html+='.date{font-size:12px;color:#94a3b8;margin-bottom:20px;}';
+    html+='.task{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;display:flex;align-items:center;gap:8px;}';
+    html+='.task .box{width:16px;height:16px;border:2px solid #ccc;border-radius:3px;flex-shrink:0;}';
+    html+='.task.done{color:#94a3b8;text-decoration:line-through;}';
+    html+='.task.done .box{background:#0d9488;border-color:#0d9488;}';
+    html+='.section{font-size:11px;font-weight:700;text-transform:uppercase;color:#94a3b8;margin-top:16px;margin-bottom:8px;}';
+    html+='@media print{body{padding:0;}}</style></head><body>';
+    html+='<h1>\u{1F9F9} Fiona\'s Tasks</h1><div class="date">'+today+'</div>';
+    if(pending.length){html+='<div class="section">To Do ('+pending.length+')</div>';pending.forEach(t=>{html+='<div class="task"><span class="box"></span>'+t.task+'</div>';});}
+    if(done.length){html+='<div class="section">Done ('+done.length+')</div>';done.forEach(t=>{html+='<div class="task done"><span class="box"></span>'+t.task+'</div>';});}
+    if(!FIONA_TASKS.length)html+='<p style="color:#94a3b8;">No tasks</p>';
+    html+='</body></html>';
+    const w=window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    w.print();
   };
 
   // Auto-add from URL param

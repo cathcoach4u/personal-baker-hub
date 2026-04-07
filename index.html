@@ -1806,38 +1806,50 @@
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
   };
 
-  window.phDeleteDateFromForm=function(){
+  window.phDeleteDateFromForm=async function(){
     if(!editingDateId)return;
-    phDeleteDate(editingDateId);
-    $('#ph-date-form').classList.remove('open');
-    resetDateForm();
+    if(!confirm('Delete this date?'))return;
+    try{
+      const {error}=await sb.from('important_dates').delete().eq('id',editingDateId);
+      if(error){alert('Delete error: '+error.message);return;}
+      DATES=DATES.filter(d=>d.id!==editingDateId);
+      $('#ph-date-form').classList.remove('open');
+      resetDateForm();
+      phDates();
+    }catch(e){alert('Delete error: '+e.message);}
   };
 
   window.phDeleteDate=async function(id){
     if(!confirm('Delete this date?'))return;
     try{
       const {error}=await sb.from('important_dates').delete().eq('id',id);
-      if(error)throw error;
+      if(error){alert('Delete error: '+error.message);return;}
       DATES=DATES.filter(d=>d.id!==id);
       phDates();
-    }catch(e){alert('Error: '+e.message);}
+    }catch(e){alert('Delete error: '+e.message);}
   };
 
-  window.phDeleteProjFromForm=function(){
+  window.phDeleteProjFromForm=async function(){
     if(!editingProjId)return;
-    phDeleteProj(editingProjId);
-    $('#ph-proj-form').classList.remove('open');
-    resetProjForm();
+    if(!confirm('Delete this project?'))return;
+    try{
+      const {error}=await sb.from('house_projects').delete().eq('id',editingProjId);
+      if(error){alert('Delete error: '+error.message);return;}
+      PROJECTS=PROJECTS.filter(p=>p.id!==editingProjId);
+      $('#ph-proj-form').classList.remove('open');
+      resetProjForm();
+      phProjects();
+    }catch(e){alert('Delete error: '+e.message);}
   };
 
   window.phDeleteProj=async function(id){
     if(!confirm('Delete this project?'))return;
     try{
       const {error}=await sb.from('house_projects').delete().eq('id',id);
-      if(error)throw error;
+      if(error){alert('Delete error: '+error.message);return;}
       PROJECTS=PROJECTS.filter(p=>p.id!==id);
       phProjects();
-    }catch(e){alert('Error: '+e.message);}
+    }catch(e){alert('Delete error: '+e.message);}
   };
 
   // ── To-Do Functions ──

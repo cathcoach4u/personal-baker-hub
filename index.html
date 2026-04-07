@@ -2046,7 +2046,7 @@
   // ── Fiona Tasks ──
   let FIONA_TASKS=[];
   // Load on startup for dashboard reminders
-  (async()=>{const{data}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});if(data)FIONA_TASKS=data;})();
+  (async()=>{try{const{data}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});if(data)FIONA_TASKS=data;}catch(e){console.error('Fiona load error:',e);}})();
 
   window.phLoadFiona=async function(){
     const {data,error}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});

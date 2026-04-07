@@ -90,14 +90,15 @@
 
   // Load all data for context
   async function loadData(){
-    const [funds,ndis,ins,contacts,projects,dates,todos]=await Promise.all([
+    const [funds,ndis,ins,contacts,projects,dates,todos,fionaTasks]=await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date',{ascending:false}),
       sb.from('insurance_policies').select('*'),
       sb.from('contacts').select('*'),
       sb.from('house_projects').select('*'),
       sb.from('important_dates').select('*').order('date_start'),
-      sb.from('todos').select('*')
+      sb.from('todos').select('*'),
+      sb.from('fiona_tasks').select('*')
     ]);
     let summary='';
 
@@ -134,6 +135,10 @@
     doneTodos.slice(0,5).forEach(t=>{summary+='- [x] '+t.text+' ['+t.category+']\n';});
 
     summary+='\nToday is '+new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'.';
+    const fionaPending=(fionaTasks.data||[]).filter(t=>!t.done);
+    summary+='\nFIONA TASKS ('+fionaPending.length+' pending):\n';
+    fionaPending.forEach(t=>{summary+='- [ ] '+t.task+'\n';});
+    (fionaTasks.data||[]).filter(t=>t.done).slice(0,5).forEach(t=>{summary+='- [x] '+t.task+'\n';});
     summary+='\nFamily members: Cath, Andrew, Sarah, Russell.';
     return summary;
   }
@@ -240,6 +245,32 @@
       return 'Added contact: "'+data.name+'"';
     }
 
+    // ── FIONA TASKS ──
+    if(action.type==='add_fiona_task'){
+      if(!action.task)return 'Error: Missing task text.';
+      const {data,error}=await sb.from('fiona_tasks').insert({id:Date.now(),task:action.task,done:false}).select().single();
+      if(error)return 'Error adding Fiona task: '+error.message;
+      return 'Added Fiona task: "'+action.task+'"';
+    }
+    if(action.type==='complete_fiona_task'){
+      if(!action.search)return 'Error: Missing search term.';
+      const {data:matches,error:fe}=await sb.from('fiona_tasks').select('*').ilike('task','%'+action.search+'%').eq('done',false).limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!matches||!matches.length)return 'No pending Fiona task matching "'+action.search+'".';
+      const {error:ue}=await sb.from('fiona_tasks').update({done:true}).eq('id',matches[0].id);
+      if(ue)return 'Error: '+ue.message;
+      return 'Completed Fiona task: "'+matches[0].task+'"';
+    }
+    if(action.type==='delete_fiona_task'){
+      if(!action.search)return 'Error: Missing search term.';
+      const {data:matches,error:fe}=await sb.from('fiona_tasks').select('*').ilike('task','%'+action.search+'%').limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!matches||!matches.length)return 'No Fiona task matching "'+action.search+'".';
+      const {error:de}=await sb.from('fiona_tasks').delete().eq('id',matches[0].id);
+      if(de)return 'Error: '+de.message;
+      return 'Deleted Fiona task: "'+matches[0].task+'"';
+    }
+
     return 'Unknown action type: '+action.type;
   }
 
@@ -313,6 +344,18 @@ Required: provider (partial name), status (Paid or Outstanding).
 ### add_contact — ALWAYS use this to add contacts
 Required: name. Optional: contact_person, phone, category, for_person.
 <action>{"type":"add_contact","name":"Dr Smith","contact_person":"GP","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}</action>
+
+### add_fiona_task — ALWAYS use this to add tasks for Fiona (cleaner)
+Required: task.
+<action>{"type":"add_fiona_task","task":"Clean the oven"}</action>
+
+### complete_fiona_task — ALWAYS use this to mark Fiona tasks done
+Required: search (partial text match).
+<action>{"type":"complete_fiona_task","search":"oven"}</action>
+
+### delete_fiona_task — ALWAYS use this to delete Fiona tasks
+Required: search (partial text match).
+<action>{"type":"delete_fiona_task","search":"oven"}</action>
 
 ## RULES
 - Be concise and friendly. Use Australian English.

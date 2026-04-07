@@ -436,6 +436,7 @@
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
+      <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
     <div class="mobile-drawer-footer">Baker Hub v2.0</div>
@@ -450,6 +451,7 @@
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
+    <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     <div class="sidebar-footer">Baker Hub v2.0 — Supabase</div>
   </div>
@@ -637,6 +639,15 @@
       <div id="td-pending"></div>
       <div class="todo-section-label">DONE</div>
       <div id="td-done"></div>
+    </div>
+    <div class="screen" id="ph-fiona">
+      <h2>&#x1F9F9; Fiona's Tasks</h2>
+      <div class="todo-input-card">
+        <input type="text" id="fi-text" placeholder="Add task for Fiona..." onkeydown="if(event.key==='Enter')phAddFiona()">
+        <button class="todo-add-btn" onclick="phAddFiona()" style="background:#0d9488;">+ Add Task</button>
+      </div>
+      <div class="todo-stats" id="fi-stats"></div>
+      <div id="fi-list"></div>
     </div>
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
@@ -1126,6 +1137,12 @@
       const outTotalR=outstandingR.reduce((s,t)=>s+t.amt,0);
       const providers=[...new Set(outstandingR.map(t=>t.p))].join(', ');
       items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{26A0}\u{FE0F}</span><div><div class="wi-label">Outstanding NDIS — '+providers+'</div><div class="wi-value" style="color:#ef4444;">'+money(outTotalR)+' ('+outstandingR.length+' invoice'+(outstandingR.length!==1?'s':'')+')</div></div></div>');
+    }
+
+    // Fiona tasks pending
+    const fionaPending=FIONA_TASKS.filter(t=>!t.done);
+    if(fionaPending.length){
+      items.push('<div class="weekly-item"><span class="wi-icon">\u{1F9F9}</span><div><div class="wi-label">Fiona Tasks</div><div class="wi-value">'+fionaPending.length+' pending</div></div></div>');
     }
 
     const el=$('#ph-reminders');
@@ -1986,6 +2003,7 @@
     if(name==='dates')phDates();
     if(name==='todo')phTodos();
     if(name==='aislemate')amGo('home');
+    if(name==='fiona')phLoadFiona();
   };
 
   // Populate insurance filters
@@ -2024,6 +2042,87 @@
   phProjects();
   phDates();
   phTodos();
+
+  // ── Fiona Tasks ──
+  let FIONA_TASKS=[];
+  // Load on startup for dashboard reminders
+  (async()=>{const{data}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});if(data)FIONA_TASKS=data;})();
+
+  window.phLoadFiona=async function(){
+    const {data,error}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});
+    if(error){console.error(error);return;}
+    FIONA_TASKS=data||[];
+    phRenderFiona();
+  };
+
+  function phRenderFiona(){
+    const pending=FIONA_TASKS.filter(t=>!t.done);
+    const done=FIONA_TASKS.filter(t=>t.done);
+    $('#fi-stats').innerHTML='<span>'+pending.length+' pending, '+done.length+' done</span>'+(done.length?'<button class="todo-clear-btn" onclick="phClearFiona()">Clear completed</button>':'');
+    let html='';
+    FIONA_TASKS.forEach(t=>{
+      html+='<div class="todo-item'+(t.done?' done':'')+'"><div class="todo-check'+(t.done?' checked':'')+'" onclick="phToggleFiona('+t.id+');">'+(t.done?'\u2713':'')+'</div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelFiona('+t.id+')">\u{1F5D1}</button></div>';
+    });
+    if(!FIONA_TASKS.length)html='<div class="todo-empty">No tasks for Fiona</div>';
+    $('#fi-list').innerHTML=html;
+  }
+
+  window.phAddFiona=async function(){
+    const text=$('#fi-text').value.trim();
+    if(!text)return;
+    const id=Date.now();
+    const {data,error}=await sb.from('fiona_tasks').insert({id:id,task:text,done:false}).select().single();
+    if(error){alert('Error: '+error.message);return;}
+    FIONA_TASKS.unshift(data);
+    $('#fi-text').value='';
+    phRenderFiona();
+  };
+
+  window.phToggleFiona=async function(id){
+    const t=FIONA_TASKS.find(x=>x.id===id);
+    if(!t)return;
+    const {error}=await sb.from('fiona_tasks').update({done:!t.done}).eq('id',id);
+    if(error){alert('Error: '+error.message);return;}
+    t.done=!t.done;
+    phRenderFiona();
+  };
+
+  window.phDelFiona=async function(id){
+    const {error}=await sb.from('fiona_tasks').delete().eq('id',id);
+    if(error){alert('Error: '+error.message);return;}
+    FIONA_TASKS=FIONA_TASKS.filter(t=>t.id!==id);
+    phRenderFiona();
+  };
+
+  window.phClearFiona=async function(){
+    if(!confirm('Clear all completed tasks?'))return;
+    const doneIds=FIONA_TASKS.filter(t=>t.done).map(t=>t.id);
+    if(!doneIds.length)return;
+    const {error}=await sb.from('fiona_tasks').delete().in('id',doneIds);
+    if(error){alert('Error: '+error.message);return;}
+    FIONA_TASKS=FIONA_TASKS.filter(t=>!t.done);
+    phRenderFiona();
+  };
+
+  // Auto-add from URL param
+  (function(){
+    const params=new URLSearchParams(window.location.search);
+    const addTask=params.get('add');
+    if(addTask){
+      sb.from('fiona_tasks').insert({id:Date.now(),task:addTask,done:false}).then(()=>{
+        window.history.replaceState({},'',window.location.pathname);
+      });
+    }
+  })();
+
+  // Auto-refresh every 30s
+  setInterval(async()=>{
+    if($('#ph-fiona').classList.contains('active')){
+      const {data}=await sb.from('fiona_tasks').select('*').order('created_at',{ascending:false});
+      if(data){FIONA_TASKS=data;phRenderFiona();}
+    }
+  },30000);
+
 })();
 </script>
 
@@ -2132,14 +2231,15 @@
   }
 
   async function baiGetData(){
-    const [funds,ndis,ins,contacts,projects,dates,todos]=await Promise.all([
+    const [funds,ndis,ins,contacts,projects,dates,todos,fionaTasks]=await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date',{ascending:false}).limit(20),
       sb.from('insurance_policies').select('*'),
       sb.from('contacts').select('*'),
       sb.from('house_projects').select('*'),
       sb.from('important_dates').select('*').order('date_start'),
-      sb.from('todos').select('*')
+      sb.from('todos').select('*'),
+      sb.from('fiona_tasks').select('*')
     ]);
     let s='';
     s+='NDIS FUNDING:\n';
@@ -2156,6 +2256,8 @@
     s+='\nDATES: ';(dates.data||[]).forEach(d=>{s+=d.title+(d.date_start?' ('+d.date_start+')':'')+', ';});
     const pt=(todos.data||[]).filter(t=>!t.done);
     s+='\nTO-DOS ('+pt.length+' pending): ';pt.forEach(t=>{s+=t.text+' ['+t.category+'], ';});
+    const fp=(fionaTasks.data||[]).filter(t=>!t.done);
+    s+='\nFIONA TASKS ('+fp.length+' pending): ';fp.forEach(t=>{s+=t.task+', ';});
     s+='\nToday: '+new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     return s;
   }
@@ -2212,6 +2314,30 @@
       if(error)return 'Error: '+error.message;
       return 'Added contact: "'+a.name+'"';
     }
+    if(a.type==='add_fiona_task'){
+      if(!a.task)return 'Error: Missing task text.';
+      const {data,error}=await sb.from('fiona_tasks').insert({id:Date.now(),task:a.task,done:false}).select().single();
+      if(error)return 'Error: '+error.message;
+      return 'Added Fiona task: "'+a.task+'"';
+    }
+    if(a.type==='complete_fiona_task'){
+      if(!a.search)return 'Error: Missing search term.';
+      const {data,error:fe}=await sb.from('fiona_tasks').select('*').ilike('task','%'+a.search+'%').eq('done',false).limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!data||!data.length)return 'No pending Fiona task matching "'+a.search+'".';
+      const {error:ue}=await sb.from('fiona_tasks').update({done:true}).eq('id',data[0].id);
+      if(ue)return 'Error: '+ue.message;
+      return 'Completed Fiona task: "'+data[0].task+'"';
+    }
+    if(a.type==='delete_fiona_task'){
+      if(!a.search)return 'Error: Missing search term.';
+      const {data,error:fe}=await sb.from('fiona_tasks').select('*').ilike('task','%'+a.search+'%').limit(1);
+      if(fe)return 'Error: '+fe.message;
+      if(!data||!data.length)return 'No Fiona task matching "'+a.search+'".';
+      const {error:de}=await sb.from('fiona_tasks').delete().eq('id',data[0].id);
+      if(de)return 'Error: '+de.message;
+      return 'Deleted Fiona task: "'+data[0].task+'"';
+    }
     return 'Unknown action: '+a.type;
   }
 
@@ -2244,6 +2370,9 @@ add_date: {"type":"add_date","title":"...","date_start":"YYYY-MM-DD","category":
 add_project: {"type":"add_project","title":"...","priority":"High"}
 update_ndis_status: {"type":"update_ndis_status","provider":"Fiona","status":"Paid"}
 add_contact: {"type":"add_contact","name":"Dr Smith","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}
+add_fiona_task: {"type":"add_fiona_task","task":"Clean the oven"}
+complete_fiona_task: {"type":"complete_fiona_task","search":"oven"}
+delete_fiona_task: {"type":"delete_fiona_task","search":"oven"}
 
 ALWAYS use the dedicated tool. Be concise, friendly, Australian English. If a tool fails, tell the user the error.`;
 

@@ -437,6 +437,7 @@
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
       <button class="nav-item" onclick="phNavDrawer('monthly',this)"><span class="icon">&#x1F5C3;</span> Monthly</button>
+      <button class="nav-item" onclick="phNavDrawer('habits',this)"><span class="icon">&#x1F469;&#x200D;&#x1F4AA;</span> Habits</button>
       <button class="nav-item" onclick="phNavDrawer('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -454,6 +455,7 @@
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
     <button class="nav-item" onclick="phNav('monthly',this)"><span class="icon">&#x1F5C3;</span> Monthly</button>
+    <button class="nav-item" onclick="phNav('habits',this)"><span class="icon">&#x1F469;&#x200D;&#x1F4AA;</span> Habits</button>
     <button class="nav-item" onclick="phNav('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -774,6 +776,11 @@
       </div>
     </div>
 
+    <div class="screen" id="ph-habits">
+      <h2>💪 Habits & Rhythms</h2>
+      <div id="ph-habits-list"></div>
+    </div>
+
     <!-- ═══ AISLEMATE ═══ -->
     <div class="screen" id="ph-aislemate">
       <h2>&#x1F6D2; AisleMate</h2>
@@ -997,13 +1004,14 @@
   let FIONA_TASKS = [];
   let MONTHLY_TASKS = [];
   let ANIMALS = [];
+  let HABITS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   try {
 
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1014,7 +1022,8 @@
       sb.from('todos').select('*').order('created_at', { ascending: false }),
       sb.from('animals').select('*').order('name'),
       sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false }),
-      sb.from('monthly_tasks').select('*').eq('month_year',currentMonth)
+      sb.from('monthly_tasks').select('*').eq('month_year',currentMonth),
+      sb.from('habits').select('*').order('frequency')
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
@@ -1028,6 +1037,7 @@
     if (animalsRes.error) throw animalsRes.error;
     if (medicalRes.error) throw medicalRes.error;
     if (monthlyRes.error) throw monthlyRes.error;
+    if (habitsRes.error) throw habitsRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1134,6 +1144,16 @@
       monthYear: r.month_year,
       week: r.week_number,
       createdAt: r.created_at
+    }));
+
+    HABITS = (habitsRes.data || []).map(r => ({
+      id: r.id,
+      task: r.task,
+      frequency: r.frequency,
+      dueDate: r.due_date || '',
+      completedThisCycle: r.completed_this_cycle || false,
+      lastCompleted: r.last_completed || '',
+      notes: r.notes || ''
     }));
 
   } catch (err) {
@@ -2201,6 +2221,7 @@
     if(name==='dates')phDates();
     if(name==='todo')phTodos();
     if(name==='monthly')phMonthly();
+    if(name==='habits')phHabits();
     if(name==='animals')phAnimals();
     if(name==='aislemate')amGo('home');
     if(name==='fiona')phLoadFiona();
@@ -2331,6 +2352,33 @@
     if(!confirm('Reset all '+MONTHLY_TASKS.length+' tasks for this month?'))return;
     for(const t of MONTHLY_TASKS){await sb.from('monthly_tasks').delete().eq('id',t.id);}
     MONTHLY_TASKS=[];phMonthly();
+  };
+
+  window.phHabits=function(){
+    const freqs=['Weekly','Fortnightly','Monthly','6-Monthly','Annual'];
+    let html='';
+    freqs.forEach(freq=>{
+      const items=HABITS.filter(h=>h.frequency===freq);
+      if(items.length===0)return;
+      const done=items.filter(h=>h.completedThisCycle).length;
+      const total=items.length;
+      const pct=total>0?Math.round((done/total)*100):0;
+      html+='<div style="background:white;border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><div style="font-weight:700;font-size:14px;">'+freq+' Rhythm</div><div style="font-size:12px;color:#64748b;">'+done+'/'+total+' completed</div></div></div><div style="background:#f1f5f9;border-radius:8px;height:8px;overflow:hidden;margin-bottom:12px;"><div style="background:#0d9488;height:100%;width:'+pct+'%;"></div></div>';
+      items.forEach(h=>{html+='<label style="display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-radius:6px;margin-bottom:6px;"+'+(h.completedThisCycle?'style="opacity:0.6;"':'')+'>'+
+        '<input type="checkbox" '+( h.completedThisCycle?'checked':'')+' onchange="phToggleHabit('+h.id+')" style="accent-color:#0d9488;cursor:pointer;width:18px;height:18px;">'+
+        '<span style="'+(h.completedThisCycle?'text-decoration:line-through;color:#94a3b8;':'')+'">'+h.task+(h.notes?'<br><span style="font-size:11px;color:#94a3b8;">'+h.notes+'</span>':'')+' </span>'+
+        '</label>';});
+      html+='</div>';
+    });
+    if(html==='')html='<div style="text-align:center;padding:40px;color:#94a3b8;">No habits yet. Add some to get started!</div>';
+    $('#ph-habits-list').innerHTML=html;
+  };
+
+  window.phToggleHabit=async function(id){
+    const h=HABITS.find(x=>x.id===id);if(!h)return;
+    const {error}=await sb.from('habits').update({completed_this_cycle:!h.completedThisCycle}).eq('id',id);
+    if(error){alert('Error: '+error.message);return;}
+    h.completedThisCycle=!h.completedThisCycle;phHabits();
   };
 
   let editingAnimalId=null;

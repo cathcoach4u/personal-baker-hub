@@ -436,6 +436,7 @@
       <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+      <button class="nav-item" onclick="phNavDrawer('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
@@ -451,6 +452,7 @@
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+    <button class="nav-item" onclick="phNav('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
@@ -650,6 +652,36 @@
       <div id="td-pending"></div>
       <div class="todo-section-label">DONE</div>
       <div id="td-done"></div>
+    </div>
+    <div class="screen" id="ph-animals">
+      <h2>🐾 Animals</h2>
+      <div class="filter-bar">
+        <button class="add-btn" onclick="phToggleAnimalForm()">+ Add Animal</button>
+      </div>
+      <div class="add-form" id="ph-animal-form" style="display:none;">
+        <h3 id="aif-title">New Animal</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Name</label><input type="text" id="aif-name" placeholder="e.g. Gypsy"></div>
+          <div class="form-group"><label>Type</label><select id="aif-type"><option>Cat</option><option>Dog</option><option>Other</option></select></div>
+          <div class="form-group"><label>Microchip Number</label><input type="text" id="aif-microchip" placeholder="Optional"></div>
+          <div class="form-group"><label>Desexed</label><input type="checkbox" id="aif-desexed"></div>
+          <div class="form-group"><label>Desexed Date</label><input type="date" id="aif-desexed-date"></div>
+          <div class="form-group full"><label>Vet Clinic</label><input type="text" id="aif-vet-name" placeholder="Clinic name"></div>
+          <div class="form-group"><label>Vet Phone</label><input type="text" id="aif-vet-phone" placeholder="Phone"></div>
+          <div class="form-group"><label>Vet Email</label><input type="text" id="aif-vet-email" placeholder="Email"></div>
+          <div class="form-group full"><label>Insurance Provider</label><input type="text" id="aif-insurance-provider" placeholder="Optional"></div>
+          <div class="form-group"><label>Insurance Policy</label><input type="text" id="aif-insurance-policy" placeholder="Optional"></div>
+          <div class="form-group"><label>Insurance Phone</label><input type="text" id="aif-insurance-phone" placeholder="Optional"></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="aif-notes" placeholder="Optional notes"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="aif-save-btn" onclick="phSaveAnimal()">Save Animal</button>
+          <button class="add-btn cancel" onclick="phToggleAnimalForm()">Cancel</button>
+          <button class="add-btn" id="aif-del-btn" onclick="phDeleteAnimalFromForm()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
+        </div>
+        <div class="form-msg" id="aif-msg"></div>
+      </div>
+      <div id="ph-animals-list"></div>
     </div>
     <div class="screen" id="ph-fiona">
       <h2>&#x1F9F9; Fiona's Tasks</h2>
@@ -941,12 +973,13 @@
   let PROVIDERS = [];
   let TODOS = [];
   let FIONA_TASKS = [];
+  let ANIMALS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   try {
 
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -954,7 +987,9 @@
       sb.from('house_projects').select('*').order('priority'),
       sb.from('important_dates').select('*').order('date_start'),
       sb.from('ndis_providers').select('*').order('name'),
-      sb.from('todos').select('*').order('created_at', { ascending: false })
+      sb.from('todos').select('*').order('created_at', { ascending: false }),
+      sb.from('animals').select('*').order('name'),
+      sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false })
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
@@ -965,6 +1000,8 @@
     if (datesRes.error) throw datesRes.error;
     if (providersRes.error) throw providersRes.error;
     if (todosRes.error) throw todosRes.error;
+    if (animalsRes.error) throw animalsRes.error;
+    if (medicalRes.error) throw medicalRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1044,6 +1081,24 @@
       due: r.due_date || '',
       done: r.done || false,
       created: r.created_at
+    }));
+
+    ANIMALS = (animalsRes.data || []).map(r => ({
+      id: r.id,
+      name: r.name,
+      type: r.type,
+      microchip: r.microchip_number || '',
+      desexed: r.desexed || false,
+      desexedDate: r.desexed_date || '',
+      vetName: r.vet_clinic_name || '',
+      vetPhone: r.vet_phone || '',
+      vetEmail: r.vet_email || '',
+      vetAddress: r.vet_address || '',
+      insuranceProvider: r.insurance_provider || '',
+      insurancePolicy: r.insurance_policy || '',
+      insurancePhone: r.insurance_phone || '',
+      notes: r.notes || '',
+      medicalRecords: (medicalRes.data || []).filter(m => m.animal_id === r.id)
     }));
 
   } catch (err) {
@@ -2110,6 +2165,7 @@
     if(name==='projects')phProjects();
     if(name==='dates')phDates();
     if(name==='todo')phTodos();
+    if(name==='animals')phAnimals();
     if(name==='aislemate')amGo('home');
     if(name==='fiona')phLoadFiona();
   };
@@ -2173,6 +2229,105 @@
     if(!FIONA_TASKS.length)html='<div class="todo-empty">No tasks for Fiona</div>';
     $('#fi-list').innerHTML=html;
   }
+
+  let editingAnimalId=null;
+  const resetAnimalForm=()=>{editingAnimalId=null;$$('#ph-animal-form input, #ph-animal-form select').forEach(el=>{el.value='';el.checked=false;});$('#aif-title').textContent='New Animal';$('#aif-save-btn').textContent='Save Animal';$('#aif-del-btn').style.display='none';$('#aif-msg').className='form-msg';$('#aif-msg').textContent='';};
+
+  window.phToggleAnimalForm=function(){
+    const form=$('#ph-animal-form');
+    if(form.style.display==='none'){form.style.display='block';resetAnimalForm();}else{form.style.display='none';resetAnimalForm();}
+  };
+
+  window.phSaveAnimal=async function(){
+    const name=$('#aif-name').value.trim();
+    const type=$('#aif-type').value;
+    const microchip=$('#aif-microchip').value.trim()||null;
+    const desexed=$('#aif-desexed').checked;
+    const desexedDate=$('#aif-desexed-date').value||null;
+    const vetName=$('#aif-vet-name').value.trim()||null;
+    const vetPhone=$('#aif-vet-phone').value.trim()||null;
+    const vetEmail=$('#aif-vet-email').value.trim()||null;
+    const insuranceProvider=$('#aif-insurance-provider').value.trim()||null;
+    const insurancePolicy=$('#aif-insurance-policy').value.trim()||null;
+    const insurancePhone=$('#aif-insurance-phone').value.trim()||null;
+    const notes=$('#aif-notes').value.trim()||null;
+
+    if(!name){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Please enter an animal name.';return;}
+
+    const row={name:name,type:type,microchip_number:microchip,desexed:desexed,desexed_date:desexedDate,vet_clinic_name:vetName,vet_phone:vetPhone,vet_email:vetEmail,insurance_provider:insuranceProvider,insurance_policy:insurancePolicy,insurance_phone:insurancePhone,notes:notes};
+
+    try{
+      if(editingAnimalId){
+        const {error}=await sb.from('animals').update(row).eq('id',editingAnimalId);
+        if(error)throw error;
+        const idx=ANIMALS.findIndex(x=>x.id===editingAnimalId);
+        if(idx>=0)ANIMALS[idx]={...ANIMALS[idx],...{id:editingAnimalId,name:name,type:type,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes}};
+        $('#aif-msg').className='form-msg success';$('#aif-msg').textContent='Animal updated!';
+      }else{
+        const {data:inserted,error}=await sb.from('animals').insert(row).select().single();
+        if(error)throw error;
+        ANIMALS.push({id:inserted.id,name:name,type:type,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes,medicalRecords:[]});
+        $('#aif-msg').className='form-msg success';$('#aif-msg').textContent='Animal saved!';
+      }
+      phAnimals();
+      setTimeout(()=>{$('#ph-animal-form').style.display='none';resetAnimalForm();},1500);
+    }catch(e){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Error: '+e.message;console.error(e);}
+  };
+
+  window.phDeleteAnimalFromForm=async function(){
+    if(!editingAnimalId)return;
+    if(!confirm('Delete this animal record?'))return;
+    try{
+      const {error}=await sb.from('animals').delete().eq('id',editingAnimalId);
+      if(error){alert('Delete error: '+error.message);return;}
+      ANIMALS=ANIMALS.filter(a=>a.id!==editingAnimalId);
+      $('#ph-animal-form').style.display='none';
+      resetAnimalForm();
+      phAnimals();
+    }catch(e){alert('Delete error: '+e.message);}
+  };
+
+  window.phAnimals=function(){
+    let html='';
+    if(!ANIMALS.length){html='<div class="todo-empty">No animals recorded</div>';$('#ph-animals-list').innerHTML=html;return;}
+    ANIMALS.forEach(a=>{
+      html+='<div class="card" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;"><div><div style="font-size:14px;font-weight:700;">'+a.name+'</div><div style="font-size:12px;color:#64748b;">'+a.type;
+      if(a.microchip)html+=' • Microchip: '+a.microchip;
+      if(a.desexed)html+=' • Desexed '+fmtD(a.desexedDate);
+      html+='</div></div><button onclick="phEditAnimal('+a.id+')" style="padding:6px 12px;background:#0d9488;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit;">Edit</button></div>';
+      if(a.vetName||a.vetPhone||a.vetEmail){html+='<div style="font-size:12px;background:#f1f5f9;padding:10px;border-radius:6px;margin-bottom:10px;"><div style="font-weight:600;margin-bottom:6px;">Vet Clinic</div>';if(a.vetName)html+=a.vetName+'<br>';if(a.vetPhone)html+='<a href="tel:'+a.vetPhone+'">'+a.vetPhone+'</a><br>';if(a.vetEmail)html+='<a href="mailto:'+a.vetEmail+'">'+a.vetEmail+'</a>';html+='</div>';}
+      if(a.insuranceProvider||a.insurancePolicy){html+='<div style="font-size:12px;background:#fef9c3;padding:10px;border-radius:6px;margin-bottom:10px;"><div style="font-weight:600;margin-bottom:6px;">Pet Insurance</div>';if(a.insuranceProvider)html+=a.insuranceProvider;if(a.insurancePolicy)html+=' - Policy: '+a.insurancePolicy;if(a.insurancePhone)html+='<br><a href="tel:'+a.insurancePhone+'">'+a.insurancePhone+'</a>';html+='</div>';}
+      if(a.notes){html+='<div style="font-size:12px;padding:10px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;"><strong>Notes:</strong> '+a.notes+'</div>';}
+      if(a.medicalRecords && a.medicalRecords.length){html+='<div style="margin-top:12px;"><div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;">Medical Records</div>';a.medicalRecords.forEach(r=>{html+='<div style="font-size:11px;padding:8px;background:#f1f5f9;border-radius:4px;margin-bottom:4px;"><div style="font-weight:600;">'+r.record_type+' - '+fmtD(r.date_recorded)+'</div>';html+=r.description;if(r.veterinarian_name)html+=' ('+r.veterinarian_name+')';if(r.cost)html+=' - $'+parseFloat(r.cost).toFixed(2);html+='</div>';});html+='</div>';}
+      html+='</div>';
+    });
+    $('#ph-animals-list').innerHTML=html;
+  };
+
+  window.phEditAnimal=function(id){
+    const a=ANIMALS.find(x=>x.id===id);
+    if(!a)return;
+    editingAnimalId=id;
+    const form=$('#ph-animal-form');
+    form.style.display='block';
+    $('#aif-title').textContent='Edit — '+a.name;
+    $('#aif-save-btn').textContent='Update Animal';
+    $('#aif-name').value=a.name;
+    $('#aif-type').value=a.type;
+    $('#aif-microchip').value=a.microchip;
+    $('#aif-desexed').checked=a.desexed;
+    $('#aif-desexed-date').value=a.desexedDate;
+    $('#aif-vet-name').value=a.vetName;
+    $('#aif-vet-phone').value=a.vetPhone;
+    $('#aif-vet-email').value=a.vetEmail;
+    $('#aif-insurance-provider').value=a.insuranceProvider;
+    $('#aif-insurance-policy').value=a.insurancePolicy;
+    $('#aif-insurance-phone').value=a.insurancePhone;
+    $('#aif-notes').value=a.notes;
+    $('#aif-del-btn').style.display='inline-block';
+    $('#aif-msg').className='form-msg';$('#aif-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
 
   window.phAddFiona=async function(){
     const text=$('#fi-text').value.trim();

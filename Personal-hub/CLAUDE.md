@@ -29,9 +29,10 @@ Sidebar (desktop) + slide-out drawer (mobile, 768px breakpoint):
 5. Contacts
 6. House Projects
 7. Dates
-8. AisleMate (shopping)
-9. Fiona Tasks
-10. About
+8. Animals
+9. AisleMate (shopping)
+10. Fiona Tasks
+11. About
 
 Baker AI accessible via purple B button (bottom-right popup) on all pages.
 
@@ -77,6 +78,14 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - Priority: Low, Medium, High, Urgent
 - Add/Edit/Delete from form
 - Delete button in both card and edit form
+
+## Animals
+- Track pets: name, type, microchip number, desexed status
+- Store vet clinic contact details (name, phone, email, address)
+- Pet insurance information (provider, policy number, phone)
+- Medical records: vaccinations, treatments, vet visits with dates and costs
+- Add/Edit/Delete animals and medical history
+- View medical records for each animal
 
 ## Dates (Important Dates)
 - **Month timeline**: Apr 2026 to Mar 2027, collapsible months
@@ -141,6 +150,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | house_projects | House project tracking | auto bigint |
 | important_dates | Important dates & events | auto bigint |
 | todos | To-do list | auto bigint |
+| animals | Pet records (name, type, microchip, vet, insurance) | auto bigint |
+| animal_medical_records | Vaccinations, treatments, vet visits | auto bigint |
 | fiona_tasks | Fiona cleaner task list | manual (Date.now()) |
 | shopping_items | AisleMate shopping list | auto UUID |
 | master_items | AisleMate master items | auto UUID |

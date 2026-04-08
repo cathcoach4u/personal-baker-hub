@@ -2767,10 +2767,12 @@
       return 'Updated '+data[0].provider_name+' Inv '+data[0].invoice_number+' to '+a.status;
     }
     if(a.type==='add_contact'){
-      if(!a.name)return 'Error: Missing name.';
-      const {data,error}=await sb.from('contacts').insert({name:a.name,contact_person:a.contact_person||null,phone:a.phone||null,email:a.email||null,meeting_link:a.meeting_link||null,notes:a.notes||null,category:a.category||'Medical',for_person:a.for_person||null}).select().single();
-      if(error)return 'Error: '+error.message;
-      return 'Added contact: "'+a.name+'"';
+      if(!a.name)return 'Error: Missing contact name.';
+      const row={name:a.name,contact_person:a.contact_person||null,phone:a.phone||null,email:a.email||null,meeting_link:a.meeting_link||null,notes:a.notes||null,category:a.category||'Medical',for_person:a.for_person||null};
+      const {data,error}=await sb.from('contacts').insert(row).select().single();
+      if(error)return 'Error adding contact: '+error.message;
+      if(!data)return 'Error: Insert returned no data.';
+      return 'Added contact: "'+data.name+'"';
     }
     if(a.type==='add_fiona_task'){
       if(!a.task)return 'Error: Missing task text.';

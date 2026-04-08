@@ -2374,6 +2374,12 @@
     else{const el=document.getElementById('baiTyp');if(el)el.remove();}
   }
 
+  async function baiLoadSettings(){
+    const {data,error}=await sb.from('ai_settings').select('*').eq('id',1).single();
+    if(error){console.error('Error loading AI settings:',error);return null;}
+    return data;
+  }
+
   async function baiGetData(){
     const [funds,ndis,ins,contacts,projects,dates,todos,fionaTasks]=await Promise.all([
       sb.from('ndis_funds').select('*'),
@@ -2494,36 +2500,23 @@
     const text=inpEl.value.trim();if(!text)return;
     baiAddMsg(text,'user');inpEl.value='';btnEl.disabled=true;sugsEl.style.display='none';baiTyping(true);
     try{
-      const data=await baiGetData();
+      const [data,aiSettings]=await Promise.all([baiGetData(),baiLoadSettings()]);
+      if(!aiSettings){baiAddMsg('Error: Could not load AI settings.','sys');baiTyping(false);btnEl.disabled=false;return;}
       baiHistory.push({role:'user',content:text});
       const now=new Date();
       const todayStr=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
       const timeStr=now.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
       const calRef=[];
       for(let i=0;i<14;i++){const d=new Date(now);d.setDate(now.getDate()+i);calRef.push(d.toLocaleDateString('en-AU',{weekday:'short'})+' '+d.toISOString().split('T')[0]);}
-      const sys=`You are Baker AI, the Baker family's assistant. Sydney, Australia (AEST). Today: ${todayStr} at ${timeStr}. Currency: AUD ($). Family: Cath, Andrew, Sarah, Russell.
 
-CALENDAR (next 14 days — use these EXACT dates, do NOT calculate days yourself):
-${calRef.join('\\n')}
+      // Interpolate system prompt template with dynamic values
+      const sys=aiSettings.system_prompt_template
+        .replace(/{todayStr}/g,todayStr)
+        .replace(/{timeStr}/g,timeStr)
+        .replace(/{calendarRef}/g,calRef.join('\n'))
+        .replace(/{dataSummary}/g,data);
 
-DATA:
-${data}
-
-TOOLS — use <action> tags:
-add_todo: {"type":"add_todo","text":"...","category":"General","due_date":"YYYY-MM-DD"}
-complete_todo: {"type":"complete_todo","search":"partial name"}
-delete_todo: {"type":"delete_todo","search":"partial name"}
-add_date: {"type":"add_date","title":"...","date_start":"YYYY-MM-DD","category":"Family"}
-add_project: {"type":"add_project","title":"...","priority":"High"}
-update_ndis_status: {"type":"update_ndis_status","provider":"Fiona","status":"Paid"}
-add_contact: {"type":"add_contact","name":"Dr Smith","phone":"02 9123 4567","email":"info@clinic.com","meeting_link":"https://hotdoc.com","notes":"Bulk bills","category":"Medical","for_person":"Cath"}
-add_fiona_task: {"type":"add_fiona_task","task":"Clean the oven"}
-complete_fiona_task: {"type":"complete_fiona_task","search":"oven"}
-delete_fiona_task: {"type":"delete_fiona_task","search":"oven"}
-
-ALWAYS use the dedicated tool. Be concise, friendly, Australian English. If a tool fails, tell the user the error.`;
-
-      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:1024,system:sys,messages:baiHistory.slice(-8)})});
+      const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:aiSettings.model,max_tokens:aiSettings.max_tokens,system:sys,messages:baiHistory.slice(-8)})});
       baiTyping(false);
       if(!res.ok){baiAddMsg('Error: '+res.status,'sys');}
       else{

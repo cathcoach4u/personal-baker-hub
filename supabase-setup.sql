@@ -11,7 +11,7 @@ CREATE TABLE ndis_funds (
 );
 
 ALTER TABLE ndis_funds ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON ndis_funds FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON ndis_funds FOR ALL USING (true) WITH CHECK (true);
 
 INSERT INTO ndis_funds (fund_name, budget_amount) VALUES
   ('Improved Daily Living', 22308.85),
@@ -33,7 +33,7 @@ CREATE TABLE ndis_transactions (
 );
 
 ALTER TABLE ndis_transactions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON ndis_transactions FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON ndis_transactions FOR ALL USING (true) WITH CHECK (true);
 
 INSERT INTO ndis_transactions (provider_name, invoice_number, funded_support, ndis_number, date, amount, status, notes) VALUES
   ('Fiona Debarge', '3', 'Increased Social and Community', '432335528', '2025-11-25', 715.00, 'Paid', ''),
@@ -66,7 +66,7 @@ CREATE TABLE insurance_policies (
 );
 
 ALTER TABLE insurance_policies ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON insurance_policies FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON insurance_policies FOR ALL USING (true) WITH CHECK (true);
 
 INSERT INTO insurance_policies (person_name, insurer, policy_number, premium_frequency, premium, payment_method, cover_type, due_date, paid_to_date, superannuation_amount) VALUES
   ('Cathrine Baker', 'AIA', '15652440', 'Annually', 467.64, 'Macquarie Super Plan', 'Life Cover', '2026-04-10', '2026-04-10', NULL),

@@ -268,6 +268,10 @@
 
     #ph-loading { padding: 60px; text-align: center; color: #94a3b8; font-size: 15px; }
     #ph-error { padding: 40px; text-align: center; color: #ef4444; font-size: 14px; display: none; }
+    #ph-error button { margin-top: 12px; padding: 10px 24px; background: #0d9488; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    #ph-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 9999; display: none; max-width: 90%; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    #ph-toast.error { background: #ef4444; }
+    #ph-toast.success { background: #0d9488; }
 
     .mobile-topbar { display: none; }
     .menu-toggle { display: none; }
@@ -465,6 +469,7 @@
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
     <div id="ph-error"></div>
+    <div id="ph-toast"></div>
     <div class="screen" id="ph-home">
       <h2 id="ph-greeting">Dashboard</h2>
       <div class="bin-widget" id="ph-thisweek"></div>
@@ -823,7 +828,7 @@
           <div style="font-size:12px !important;color:#94a3b8 !important;margin-bottom:8px !important;">Open shopping list without logging in. Use in Apple Shortcuts to quick-add items.</div>
           <div style="display:flex !important;gap:8px !important;align-items:center !important;">
             <input type="text" readonly id="am-quick-link" style="flex:1 !important;padding:8px 10px !important;border:1px solid #e2e8f0 !important;border-radius:6px !important;font-size:11px !important;color:#475569 !important;background:white !important;">
-            <button class="am-btn" onclick="(function(){var i=document.getElementById('am-quick-link');i.select();document.execCommand('copy');alert('Link copied!')})()" style="padding:8px 12px !important;font-size:12px !important;white-space:nowrap !important;">Copy</button>
+            <button class="am-btn" onclick="(function(){var i=document.getElementById('am-quick-link');i.select();document.execCommand('copy');phToast('Link copied!','success')})()" style="padding:8px 12px !important;font-size:12px !important;white-space:nowrap !important;">Copy</button>
           </div>
         </div>
       </div>
@@ -1012,8 +1017,14 @@
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
-  try {
+  // --- Toast notifications ---
+  window.phToast=function(msg,type,duration){
+    const t=$('#ph-toast');t.textContent=msg;t.className=type||'';t.style.display='block';
+    clearTimeout(t._tid);t._tid=setTimeout(()=>{t.style.display='none';},duration||3500);
+  };
 
+  // --- Load data with auto-retry ---
+  async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
     const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
@@ -1030,18 +1041,30 @@
       sb.from('habits').select('*').order('frequency')
     ]);
 
-    if (fundsRes.error) throw fundsRes.error;
-    if (ndisRes.error) throw ndisRes.error;
-    if (insRes.error) throw insRes.error;
-    if (contactsRes.error) throw contactsRes.error;
-    if (projectsRes.error) throw projectsRes.error;
-    if (datesRes.error) throw datesRes.error;
-    if (providersRes.error) throw providersRes.error;
-    if (todosRes.error) throw todosRes.error;
-    if (animalsRes.error) throw animalsRes.error;
-    if (medicalRes.error) throw medicalRes.error;
-    if (monthlyRes.error) throw monthlyRes.error;
-    if (habitsRes.error) throw habitsRes.error;
+    const errors=[];
+    [fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes].forEach(r=>{if(r.error)errors.push(r.error.message);});
+    if(errors.length)throw new Error(errors[0]);
+
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes};
+  }
+
+  let res;
+  try {
+    try{res=await loadData();}catch(e){
+      $('#ph-loading').textContent='Retrying...';
+      await new Promise(r=>setTimeout(r,2000));
+      res=await loadData();
+    }
+  } catch (err) {
+    $('#ph-loading').style.display = 'none';
+    $('#ph-error').style.display = 'block';
+    $('#ph-error').innerHTML = 'Could not load data from Supabase.<br><small>'+err.message+'</small><br><button onclick="location.reload()">Retry</button>';
+    console.error('Supabase error:', err);
+    return;
+  }
+
+  try {
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1165,7 +1188,7 @@
   } catch (err) {
     $('#ph-loading').style.display = 'none';
     $('#ph-error').style.display = 'block';
-    $('#ph-error').textContent = 'Could not load data from Supabase. Check that config.js has your project URL and anon key, and that the tables exist.';
+    $('#ph-error').innerHTML = 'Could not load data from Supabase.<br><small>'+err.message+'</small><br><button onclick="location.reload()">Retry</button>';
     console.error('Supabase error:', err);
     return;
   }
@@ -1620,12 +1643,12 @@
     if(!confirm('Delete this contact?'))return;
     try{
       const {error}=await sb.from('contacts').delete().eq('id',editingContactId);
-      if(error){alert('Error: '+error.message);return;}
+      if(error){phToast('Error: '+error.message,'error');return;}
       CONTACTS=CONTACTS.filter(c=>c.id!==editingContactId);
       $('#ph-contact-form').classList.remove('open');
       resetContactForm();
       phContacts();
-    }catch(e){alert('Error: '+e.message);}
+    }catch(e){phToast('Error: '+e.message,'error');}
   };
 
   const catClass=c=>c==='Medical'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Recreation'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':'medical';
@@ -2052,22 +2075,22 @@
     if(!confirm('Delete this date?'))return;
     try{
       const {error}=await sb.from('important_dates').delete().eq('id',editingDateId);
-      if(error){alert('Delete error: '+error.message);return;}
+      if(error){phToast('Delete error: '+error.message,'error');return;}
       DATES=DATES.filter(d=>d.id!==editingDateId);
       $('#ph-date-form').classList.remove('open');
       resetDateForm();
       phDates();
-    }catch(e){alert('Delete error: '+e.message);}
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phDeleteDate=async function(id){
     if(!confirm('Delete this date?'))return;
     try{
       const {error}=await sb.from('important_dates').delete().eq('id',id);
-      if(error){alert('Delete error: '+error.message);return;}
+      if(error){phToast('Delete error: '+error.message,'error');return;}
       DATES=DATES.filter(d=>d.id!==id);
       phDates();
-    }catch(e){alert('Delete error: '+e.message);}
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phDeleteProjFromForm=async function(){
@@ -2075,22 +2098,22 @@
     if(!confirm('Delete this project?'))return;
     try{
       const {error}=await sb.from('house_projects').delete().eq('id',editingProjId);
-      if(error){alert('Delete error: '+error.message);return;}
+      if(error){phToast('Delete error: '+error.message,'error');return;}
       PROJECTS=PROJECTS.filter(p=>p.id!==editingProjId);
       $('#ph-proj-form').classList.remove('open');
       resetProjForm();
       phProjects();
-    }catch(e){alert('Delete error: '+e.message);}
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phDeleteProj=async function(id){
     if(!confirm('Delete this project?'))return;
     try{
       const {error}=await sb.from('house_projects').delete().eq('id',id);
-      if(error){alert('Delete error: '+error.message);return;}
+      if(error){phToast('Delete error: '+error.message,'error');return;}
       PROJECTS=PROJECTS.filter(p=>p.id!==id);
       phProjects();
-    }catch(e){alert('Delete error: '+e.message);}
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   // ── To-Do Functions ──
@@ -2329,7 +2352,7 @@
     const text=$('#mt-text').value.trim();if(!text)return;
     const week=parseInt($('#mt-week').value);
     const {data,error}=await sb.from('monthly_tasks').insert({task:text,month_year:currentMonth,week_number:week,done:false}).select().single();
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     MONTHLY_TASKS.push({id:data.id,task:text,done:false,monthYear:currentMonth,week:week,createdAt:data.created_at});
     $('#mt-text').value='';phMonthly();
   };
@@ -2337,13 +2360,13 @@
   window.phToggleMonthly=async function(id){
     const t=MONTHLY_TASKS.find(x=>x.id===id);if(!t)return;
     const {error}=await sb.from('monthly_tasks').update({done:!t.done}).eq('id',id);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     t.done=!t.done;phMonthly();
   };
 
   window.phDelMonthly=async function(id){
     const {error}=await sb.from('monthly_tasks').delete().eq('id',id);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     MONTHLY_TASKS=MONTHLY_TASKS.filter(t=>t.id!==id);phMonthly();
   };
 
@@ -2384,7 +2407,7 @@
   window.phToggleHabit=async function(id){
     const h=HABITS.find(x=>x.id===id);if(!h)return;
     const {error}=await sb.from('habits').update({completed_this_cycle:!h.completedThisCycle}).eq('id',id);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     h.completedThisCycle=!h.completedThisCycle;phHabits();
   };
 
@@ -2439,12 +2462,12 @@
     if(!confirm('Delete this animal record?'))return;
     try{
       const {error}=await sb.from('animals').delete().eq('id',editingAnimalId);
-      if(error){alert('Delete error: '+error.message);return;}
+      if(error){phToast('Delete error: '+error.message,'error');return;}
       ANIMALS=ANIMALS.filter(a=>a.id!==editingAnimalId);
       $('#ph-animal-form').style.display='none';
       resetAnimalForm();
       phAnimals();
-    }catch(e){alert('Delete error: '+e.message);}
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phAnimals=function(){
@@ -2498,7 +2521,7 @@
     if(!text)return;
     const id=Date.now();
     const {data,error}=await sb.from('fiona_tasks').insert({id:id,task:text,done:false}).select().single();
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     FIONA_TASKS.unshift(data);
     $('#fi-text').value='';
     phRenderFiona();
@@ -2508,14 +2531,14 @@
     const t=FIONA_TASKS.find(x=>x.id===id);
     if(!t)return;
     const {error}=await sb.from('fiona_tasks').update({done:!t.done}).eq('id',id);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     t.done=!t.done;
     phRenderFiona();
   };
 
   window.phDelFiona=async function(id){
     const {error}=await sb.from('fiona_tasks').delete().eq('id',id);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     FIONA_TASKS=FIONA_TASKS.filter(t=>t.id!==id);
     phRenderFiona();
   };
@@ -2525,7 +2548,7 @@
     const doneIds=FIONA_TASKS.filter(t=>t.done).map(t=>t.id);
     if(!doneIds.length)return;
     const {error}=await sb.from('fiona_tasks').delete().in('id',doneIds);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     FIONA_TASKS=FIONA_TASKS.filter(t=>!t.done);
     phRenderFiona();
   };
@@ -2535,7 +2558,7 @@
     const allIds=FIONA_TASKS.map(t=>t.id);
     if(!allIds.length)return;
     const {error}=await sb.from('fiona_tasks').delete().in('id',allIds);
-    if(error){alert('Error: '+error.message);return;}
+    if(error){phToast('Error: '+error.message,'error');return;}
     FIONA_TASKS=[];
     phRenderFiona();
   };
@@ -2924,7 +2947,7 @@
     var basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
     var qrUrl = window.location.origin + basePath + 'shopping.html';
     navigator.clipboard.writeText(qrUrl).then(function() {
-      alert('Link copied to clipboard!');
+      phToast('Link copied!','success');
     });
   };
 
@@ -3015,7 +3038,7 @@
     weekAgo.setDate(weekAgo.getDate() - 7);
     var { data: receipts } = await sb.from('receipts').select('*, receipt_items(*)').gte('uploaded_at', weekAgo.toISOString()).order('uploaded_at', { ascending: false });
     if (!receipts || !receipts.length) {
-      alert('No receipts from the last 7 days. Scan a receipt first to use this feature.');
+      phToast('No receipts from the last 7 days. Scan a receipt first to use this feature.','error');
       return;
     }
     var { data: master } = await sb.from('master_items').select('name, category, store');
@@ -3116,7 +3139,7 @@
         var prefix = now.getFullYear() + '' + String(now.getMonth()+1).padStart(2,'0') + '' + String(now.getDate()).padStart(2,'0');
         var fileName = prefix + '_' + Date.now() + '_' + file.name;
         var { error: uploadErr } = await sb.storage.from('receipts').upload(fileName, file, { upsert: true });
-        if (uploadErr) { alert('Upload failed: ' + uploadErr.message); continue; }
+        if (uploadErr) { phToast('Upload failed: ' + uploadErr.message,'error'); continue; }
         var { data: urlData } = sb.storage.from('receipts').getPublicUrl(fileName);
 
         var base64 = await fileToBase64(file);
@@ -3168,7 +3191,7 @@
           }
         }
       } catch(e) {
-        alert('Scan failed: ' + e.message);
+        phToast('Scan failed: ' + e.message,'error');
       }
     }
     statusEl.style.display = 'none';

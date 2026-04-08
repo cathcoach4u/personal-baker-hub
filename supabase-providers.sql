@@ -10,8 +10,7 @@ CREATE TABLE ndis_providers (
 );
 
 ALTER TABLE ndis_providers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON ndis_providers FOR SELECT USING (true);
-CREATE POLICY "Allow public insert" ON ndis_providers FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_all" ON ndis_providers FOR ALL USING (true) WITH CHECK (true);
 
 -- Seed from existing transaction data
 INSERT INTO ndis_providers (name, ndis_number, default_fund) VALUES

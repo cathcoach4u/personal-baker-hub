@@ -659,7 +659,14 @@
       <h2>📋 Monthly Tasks</h2>
       <div class="todo-input-card">
         <input type="text" id="mt-text" placeholder="Add monthly task..." onkeydown="if(event.key==='Enter')phAddMonthly()">
-        <button class="todo-add-btn" onclick="phAddMonthly()" style="background:#0d9488;">+ Add Task</button>
+        <select id="mt-week" style="padding:12px 14px;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;outline:none;">
+          <option value="1">Week 1</option>
+          <option value="2">Week 2</option>
+          <option value="3">Week 3</option>
+          <option value="4">Week 4</option>
+          <option value="5">Week 5 (Catch-up)</option>
+        </select>
+        <button class="todo-add-btn" onclick="phAddMonthly()" style="background:#0d9488;">+ Add</button>
       </div>
       <div class="todo-stats" id="mt-stats"></div>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -1125,6 +1132,7 @@
       task: r.task,
       done: r.done || false,
       monthYear: r.month_year,
+      week: r.week_number,
       createdAt: r.created_at
     }));
 
@@ -2260,23 +2268,42 @@
 
   const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
 
+  function getCurrentWeek(){
+    const now=new Date();const date=now.getDate();
+    if(date<=7)return 1;if(date<=14)return 2;if(date<=21)return 3;if(date<=28)return 4;return 5;
+  }
+
   window.phMonthly=function(){
-    let html='';const pending=MONTHLY_TASKS.filter(t=>!t.done);const done=MONTHLY_TASKS.filter(t=>t.done);
+    let html='';const curWeek=getCurrentWeek();
+    const pending=MONTHLY_TASKS.filter(t=>!t.done);const done=MONTHLY_TASKS.filter(t=>t.done);
     $('#mt-stats').innerHTML='<span>'+pending.length+' pending, '+done.length+' done</span>'+(done.length?'<button class="todo-clear-btn" onclick="phClearCompletedMonthly()">Clear done</button>':'');
-    html='<div class="todo-section-label">PENDING ('+pending.length+')</div>';
-    pending.forEach(t=>{html+='<div class="todo-item"><div class="todo-check" onclick="phToggleMonthly('+t.id+')"></div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});
-    if(!pending.length)html+='<div class="todo-empty">All tasks done! ✓</div>';
-    html+='<div class="todo-section-label">COMPLETED ('+done.length+')</div>';
-    done.forEach(t=>{html+='<div class="todo-item done"><div class="todo-check checked">\u2713</div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});
-    if(!done.length)html+='<div class="todo-empty" style="padding:8px;">No completed tasks</div>';
+
+    for(let w=1;w<=5;w++){
+      const weekTasks=MONTHLY_TASKS.filter(t=>t.week===w);
+      const weekPending=weekTasks.filter(t=>!t.done);
+      const weekDone=weekTasks.filter(t=>t.done);
+
+      const isCurWeek=w===curWeek;
+      const weekLabel=w===5?'Week 5 (Catch-up)':'Week '+w;
+      const highlight=isCurWeek?' style="background:#fef9c3;border-radius:10px;padding:12px;margin-bottom:12px;"':'';
+
+      if(weekTasks.length>0){
+        html+='<div class="todo-section-label"'+highlight+'>'+weekLabel+' • '+weekPending.length+' pending'+(isCurWeek?' (THIS WEEK)':'')+'</div>';
+        weekPending.forEach(t=>{html+='<div class="todo-item"><div class="todo-check" onclick="phToggleMonthly('+t.id+')"></div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});
+        if(weekDone.length>0){html+='<div class="todo-section-label" style="margin-top:8px;">Done ('+weekDone.length+')</div>';weekDone.forEach(t=>{html+='<div class="todo-item done"><div class="todo-check checked">\u2713</div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});}
+      }
+    }
+
+    if(!MONTHLY_TASKS.length)html='<div class="todo-empty">No tasks for this month</div>';
     $('#mt-list').innerHTML=html;
   };
 
   window.phAddMonthly=async function(){
     const text=$('#mt-text').value.trim();if(!text)return;
-    const {data,error}=await sb.from('monthly_tasks').insert({task:text,month_year:currentMonth,done:false}).select().single();
+    const week=parseInt($('#mt-week').value);
+    const {data,error}=await sb.from('monthly_tasks').insert({task:text,month_year:currentMonth,week_number:week,done:false}).select().single();
     if(error){alert('Error: '+error.message);return;}
-    MONTHLY_TASKS.push({id:data.id,task:text,done:false,monthYear:currentMonth,createdAt:data.created_at});
+    MONTHLY_TASKS.push({id:data.id,task:text,done:false,monthYear:currentMonth,week:week,createdAt:data.created_at});
     $('#mt-text').value='';phMonthly();
   };
 

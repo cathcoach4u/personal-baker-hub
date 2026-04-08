@@ -2364,10 +2364,11 @@
       const total=items.length;
       const pct=total>0?Math.round((done/total)*100):0;
       html+='<div style="background:white;border:1px solid #e8edf2;border-radius:10px;padding:16px;margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><div style="font-weight:700;font-size:14px;">'+freq+' Rhythm</div><div style="font-size:12px;color:#64748b;">'+done+'/'+total+' completed</div></div></div><div style="background:#f1f5f9;border-radius:8px;height:8px;overflow:hidden;margin-bottom:12px;"><div style="background:#0d9488;height:100%;width:'+pct+'%;"></div></div>';
-      items.forEach(h=>{html+='<label style="display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-radius:6px;margin-bottom:6px;"+'+(h.completedThisCycle?'style="opacity:0.6;"':'')+'>'+
-        '<input type="checkbox" '+( h.completedThisCycle?'checked':'')+' onchange="phToggleHabit('+h.id+')" style="accent-color:#0d9488;cursor:pointer;width:18px;height:18px;">'+
-        '<span style="'+(h.completedThisCycle?'text-decoration:line-through;color:#94a3b8;':'')+'">'+h.task+(h.notes?'<br><span style="font-size:11px;color:#94a3b8;">'+h.notes+'</span>':'')+' </span>'+
-        '</label>';});
+      items.forEach(h=>{
+        const opacity=h.completedThisCycle?'opacity:0.6;':'';
+        const strikethrough=h.completedThisCycle?'text-decoration:line-through;color:#94a3b8;':'';
+        html+='<label style="display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-radius:6px;margin-bottom:6px;'+opacity+'"><input type="checkbox" '+(h.completedThisCycle?'checked':'')+' onchange="phToggleHabit('+h.id+')" style="accent-color:#0d9488;cursor:pointer;width:18px;height:18px;"><span style="'+strikethrough+'">'+h.task+(h.notes?'<br><span style="font-size:11px;color:#94a3b8;">'+h.notes+'</span>':'')+' </span></label>';
+      });
       html+='</div>';
     });
     if(html==='')html='<div style="text-align:center;padding:40px;color:#94a3b8;">No habits yet. Add some to get started!</div>';

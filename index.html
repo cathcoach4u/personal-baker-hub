@@ -687,6 +687,8 @@
         <div class="form-grid">
           <div class="form-group"><label>Name</label><input type="text" id="aif-name" placeholder="e.g. Gypsy"></div>
           <div class="form-group"><label>Type</label><select id="aif-type"><option>Cat</option><option>Dog</option><option>Other</option></select></div>
+          <div class="form-group"><label>Breed</label><input type="text" id="aif-breed" placeholder="e.g. Tonkinese"></div>
+          <div class="form-group"><label>Date of Birth</label><input type="date" id="aif-dob"></div>
           <div class="form-group"><label>Microchip Number</label><input type="text" id="aif-microchip" placeholder="Optional"></div>
           <div class="form-group"><label>Desexed</label><input type="checkbox" id="aif-desexed"></div>
           <div class="form-group"><label>Desexed Date</label><input type="date" id="aif-desexed-date"></div>
@@ -1123,6 +1125,8 @@
       id: r.id,
       name: r.name,
       type: r.type,
+      breed: r.breed || '',
+      dob: r.dob || '',
       microchip: r.microchip_number || '',
       desexed: r.desexed || false,
       desexedDate: r.desexed_date || '',
@@ -2393,6 +2397,8 @@
   window.phSaveAnimal=async function(){
     const name=$('#aif-name').value.trim();
     const type=$('#aif-type').value;
+    const breed=$('#aif-breed').value.trim()||null;
+    const dob=$('#aif-dob').value||null;
     const microchip=$('#aif-microchip').value.trim()||null;
     const desexed=$('#aif-desexed').checked;
     const desexedDate=$('#aif-desexed-date').value||null;
@@ -2406,19 +2412,19 @@
 
     if(!name){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Please enter an animal name.';return;}
 
-    const row={name:name,type:type,microchip_number:microchip,desexed:desexed,desexed_date:desexedDate,vet_clinic_name:vetName,vet_phone:vetPhone,vet_email:vetEmail,insurance_provider:insuranceProvider,insurance_policy:insurancePolicy,insurance_phone:insurancePhone,notes:notes};
+    const row={name:name,type:type,breed:breed,dob:dob,microchip_number:microchip,desexed:desexed,desexed_date:desexedDate,vet_clinic_name:vetName,vet_phone:vetPhone,vet_email:vetEmail,insurance_provider:insuranceProvider,insurance_policy:insurancePolicy,insurance_phone:insurancePhone,notes:notes};
 
     try{
       if(editingAnimalId){
         const {error}=await sb.from('animals').update(row).eq('id',editingAnimalId);
         if(error)throw error;
         const idx=ANIMALS.findIndex(x=>x.id===editingAnimalId);
-        if(idx>=0)ANIMALS[idx]={...ANIMALS[idx],...{id:editingAnimalId,name:name,type:type,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes}};
+        if(idx>=0)ANIMALS[idx]={...ANIMALS[idx],...{id:editingAnimalId,name:name,type:type,breed:breed,dob:dob,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes}};
         $('#aif-msg').className='form-msg success';$('#aif-msg').textContent='Animal updated!';
       }else{
         const {data:inserted,error}=await sb.from('animals').insert(row).select().single();
         if(error)throw error;
-        ANIMALS.push({id:inserted.id,name:name,type:type,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes,medicalRecords:[]});
+        ANIMALS.push({id:inserted.id,name:name,type:type,breed:breed,dob:dob,microchip:microchip,desexed:desexed,desexedDate:desexedDate,vetName:vetName,vetPhone:vetPhone,vetEmail:vetEmail,insuranceProvider:insuranceProvider,insurancePolicy:insurancePolicy,insurancePhone:insurancePhone,notes:notes,medicalRecords:[]});
         $('#aif-msg').className='form-msg success';$('#aif-msg').textContent='Animal saved!';
       }
       phAnimals();
@@ -2444,6 +2450,8 @@
     if(!ANIMALS.length){html='<div class="todo-empty">No animals recorded</div>';$('#ph-animals-list').innerHTML=html;return;}
     ANIMALS.forEach(a=>{
       html+='<div class="card" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;"><div><div style="font-size:14px;font-weight:700;">'+a.name+'</div><div style="font-size:12px;color:#64748b;">'+a.type;
+      if(a.breed)html+=' • '+a.breed;
+      if(a.dob)html+=' • DOB: '+fmtD(a.dob);
       if(a.microchip)html+=' • Microchip: '+a.microchip;
       if(a.desexed)html+=' • Desexed '+fmtD(a.desexedDate);
       html+='</div></div><button onclick="phEditAnimal('+a.id+')" style="padding:6px 12px;background:#0d9488;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit;">Edit</button></div>';
@@ -2466,6 +2474,8 @@
     $('#aif-save-btn').textContent='Update Animal';
     $('#aif-name').value=a.name;
     $('#aif-type').value=a.type;
+    $('#aif-breed').value=a.breed;
+    $('#aif-dob').value=a.dob;
     $('#aif-microchip').value=a.microchip;
     $('#aif-desexed').checked=a.desexed;
     $('#aif-desexed-date').value=a.desexedDate;

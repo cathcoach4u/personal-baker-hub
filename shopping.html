@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shopping List - Baker Hub</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e293b">
+<link rel="manifest" href="shopping-manifest.json">
+<link rel="apple-touch-icon" href="shopping-icon-192.svg">
+<title>AisleMate - Shopping List</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; }
@@ -84,12 +89,11 @@
   <div id="items-container"><div class="loading">Loading...</div></div>
 </div>
 
+<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (async function(){
-  var SB_URL = 'https://ziwycymhaqghdiznyhhw.supabase.co';
-  var SB_KEY = 'sb_publishable_n-xBxzqdGySGh-JWHuI40g_Hb5Qf8mg';
-  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   var CAT_ICONS = {'Fruit & Veg':'\u{1F96C}','Meat':'\u{1F969}','Dairy':'\u{1F95B}','Pantry':'\u{1F96B}','Frozen':'\u{2744}','Drinks':'\u{1F964}','Household':'\u{1F9F9}','Other':'\u{1F4E6}'};
   var CAT_ORDER = ['Fruit & Veg','Meat','Dairy','Pantry','Frozen','Drinks','Household','Other'];

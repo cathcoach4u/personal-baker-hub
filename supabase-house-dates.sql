@@ -17,7 +17,7 @@ CREATE TABLE important_dates (
 );
 
 ALTER TABLE important_dates ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON important_dates FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON important_dates FOR ALL USING (true) WITH CHECK (true);
 
 INSERT INTO important_dates (title, description, date_start, date_end, time_info, location, category, notes) VALUES
   ('Chemical CleanOut', 'Free drop-off for household chemicals, paints, pesticides, gas bottles, batteries, oils, etc.', '2026-06-27', '2026-06-28', '9am - 3:30pm', 'Mona Vale Beach car park (Surfview Road, Mona Vale)', 'Council', 'Northern Beaches Council'),
@@ -39,4 +39,4 @@ CREATE TABLE house_projects (
 );
 
 ALTER TABLE house_projects ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON house_projects FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON house_projects FOR ALL USING (true) WITH CHECK (true);

@@ -4,8 +4,11 @@
 -- Add receipt_path column to ndis_transactions
 ALTER TABLE ndis_transactions ADD COLUMN IF NOT EXISTS receipt_path TEXT;
 
--- Allow updates from the browser
-CREATE POLICY "Allow public update" ON ndis_transactions FOR UPDATE USING (true) WITH CHECK (true);
+-- NOTE: UPDATE policy is now included in the allow_all policy in supabase-setup.sql
+-- If upgrading from an older setup, run:
+-- DROP POLICY IF EXISTS "Allow public update" ON ndis_transactions;
+-- DROP POLICY IF EXISTS "Allow public read" ON ndis_transactions;
+-- CREATE POLICY "allow_all" ON ndis_transactions FOR ALL USING (true) WITH CHECK (true);
 
 -- IMPORTANT: You also need to create a Storage bucket manually:
 -- 1. Go to Supabase Dashboard > Storage (left sidebar)

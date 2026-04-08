@@ -23,25 +23,24 @@
 ---
 
 ### 2. Date Deletion Persistence
-**Status**: Pending  
-**Description**: When dates are deleted from the Important Dates section, they sometimes reappear on refresh. Need to ensure deletion is permanent.
+**Status**: Fixed  
+**Description**: Dates reappeared on refresh because the Supabase RLS policy only allowed SELECT.
 
-**Related Code**: `index.html` - phDates() and phDelDate() functions  
-**Table**: `important_dates`  
-**Issue**: Likely RLS policy or Supabase sync issue
+**Root Cause & Fix**:
+- `important_dates` table had SELECT-only RLS policy — deletes were silently rejected
+- Changed to `allow_all` policy across all affected tables (`important_dates`, `house_projects`, `ndis_funds`, `ndis_transactions`, `insurance_policies`, `ndis_providers`)
 
 ---
 
 ### 3. Dashboard Error Handling
-**Status**: Pending  
-**Description**: Add graceful error handling for missing data or Supabase connection failures.
+**Status**: Fixed  
+**Description**: Added graceful error handling for Supabase connection failures.
 
-**Current State**: Shows generic error message when data fails to load (line 1162 in index.html)  
-**Needs**: 
-- Retry mechanism for failed data loads
-- Offline mode support or cached data fallback
-- User-friendly error messages per section
-- Toast notifications for transient errors
+**What was added**:
+- Auto-retry: if data load fails, waits 2s and retries once automatically
+- Retry button: if both attempts fail, shows error message with a Retry button
+- Toast notifications: all error/success alerts replaced with non-blocking toast popups
+- Error detail: Supabase error messages now shown to help diagnose issues
 
 ---
 

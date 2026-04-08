@@ -605,7 +605,7 @@
         <h3 id="dtf-title">New Important Date</h3>
         <div class="form-grid">
           <div class="form-group"><label>Title</label><input type="text" id="dtf-title-input" placeholder="e.g. Council CleanUp"></div>
-          <div class="form-group"><label>Category</label><select id="dtf-cat"><option>Council</option><option>Family</option><option>Sarah's Medical</option><option>Financial</option><option>Other</option></select></div>
+          <div class="form-group full"><label>Categories</label><div id="dtf-cats" style="display:flex;gap:6px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Council" style="accent-color:#0d9488;"> Council</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Family" style="accent-color:#0d9488;"> Family</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Cath" style="accent-color:#0d9488;"> Cath</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Andrew" style="accent-color:#0d9488;"> Andrew</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah" style="accent-color:#0d9488;"> Sarah</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Russell" style="accent-color:#0d9488;"> Russell</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah's Medical" style="accent-color:#0d9488;"> Sarah's Medical</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Financial" style="accent-color:#0d9488;"> Financial</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Other" style="accent-color:#0d9488;"> Other</label></div></div>
           <div class="form-group"><label>Start Date</label><input type="date" id="dtf-start"></div>
           <div class="form-group"><label>End Date</label><input type="date" id="dtf-end" placeholder="Optional"></div>
           <div class="form-group"><label>Time</label><input type="text" id="dtf-time" placeholder="e.g. 9am - 3pm"></div>
@@ -1671,7 +1671,7 @@
     }
   };
 
-  const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==="Sarah's Medical"?'medical':c==='Financial'?'financial':'other';
+  const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==="Sarah's Medical"?'medical':c==='Financial'?'financial':c==='Cath'||c==='Andrew'||c==='Sarah'||c==='Russell'?'family':'other';
 
   window.phProjects=function(){
     const pf=$('#ph-pf').value,pp=$('#ph-pp').value,ps=$('#ph-ps').value.toLowerCase();
@@ -1780,15 +1780,22 @@
     const isToday=d.start&&daysUntil(d.start)===0;
     const dayName=d.start?new Date(d.start+'T00:00:00').toLocaleDateString('en-AU',{weekday:'short'}):'';
     const recurBadge=d.recurring?'<span style="font-size:9px;color:#94a3b8;margin-left:4px;">\u{1F501} yearly</span>':'';
-    return '<div class="date-card" style="cursor:pointer;position:relative;"><div onclick="phEditDate('+d.id+')" style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;"><div class="dc-title">'+d.title+'</div><span class="date-badge '+dateBadgeClass(d.cat)+'">'+d.cat+'</span>'+recurBadge+(isToday?'<span class="date-upcoming" style="background:#f0fdf4;color:#16a34a;">Today</span>':upcoming?'<span class="date-upcoming">This week</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta">'+(dayName?'<span><strong>'+dayName+'</strong></span>':'')+'<span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div><button onclick="event.stopPropagation();phDeleteDate('+d.id+')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
+    return '<div class="date-card" style="cursor:pointer;position:relative;"><div onclick="phEditDate('+d.id+')" style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;"><div class="dc-title">'+d.title+'</div>'+d.cat.split(', ').map(c=>'<span class="date-badge '+dateBadgeClass(c)+'">'+c+'</span>').join('')+''+recurBadge+(isToday?'<span class="date-upcoming" style="background:#f0fdf4;color:#16a34a;">Today</span>':upcoming?'<span class="date-upcoming">This week</span>':'')+'</div>'+(d.desc?'<div class="dc-desc">'+d.desc+'</div>':'')+'<div class="dc-meta">'+(dayName?'<span><strong>'+dayName+'</strong></span>':'')+'<span>\u{1F4C5} '+dateStr+'</span>'+(d.time?'<span>\u{1F552} '+d.time+'</span>':'')+(d.loc?'<span>\u{1F4CD} '+d.loc+'</span>':'')+(d.notes?'<span>\u{1F4DD} '+d.notes+'</span>':'')+'</div></div><button onclick="event.stopPropagation();phDeleteDate('+d.id+')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
   }
 
   window.phDates=function(){
     const df=$('#ph-df').value,ds=$('#ph-ds').value.toLowerCase();
     let fl=DATES;
-    if(df)fl=fl.filter(d=>d.cat===df);
+    if(df)fl=fl.filter(d=>d.cat&&d.cat.split(', ').includes(df));
     if(ds)fl=fl.filter(d=>d.title.toLowerCase().includes(ds)||(d.desc&&d.desc.toLowerCase().includes(ds)));
     $('#ph-dc').textContent=fl.length+' date'+(fl.length!==1?'s':'');
+
+    // If filtering by category or searching, show flat date-ordered list
+    if(df||ds){
+      fl.sort((a,b)=>{if(!a.start&&!b.start)return 0;if(!a.start)return 1;if(!b.start)return -1;return new Date(a.start)-new Date(b.start);});
+      $('#ph-dg').innerHTML=fl.map(d=>renderDateCard(d)).join('')||'<div class="todo-empty">No matching dates</div>';
+      return;
+    }
 
     // Build month timeline from Apr 2026 to Mar 2027
     const months=[];
@@ -1859,7 +1866,7 @@
     $('#dtf-title').textContent='New Important Date';
     $('#dtf-save-btn').textContent='Save Date';
     $('#dtf-title-input').value='';$('#dtf-desc').value='';$('#dtf-notes').value='';
-    $('#dtf-cat').value='Council';$('#dtf-start').value='';$('#dtf-end').value='';
+    $$('#dtf-cats input[type=checkbox]').forEach(cb=>cb.checked=false);$('#dtf-start').value='';$('#dtf-end').value='';
     $('#dtf-time').value='';$('#dtf-loc').value='';
     $('#dtf-del-btn').style.display='none';
     $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
@@ -1880,7 +1887,9 @@
     $('#dtf-title').textContent='Edit \u2014 '+d.title;
     $('#dtf-save-btn').textContent='Update Date';
     $('#dtf-title-input').value=d.title;$('#dtf-desc').value=d.desc;$('#dtf-notes').value=d.notes;
-    $('#dtf-cat').value=d.cat;$('#dtf-start').value=d.start;$('#dtf-end').value=d.end;
+    const catVals=d.cat?d.cat.split(', '):[];
+    $$('#dtf-cats input[type=checkbox]').forEach(cb=>{cb.checked=catVals.includes(cb.value);});
+    $('#dtf-start').value=d.start;$('#dtf-end').value=d.end;
     $('#dtf-time').value=d.time;$('#dtf-loc').value=d.loc;
     $('#dtf-del-btn').style.display='inline-block';
     $('#dtf-msg').className='form-msg';$('#dtf-msg').textContent='';
@@ -1891,7 +1900,7 @@
     const title=$('#dtf-title-input').value.trim();
     const desc=$('#dtf-desc').value.trim();
     const notes=$('#dtf-notes').value.trim();
-    const cat=$('#dtf-cat').value;
+    const cat=[...$$('#dtf-cats input[type=checkbox]')].filter(cb=>cb.checked).map(cb=>cb.value).join(', ')||'Other';
     const start=$('#dtf-start').value||null;
     const end=$('#dtf-end').value||null;
     const time=$('#dtf-time').value.trim();
@@ -1915,7 +1924,7 @@
         $('#dtf-msg').className='form-msg success';$('#dtf-msg').textContent='Date saved!';
       }
       phDates();
-      const dateCats=[...new Set(DATES.map(d=>d.cat))].sort();
+      const dateCats=[...new Set(DATES.flatMap(d=>d.cat?d.cat.split(', '):[]))].sort();
       $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
       setTimeout(()=>{$('#ph-date-form').classList.remove('open');resetDateForm();},1500);
     } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
@@ -2117,7 +2126,7 @@
   $('#ph-cpf').innerHTML='<option value="">All People</option>'+contactPeople.map(p=>'<option>'+p+'</option>').join('');
 
   // Populate dates category filter
-  const dateCats=[...new Set(DATES.map(d=>d.cat))].sort();
+  const dateCats=[...new Set(DATES.flatMap(d=>d.cat?d.cat.split(', '):[]))].sort();
   $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
 
   // Build data summary for AI context

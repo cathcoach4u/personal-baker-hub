@@ -46,16 +46,14 @@
 ---
 
 ### 4. add_contact Reliability
-**Status**: Pending  
-**Description**: The AI tool `add_contact` doesn't always work smoothly. Needs testing and debugging.
+**Status**: Fixed  
+**Description**: The AI tool `add_contact` had reliability issues due to missing columns and RLS policies.
 
-**Related Code**: `index.html` - baiAddContact() function (AI tool handler)  
-**Tool Definition**: ai.html or index.html AI tools array  
-**Issues to Check**:
-- Does it validate email/phone format?
-- Does it handle missing optional fields correctly?
-- Does it show user feedback on success/failure?
-- Are there RLS policy issues preventing inserts?
+**Root Causes Found & Fixed**:
+- `supabase-contacts.sql` was missing `email`, `meeting_link`, `notes`, `for_person` columns — inserts with these fields would fail
+- RLS policy only allowed SELECT (no INSERT/UPDATE/DELETE) — changed to `allow_all` policy
+- `index.html` handler lacked `if(!data)` safety check — aligned with the more robust `ai.html` version
+- Improved error messages for better user feedback
 
 ---
 

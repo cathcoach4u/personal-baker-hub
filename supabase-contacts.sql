@@ -6,11 +6,15 @@ CREATE TABLE contacts (
   name TEXT NOT NULL,
   contact_person TEXT,
   phone TEXT,
-  category TEXT NOT NULL
+  email TEXT,
+  meeting_link TEXT,
+  notes TEXT,
+  category TEXT NOT NULL,
+  for_person TEXT
 );
 
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON contacts FOR SELECT USING (true);
+CREATE POLICY "allow_all" ON contacts FOR ALL USING (true) WITH CHECK (true);
 
 INSERT INTO contacts (name, contact_person, phone, category) VALUES
   ('Alignment Health Co.', 'Daniel Murray', '0475 852 878', 'Medical'),

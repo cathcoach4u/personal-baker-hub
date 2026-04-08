@@ -1553,7 +1553,7 @@
         const gid='cp-'+person.replace(/[^a-zA-Z]/g,'');
         html+='<div class="group-section" style="margin-bottom:12px;">';
         html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span style="font-size:14px;font-weight:700;">'+person+'</span><span style="color:#64748b;font-size:12px;margin-left:8px;">'+items.length+'</span></span></div>';
-        html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+        html+='<div class="group-body" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
         html+='</div>';
       });
       $('#ph-cg').innerHTML=html;
@@ -1571,7 +1571,7 @@
         const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
         html+='<div class="group-section" style="margin-bottom:12px;">';
         html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
-        html+='<div class="group-body open" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+        html+='<div class="group-body" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
         html+='</div>';
       });
       $('#ph-cg').innerHTML=html;
@@ -2516,7 +2516,33 @@ ALWAYS use the dedicated tool. Be concise, friendly, Australian English. If a to
         const d=await res.json();
         let reply=d.content?d.content[0].text:d.reply||'No response';
         const actions=reply.match(/<action>(.*?)<\/action>/gs);
-        if(actions){for(const m of actions){try{const r=await baiExecAction(JSON.parse(m.replace(/<\/?action>/g,'')));if(r)baiAddMsg(r,'sys');}catch(e){baiAddMsg('Action error: '+e.message,'sys');}}reply=reply.replace(/<action>.*?<\/action>/gs,'').trim();}
+        if(actions){
+          let acted=false;
+          for(const m of actions){try{const r=await baiExecAction(JSON.parse(m.replace(/<\/?action>/g,'')));if(r){baiAddMsg(r,'sys');acted=true;}}catch(e){baiAddMsg('Action error: '+e.message,'sys');}}
+          reply=reply.replace(/<action>.*?<\/action>/gs,'').trim();
+          // Reload data so changes appear without hard refresh
+          if(acted){
+            try{
+              const [dr,tr,fr]=await Promise.all([
+                sb.from('important_dates').select('*').order('date_start'),
+                sb.from('todos').select('*').order('created_at',{ascending:false}),
+                sb.from('fiona_tasks').select('*').order('created_at',{ascending:false})
+              ]);
+              if(dr.data)DATES=dr.data.map(r=>({id:r.id,title:r.title,desc:r.description||'',start:r.date_start||'',end:r.date_end||'',time:r.time_info||'',loc:r.location||'',cat:r.category,notes:r.notes||'',recurring:r.recurring||''}));
+              if(tr.data)TODOS=tr.data.map(r=>({id:r.id,text:r.text,cat:r.category||'General',due:r.due_date||'',done:r.done||false,created:r.created_at}));
+              if(fr.data)FIONA_TASKS=fr.data;
+              // Re-render active screen
+              const active=document.querySelector('#personalHub .screen.active');
+              if(active){
+                if(active.id==='ph-home')renderHome();
+                if(active.id==='ph-dates')phDates();
+                if(active.id==='ph-todo')phTodos();
+                if(active.id==='ph-fiona')phRenderFiona();
+                if(active.id==='ph-contacts')phContacts();
+              }
+            }catch(e){console.error('Refresh error:',e);}
+          }
+        }
         if(reply)baiAddMsg(reply,'ai');
         baiHistory.push({role:'assistant',content:reply});
       }

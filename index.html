@@ -543,7 +543,10 @@
           <div class="form-group"><label>Name</label><input type="text" id="cf-name" placeholder="e.g. Dr Smith"></div>
           <div class="form-group"><label>Contact Person</label><input type="text" id="cf-person" placeholder="Optional"></div>
           <div class="form-group"><label>Phone</label><input type="tel" id="cf-phone" placeholder="e.g. 02 9123 4567"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="cf-email" placeholder="e.g. info@clinic.com.au"></div>
           <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Massage</option><option>Pharmacy</option><option>Home & Services</option><option>Recreation</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option></select></div>
+          <div class="form-group"><label>Meeting / Portal Link</label><input type="url" id="cf-link" placeholder="e.g. https://hotdoc.com.au/..."></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="cf-notes" placeholder="Optional notes"></div>
           <div class="form-group"><label>For Person</label><div id="cf-for" style="display:flex;gap:6px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Family" style="accent-color:#0d9488;"> Family</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Cath" style="accent-color:#0d9488;"> Cath</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Andrew" style="accent-color:#0d9488;"> Andrew</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah" style="accent-color:#0d9488;"> Sarah</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Russell" style="accent-color:#0d9488;"> Russell</label></div></div>
         </div>
         <div class="form-actions">
@@ -602,7 +605,7 @@
         <h3 id="dtf-title">New Important Date</h3>
         <div class="form-grid">
           <div class="form-group"><label>Title</label><input type="text" id="dtf-title-input" placeholder="e.g. Council CleanUp"></div>
-          <div class="form-group"><label>Category</label><select id="dtf-cat"><option>Council</option><option>Family</option><option>Financial</option><option>Other</option></select></div>
+          <div class="form-group"><label>Category</label><select id="dtf-cat"><option>Council</option><option>Family</option><option>Sarah's Medical</option><option>Financial</option><option>Other</option></select></div>
           <div class="form-group"><label>Start Date</label><input type="date" id="dtf-start"></div>
           <div class="form-group"><label>End Date</label><input type="date" id="dtf-end" placeholder="Optional"></div>
           <div class="form-group"><label>Time</label><input type="text" id="dtf-time" placeholder="e.g. 9am - 3pm"></div>
@@ -996,6 +999,9 @@
       name: r.name,
       person: r.contact_person || '',
       phone: r.phone || '',
+      email: r.email || '',
+      link: r.meeting_link || '',
+      notes: r.notes || '',
       cat: r.category,
       forPerson: r.for_person || ''
     }));
@@ -1574,9 +1580,11 @@
 
   function renderContactCards(items){
     return items.map(c=>{
-      const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'\u2014';
+      const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'';
+      const emailLink=c.email?'<a href="mailto:'+c.email+'" style="font-size:11px;color:#0d9488;text-decoration:none;">'+c.email+'</a>':'';
+      const meetLink=c.link?'<a href="'+c.link+'" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;" onclick="event.stopPropagation()">Book / Portal</a>':'';
       const personTag=c.forPerson?c.forPerson.split(', ').map(p=>'<span class="person-tag">'+p+'</span>').join(''):'';
-      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()">'+phoneLink+'</div>'+personTag+'</div>';
+      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;gap:2px;">'+(phoneLink||'')+(emailLink?'<div>'+emailLink+'</div>':'')+(meetLink?'<div>'+meetLink+'</div>':'')+'</div>'+(c.notes?'<div style="font-size:10px;color:#94a3b8;margin-top:4px;">'+c.notes+'</div>':'')+personTag+'</div>';
     }).join('');
   }
 
@@ -1586,7 +1594,7 @@
     editingContactId=null;
     $('#cf-title').textContent='New Contact';
     $('#cf-save-btn').textContent='Save Contact';
-    $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';
+    $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';$('#cf-email').value='';$('#cf-link').value='';$('#cf-notes').value='';
     $('#cf-cat').value='Medical';$$('#cf-for input[type=checkbox]').forEach(cb=>cb.checked=false);
     $('#cf-del-btn').style.display='none';
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
@@ -1607,7 +1615,7 @@
     form.classList.add('open');
     $('#cf-title').textContent='Edit \u2014 '+c.name;
     $('#cf-save-btn').textContent='Update Contact';
-    $('#cf-name').value=c.name;$('#cf-person').value=c.person;$('#cf-phone').value=c.phone;
+    $('#cf-name').value=c.name;$('#cf-person').value=c.person;$('#cf-phone').value=c.phone;$('#cf-email').value=c.email;$('#cf-link').value=c.link;$('#cf-notes').value=c.notes;
     $('#cf-cat').value=c.cat;
     const personVals=c.forPerson?c.forPerson.split(', '):[];
     $$('#cf-for input[type=checkbox]').forEach(cb=>{cb.checked=personVals.includes(cb.value);});
@@ -1620,6 +1628,9 @@
     const name=$('#cf-name').value.trim();
     const person=$('#cf-person').value.trim();
     const phone=$('#cf-phone').value.trim();
+    const email=$('#cf-email').value.trim();
+    const link=$('#cf-link').value.trim();
+    const notes=$('#cf-notes').value.trim();
     const cat=$('#cf-cat').value;
     const forPerson=[...$$('#cf-for input[type=checkbox]')].filter(cb=>cb.checked).map(cb=>cb.value).join(', ');
 
@@ -1629,20 +1640,20 @@
       return;
     }
 
-    const row={name:name,contact_person:person||null,phone:phone||null,category:cat,for_person:forPerson||null};
+    const row={name:name,contact_person:person||null,phone:phone||null,email:email||null,meeting_link:link||null,notes:notes||null,category:cat,for_person:forPerson||null};
 
     try {
       if(editingContactId){
         const {error}=await sb.from('contacts').update(row).eq('id',editingContactId);
         if(error)throw error;
         const idx=CONTACTS.findIndex(x=>x.id===editingContactId);
-        if(idx>=0)CONTACTS[idx]={id:editingContactId,name:name,person:person,phone:phone,cat:cat,forPerson:forPerson};
+        if(idx>=0)CONTACTS[idx]={id:editingContactId,name:name,person:person,phone:phone,email:email,link:link,notes:notes,cat:cat,forPerson:forPerson};
         $('#cf-msg').className='form-msg success';
         $('#cf-msg').textContent='Contact updated!';
       } else {
         const {data:inserted,error}=await sb.from('contacts').insert(row).select().single();
         if(error)throw error;
-        CONTACTS.push({id:inserted.id,name:name,person:person,phone:phone,cat:cat,forPerson:forPerson});
+        CONTACTS.push({id:inserted.id,name:name,person:person,phone:phone,email:email,link:link,notes:notes,cat:cat,forPerson:forPerson});
         $('#cf-msg').className='form-msg success';
         $('#cf-msg').textContent='Contact saved!';
       }
@@ -1660,7 +1671,7 @@
     }
   };
 
-  const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Financial'?'financial':'other';
+  const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==="Sarah's Medical"?'medical':c==='Financial'?'financial':'other';
 
   window.phProjects=function(){
     const pf=$('#ph-pf').value,pp=$('#ph-pp').value,ps=$('#ph-ps').value.toLowerCase();
@@ -2432,7 +2443,7 @@
     }
     if(a.type==='add_contact'){
       if(!a.name)return 'Error: Missing name.';
-      const {data,error}=await sb.from('contacts').insert({name:a.name,contact_person:a.contact_person||null,phone:a.phone||null,category:a.category||'Medical',for_person:a.for_person||null}).select().single();
+      const {data,error}=await sb.from('contacts').insert({name:a.name,contact_person:a.contact_person||null,phone:a.phone||null,email:a.email||null,meeting_link:a.meeting_link||null,notes:a.notes||null,category:a.category||'Medical',for_person:a.for_person||null}).select().single();
       if(error)return 'Error: '+error.message;
       return 'Added contact: "'+a.name+'"';
     }
@@ -2491,7 +2502,7 @@ delete_todo: {"type":"delete_todo","search":"partial name"}
 add_date: {"type":"add_date","title":"...","date_start":"YYYY-MM-DD","category":"Family"}
 add_project: {"type":"add_project","title":"...","priority":"High"}
 update_ndis_status: {"type":"update_ndis_status","provider":"Fiona","status":"Paid"}
-add_contact: {"type":"add_contact","name":"Dr Smith","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}
+add_contact: {"type":"add_contact","name":"Dr Smith","phone":"02 9123 4567","email":"info@clinic.com","meeting_link":"https://hotdoc.com","notes":"Bulk bills","category":"Medical","for_person":"Cath"}
 add_fiona_task: {"type":"add_fiona_task","task":"Clean the oven"}
 complete_fiona_task: {"type":"complete_fiona_task","search":"oven"}
 delete_fiona_task: {"type":"delete_fiona_task","search":"oven"}

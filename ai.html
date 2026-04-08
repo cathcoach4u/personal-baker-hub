@@ -238,7 +238,7 @@
     // ── ADD CONTACT ──
     if(action.type==='add_contact'){
       if(!action.name)return 'Error: Missing contact name.';
-      const row={name:action.name,contact_person:action.contact_person||null,phone:action.phone||null,category:action.category||'Medical',for_person:action.for_person||null};
+      const row={name:action.name,contact_person:action.contact_person||null,phone:action.phone||null,email:action.email||null,meeting_link:action.meeting_link||null,notes:action.notes||null,category:action.category||'Medical',for_person:action.for_person||null};
       const {data,error}=await sb.from('contacts').insert(row).select().single();
       if(error)return 'Error adding contact: '+error.message;
       if(!data)return 'Error: Insert returned no data.';
@@ -330,7 +330,7 @@ Required: search (partial text match).
 ### add_date — ALWAYS use this to add events/dates
 Required: title. Optional: date_start, date_end, time_info, location, category, description, notes, recurring.
 <action>{"type":"add_date","title":"School pickup","date_start":"2026-05-01","category":"Family","recurring":"yearly"}</action>
-Categories: Council, Family, Financial, Other.
+Categories: Council, Family, Sarah's Medical, Financial, Other.
 
 ### add_project — ALWAYS use this to add house projects
 Required: title. Optional: description, priority, status, due_date, notes.
@@ -342,8 +342,8 @@ Required: provider (partial name), status (Paid or Outstanding).
 <action>{"type":"update_ndis_status","provider":"Fiona","status":"Paid"}</action>
 
 ### add_contact — ALWAYS use this to add contacts
-Required: name. Optional: contact_person, phone, category, for_person.
-<action>{"type":"add_contact","name":"Dr Smith","contact_person":"GP","phone":"02 9123 4567","category":"Medical","for_person":"Cath"}</action>
+Required: name. Optional: contact_person, phone, email, meeting_link, notes, category, for_person.
+<action>{"type":"add_contact","name":"Dr Smith","contact_person":"GP","phone":"02 9123 4567","email":"info@drsmith.com.au","meeting_link":"https://hotdoc.com.au/dr-smith","category":"Medical","for_person":"Cath"}</action>
 
 ### add_fiona_task — ALWAYS use this to add tasks for Fiona (cleaner)
 Required: task.

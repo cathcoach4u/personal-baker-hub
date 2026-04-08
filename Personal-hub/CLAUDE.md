@@ -82,7 +82,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Month timeline**: Apr 2026 to Mar 2027, collapsible months
 - **Week grouping**: Within each month, grouped by week (collapsible)
 - Current month/week highlighted green, past months collapsed
-- **Categories**: Multi-select checkboxes — Council, Family, Cath, Andrew, Sarah, Russell, Sarah's Medical, Financial, Other
+- **Categories**: Multi-select checkboxes — Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, Other
 - **Filtered view**: When filtering by category or searching, shows flat date-ordered list (no weekly grouping)
 - **Recurring**: yearly badge for birthdays, ANZAC Day etc.
 - Add/Edit/Delete from form and card

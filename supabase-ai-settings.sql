@@ -43,7 +43,7 @@ Required: search (partial text match).
 ### add_date — ALWAYS use this to add events/dates
 Required: title. Optional: date_start, date_end, time_info, location, category, description, notes, recurring.
 <action>{"type":"add_date","title":"School pickup","date_start":"2026-05-01","category":"Family","recurring":"yearly"}</action>
-Categories: Council, Family, Sarah''s Medical, Financial, Other.
+Categories: Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, Other.
 
 ### add_project — ALWAYS use this to add house projects
 Required: title. Optional: description, priority, status, due_date, notes.

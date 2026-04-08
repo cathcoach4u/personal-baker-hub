@@ -66,10 +66,12 @@
 </div>
 
 <div class="suggestions" id="sugs">
-  <button class="sug" onclick="ask(this.textContent)">What's my NDIS budget?</button>
-  <button class="sug" onclick="ask(this.textContent)">Any premiums due?</button>
-  <button class="sug" onclick="ask(this.textContent)">Show outstanding invoices</button>
-  <button class="sug" onclick="ask(this.textContent)">Add a to-do</button>
+  <button class="sug" onclick="ask('Add to dates: ')" style="background:#f0fdf4;border-color:#bbf7d0;color:#16a34a;">&#x1F4C5; Add to Dates</button>
+  <button class="sug" onclick="ask('Add a to-do: ')" style="background:#eff6ff;border-color:#bfdbfe;color:#2563eb;">&#x2705; Add To-Do</button>
+  <button class="sug" onclick="ask('Add a Fiona task: ')" style="background:#fef9c3;border-color:#fef08a;color:#a16207;">&#x1F9F9; Fiona Task</button>
+  <button class="sug" onclick="ask('Add a contact: ')" style="background:#f5f3ff;border-color:#ddd6fe;color:#7c3aed;">&#x1F4D6; Add Contact</button>
+  <button class="sug" onclick="ask(this.textContent)">NDIS budget?</button>
+  <button class="sug" onclick="ask(this.textContent)">Outstanding invoices</button>
   <button class="sug" onclick="ask(this.textContent)">What's on this week?</button>
 </div>
 
@@ -274,7 +276,10 @@
     return 'Unknown action type: '+action.type;
   }
 
-  window.ask=function(text){inp.value=text;send();};
+  window.ask=function(text){
+    if(text.endsWith(': ')){inp.value=text;inp.focus();return;}
+    inp.value=text;send();
+  };
 
   window.send=async function(){
     const text=inp.value.trim();

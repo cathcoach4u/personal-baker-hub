@@ -2310,10 +2310,12 @@
     <div class="bai-m ai"><div class="bub">G'day! I can answer questions about your data or take actions — add to-dos, update transactions, add dates. Try the suggestions below.</div></div>
   </div>
   <div class="bai-sugs" id="baiSugs">
+    <span class="bai-sg" onclick="baiAsk('Add to dates: ')" style="background:#f0fdf4;border-color:#bbf7d0;color:#16a34a;">&#x1F4C5; Add to Dates</span>
+    <span class="bai-sg" onclick="baiAsk('Add a to-do: ')" style="background:#eff6ff;border-color:#bfdbfe;color:#2563eb;">&#x2705; Add To-Do</span>
+    <span class="bai-sg" onclick="baiAsk('Add a Fiona task: ')" style="background:#fef9c3;border-color:#fef08a;color:#a16207;">&#x1F9F9; Fiona Task</span>
+    <span class="bai-sg" onclick="baiAsk('Add a contact: ')" style="background:#f5f3ff;border-color:#ddd6fe;color:#7c3aed;">&#x1F4D6; Add Contact</span>
     <span class="bai-sg" onclick="baiAsk(this.textContent)">NDIS budget?</span>
     <span class="bai-sg" onclick="baiAsk(this.textContent)">Outstanding invoices</span>
-    <span class="bai-sg" onclick="baiAsk(this.textContent)">Premiums due?</span>
-    <span class="bai-sg" onclick="baiAsk(this.textContent)">Add a to-do</span>
     <span class="bai-sg" onclick="baiAsk(this.textContent)">What's on this week?</span>
   </div>
   <div class="bai-inp">
@@ -2474,7 +2476,10 @@
     return 'Unknown action: '+a.type;
   }
 
-  window.baiAsk=function(t){inpEl.value=t;baiSend();};
+  window.baiAsk=function(t){
+    if(t.endsWith(': ')){inpEl.value=t;inpEl.focus();return;}
+    inpEl.value=t;baiSend();
+  };
 
   window.baiSend=async function(){
     const text=inpEl.value.trim();if(!text)return;

@@ -436,6 +436,7 @@
       <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+      <button class="nav-item" onclick="phNavDrawer('monthly',this)"><span class="icon">&#x1F5C3;</span> Monthly</button>
       <button class="nav-item" onclick="phNavDrawer('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -452,6 +453,7 @@
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
+    <button class="nav-item" onclick="phNav('monthly',this)"><span class="icon">&#x1F5C3;</span> Monthly</button>
     <button class="nav-item" onclick="phNav('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -652,6 +654,19 @@
       <div id="td-pending"></div>
       <div class="todo-section-label">DONE</div>
       <div id="td-done"></div>
+    </div>
+    <div class="screen" id="ph-monthly">
+      <h2>📋 Monthly Tasks</h2>
+      <div class="todo-input-card">
+        <input type="text" id="mt-text" placeholder="Add monthly task..." onkeydown="if(event.key==='Enter')phAddMonthly()">
+        <button class="todo-add-btn" onclick="phAddMonthly()" style="background:#0d9488;">+ Add Task</button>
+      </div>
+      <div class="todo-stats" id="mt-stats"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="phClearCompletedMonthly()" style="flex:1;padding:10px;background:white;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#1e293b;">✓ Clear Done</button>
+        <button onclick="phResetMonthlyTasks()" style="flex:1;padding:10px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#7c3aed;" title="Reset all tasks for this month">↻ Reset Month</button>
+      </div>
+      <div id="mt-list"></div>
     </div>
     <div class="screen" id="ph-animals">
       <h2>🐾 Animals</h2>
@@ -973,13 +988,15 @@
   let PROVIDERS = [];
   let TODOS = [];
   let FIONA_TASKS = [];
+  let MONTHLY_TASKS = [];
   let ANIMALS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
   try {
 
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes] = await Promise.all([
+    const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -989,7 +1006,8 @@
       sb.from('ndis_providers').select('*').order('name'),
       sb.from('todos').select('*').order('created_at', { ascending: false }),
       sb.from('animals').select('*').order('name'),
-      sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false })
+      sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false }),
+      sb.from('monthly_tasks').select('*').eq('month_year',currentMonth)
     ]);
 
     if (fundsRes.error) throw fundsRes.error;
@@ -1002,6 +1020,7 @@
     if (todosRes.error) throw todosRes.error;
     if (animalsRes.error) throw animalsRes.error;
     if (medicalRes.error) throw medicalRes.error;
+    if (monthlyRes.error) throw monthlyRes.error;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1099,6 +1118,14 @@
       insurancePhone: r.insurance_phone || '',
       notes: r.notes || '',
       medicalRecords: (medicalRes.data || []).filter(m => m.animal_id === r.id)
+    }));
+
+    MONTHLY_TASKS = (monthlyRes.data || []).map(r => ({
+      id: r.id,
+      task: r.task,
+      done: r.done || false,
+      monthYear: r.month_year,
+      createdAt: r.created_at
     }));
 
   } catch (err) {
@@ -2165,6 +2192,7 @@
     if(name==='projects')phProjects();
     if(name==='dates')phDates();
     if(name==='todo')phTodos();
+    if(name==='monthly')phMonthly();
     if(name==='animals')phAnimals();
     if(name==='aislemate')amGo('home');
     if(name==='fiona')phLoadFiona();
@@ -2229,6 +2257,54 @@
     if(!FIONA_TASKS.length)html='<div class="todo-empty">No tasks for Fiona</div>';
     $('#fi-list').innerHTML=html;
   }
+
+  const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
+
+  window.phMonthly=function(){
+    let html='';const pending=MONTHLY_TASKS.filter(t=>!t.done);const done=MONTHLY_TASKS.filter(t=>t.done);
+    $('#mt-stats').innerHTML='<span>'+pending.length+' pending, '+done.length+' done</span>'+(done.length?'<button class="todo-clear-btn" onclick="phClearCompletedMonthly()">Clear done</button>':'');
+    html='<div class="todo-section-label">PENDING ('+pending.length+')</div>';
+    pending.forEach(t=>{html+='<div class="todo-item"><div class="todo-check" onclick="phToggleMonthly('+t.id+')"></div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});
+    if(!pending.length)html+='<div class="todo-empty">All tasks done! ✓</div>';
+    html+='<div class="todo-section-label">COMPLETED ('+done.length+')</div>';
+    done.forEach(t=>{html+='<div class="todo-item done"><div class="todo-check checked">\u2713</div><div class="todo-content"><div class="todo-text">'+t.task+'</div></div><button class="todo-del-btn" onclick="phDelMonthly('+t.id+')">\u{1F5D1}</button></div>';});
+    if(!done.length)html+='<div class="todo-empty" style="padding:8px;">No completed tasks</div>';
+    $('#mt-list').innerHTML=html;
+  };
+
+  window.phAddMonthly=async function(){
+    const text=$('#mt-text').value.trim();if(!text)return;
+    const {data,error}=await sb.from('monthly_tasks').insert({task:text,month_year:currentMonth,done:false}).select().single();
+    if(error){alert('Error: '+error.message);return;}
+    MONTHLY_TASKS.push({id:data.id,task:text,done:false,monthYear:currentMonth,createdAt:data.created_at});
+    $('#mt-text').value='';phMonthly();
+  };
+
+  window.phToggleMonthly=async function(id){
+    const t=MONTHLY_TASKS.find(x=>x.id===id);if(!t)return;
+    const {error}=await sb.from('monthly_tasks').update({done:!t.done}).eq('id',id);
+    if(error){alert('Error: '+error.message);return;}
+    t.done=!t.done;phMonthly();
+  };
+
+  window.phDelMonthly=async function(id){
+    const {error}=await sb.from('monthly_tasks').delete().eq('id',id);
+    if(error){alert('Error: '+error.message);return;}
+    MONTHLY_TASKS=MONTHLY_TASKS.filter(t=>t.id!==id);phMonthly();
+  };
+
+  window.phClearCompletedMonthly=async function(){
+    const done=MONTHLY_TASKS.filter(t=>t.done).map(t=>t.id);
+    if(!done.length)return;
+    for(const id of done){await sb.from('monthly_tasks').delete().eq('id',id);}
+    MONTHLY_TASKS=MONTHLY_TASKS.filter(t=>!t.done);phMonthly();
+  };
+
+  window.phResetMonthlyTasks=async function(){
+    if(!confirm('Reset all '+MONTHLY_TASKS.length+' tasks for this month?'))return;
+    for(const t of MONTHLY_TASKS){await sb.from('monthly_tasks').delete().eq('id',t.id);}
+    MONTHLY_TASKS=[];phMonthly();
+  };
 
   let editingAnimalId=null;
   const resetAnimalForm=()=>{editingAnimalId=null;$$('#ph-animal-form input, #ph-animal-form select').forEach(el=>{el.value='';el.checked=false;});$('#aif-title').textContent='New Animal';$('#aif-save-btn').textContent='Save Animal';$('#aif-del-btn').style.display='none';$('#aif-msg').className='form-msg';$('#aif-msg').textContent='';};

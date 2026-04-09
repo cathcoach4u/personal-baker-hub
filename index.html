@@ -3143,7 +3143,9 @@
       if(!a.title)return 'Error: Missing title.';
       const {data,error}=await sb.from('important_dates').insert({title:a.title,description:a.description||null,date_start:a.date_start||null,date_end:a.date_end||null,time_info:a.time_info||null,location:a.location||null,category:a.category||'Other',notes:a.notes||null,recurring:a.recurring||null}).select().single();
       if(error)return 'Error: '+error.message;
-      return 'Added date: "'+a.title+'"';
+      DATES.push({id:data.id,title:data.title,desc:data.description||'',start:data.date_start||'',end:data.date_end||'',time:data.time_info||'',loc:data.location||'',cat:data.category,notes:data.notes||'',recurring:data.recurring||''});
+      var fmtDate=a.date_start?new Date(a.date_start+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}):'';
+      return 'Added date: "'+a.title+'"'+(fmtDate?' on '+fmtDate:'');
     }
     if(a.type==='add_project'){
       if(!a.title)return 'Error: Missing title.';

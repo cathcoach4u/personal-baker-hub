@@ -1198,6 +1198,8 @@
   $('#ph-home').classList.add('active');
 
   // --- Helpers ---
+  function lockBtn(id){const b=$(id);if(b){b.disabled=true;b._origText=b.textContent;b.textContent='Saving...';}return b;}
+  function unlockBtn(b){if(b){b.disabled=false;b.textContent=b._origText||'Save';}}
   const money=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
   const fmtD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});};
   const shortD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});};
@@ -1415,12 +1417,13 @@
   };
 
   window.phSaveNdis=async function(){
+    const btn=lockBtn('#nf-save-btn');
     const provVal=$('#nf-provider').value;
     const newProvName=$('#nf-newprov').value.trim();
     let provider='';
 
     if(provVal==='__new'){
-      if(!newProvName){$('#nf-msg').className='form-msg error';$('#nf-msg').textContent='Please enter the new provider name.';return;}
+      if(!newProvName){$('#nf-msg').className='form-msg error';$('#nf-msg').textContent='Please enter the new provider name.';unlockBtn(btn);return;}
       provider=newProvName;
     } else if(provVal){
       const prov=PROVIDERS.find(p=>p.id===parseInt(provVal));
@@ -1442,7 +1445,7 @@
     if(!provider||!invoice||!date){
       $('#nf-msg').className='form-msg error';
       $('#nf-msg').textContent='Please fill in Provider, Invoice, and Date.';
-      return;
+      unlockBtn(btn);return;
     }
 
     try {
@@ -1499,7 +1502,7 @@
       $('#nf-msg').className='form-msg error';
       $('#nf-msg').textContent='Error: '+e.message;
       console.error(e);
-    }
+    } finally { unlockBtn(btn); }
   };
 
   window.phIns=function(){
@@ -1588,6 +1591,7 @@
   };
 
   window.phSaveIns=async function(){
+    const btn=lockBtn('#if-save-btn');
     const name=$('#if-name').value;
     const ins=$('#if-ins').value.trim();
     const pol=$('#if-pol').value.trim();
@@ -1602,7 +1606,7 @@
     if(!ins||!cover){
       $('#if-msg').className='form-msg error';
       $('#if-msg').textContent='Please fill in Insurer and Cover Type.';
-      return;
+      unlockBtn(btn);return;
     }
 
     const row={
@@ -1635,7 +1639,7 @@
       $('#if-msg').className='form-msg error';
       $('#if-msg').textContent='Error: '+e.message;
       console.error(e);
-    }
+    } finally { unlockBtn(btn); }
   };
 
   window.phDeleteContact=async function(){
@@ -1765,6 +1769,7 @@
   };
 
   window.phSaveContact=async function(){
+    const btn=lockBtn('#cf-save-btn');
     const name=$('#cf-name').value.trim();
     const person=$('#cf-person').value.trim();
     const phone=$('#cf-phone').value.trim();
@@ -1777,7 +1782,7 @@
     if(!name){
       $('#cf-msg').className='form-msg error';
       $('#cf-msg').textContent='Please enter a contact name.';
-      return;
+      unlockBtn(btn);return;
     }
 
     const row={name:name,contact_person:person||null,phone:phone||null,email:email||null,meeting_link:link||null,notes:notes||null,category:cat,for_person:forPerson||null};
@@ -1808,7 +1813,7 @@
       $('#cf-msg').className='form-msg error';
       $('#cf-msg').textContent='Error: '+e.message;
       console.error(e);
-    }
+    } finally { unlockBtn(btn); }
   };
 
   const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Public Holidays'?'holidays':c==='Financial'?'financial':c==='Cath'||c==='Andrew'||c==='Sarah'||c==='Russell'?'family':'other';
@@ -1864,6 +1869,7 @@
   };
 
   window.phSaveProj=async function(){
+    const btn=lockBtn('#pf-save-btn');
     const title=$('#pf-title-input').value.trim();
     const desc=$('#pf-desc').value.trim();
     const notes=$('#pf-notes').value.trim();
@@ -1871,7 +1877,7 @@
     const status=$('#pf-status').value;
     const due=$('#pf-due').value||null;
 
-    if(!title){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Please enter a title.';return;}
+    if(!title){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Please enter a title.';unlockBtn(btn);return;}
 
     const row={title:title,description:desc||null,notes:notes||null,priority:priority,status:status,due_date:due};
 
@@ -1890,7 +1896,7 @@
       }
       phProjects();
       setTimeout(()=>{$('#ph-proj-form').classList.remove('open');resetProjForm();},1500);
-    } catch(e){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Error: '+e.message;console.error(e);}
+    } catch(e){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Error: '+e.message;console.error(e);} finally { unlockBtn(btn); }
   };
 
   function getWeekNum(d){
@@ -2037,6 +2043,7 @@
   };
 
   window.phSaveDate=async function(){
+    const btn=lockBtn('#dtf-save-btn');
     const title=$('#dtf-title-input').value.trim();
     const desc=$('#dtf-desc').value.trim();
     const notes=$('#dtf-notes').value.trim();
@@ -2046,7 +2053,7 @@
     const time=$('#dtf-time').value.trim();
     const loc=$('#dtf-loc').value.trim();
 
-    if(!title){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Please enter a title.';return;}
+    if(!title){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Please enter a title.';unlockBtn(btn);return;}
 
     const row={title:title,description:desc||null,notes:notes||null,category:cat,date_start:start,date_end:end,time_info:time||null,location:loc||null};
 
@@ -2067,7 +2074,7 @@
       const dateCats=[...new Set(DATES.flatMap(d=>d.cat?d.cat.split(', '):[]))].sort();
       $('#ph-df').innerHTML='<option value="">All Categories</option>'+dateCats.map(c=>'<option>'+c+'</option>').join('');
       setTimeout(()=>{$('#ph-date-form').classList.remove('open');resetDateForm();},1500);
-    } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);}
+    } catch(e){$('#dtf-msg').className='form-msg error';$('#dtf-msg').textContent='Error: '+e.message;console.error(e);} finally { unlockBtn(btn); }
   };
 
   window.phDeleteDateFromForm=async function(){
@@ -2420,6 +2427,7 @@
   };
 
   window.phSaveAnimal=async function(){
+    const btn=lockBtn('#aif-save-btn');
     const name=$('#aif-name').value.trim();
     const type=$('#aif-type').value;
     const breed=$('#aif-breed').value.trim()||null;
@@ -2435,7 +2443,7 @@
     const insurancePhone=$('#aif-insurance-phone').value.trim()||null;
     const notes=$('#aif-notes').value.trim()||null;
 
-    if(!name){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Please enter an animal name.';return;}
+    if(!name){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Please enter an animal name.';unlockBtn(btn);return;}
 
     const row={name:name,type:type,breed:breed,dob:dob,microchip_number:microchip,desexed:desexed,desexed_date:desexedDate,vet_clinic_name:vetName,vet_phone:vetPhone,vet_email:vetEmail,insurance_provider:insuranceProvider,insurance_policy:insurancePolicy,insurance_phone:insurancePhone,notes:notes};
 
@@ -2454,7 +2462,7 @@
       }
       phAnimals();
       setTimeout(()=>{$('#ph-animal-form').style.display='none';resetAnimalForm();},1500);
-    }catch(e){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Error: '+e.message;console.error(e);}
+    }catch(e){$('#aif-msg').className='form-msg error';$('#aif-msg').textContent='Error: '+e.message;console.error(e);} finally { unlockBtn(btn); }
   };
 
   window.phDeleteAnimalFromForm=async function(){
@@ -2691,10 +2699,11 @@
     if(document.getElementById('baiPanel').classList.contains('open'))inpEl.focus();
   };
 
+  function baiEscHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function baiAddMsg(text,role){
     const div=document.createElement('div');
     div.className='bai-m '+role;
-    let html=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'\n<li>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
+    let html=baiEscHtml(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'\n<li>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
     if(html.includes('<li>'))html='<ul>'+html+'</ul>';
     if(role==='ai'){
       div.innerHTML='<div class="bub"><button class="bai-copy" onclick="baiCopy(this)" title="Copy">\u{1F4CB}</button><p>'+html+'</p></div>';

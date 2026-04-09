@@ -827,6 +827,14 @@
 
     <div class="screen" id="ph-habits">
       <h2>💪 Habits & Rhythms</h2>
+      <div class="filter-bar" id="ph-habits-pills" style="margin-bottom:12px;">
+        <button class="todo-filter-btn active" onclick="phFilterHabits('All',this)">All</button>
+        <button class="todo-filter-btn" onclick="phFilterHabits('Weekly',this)">Weekly</button>
+        <button class="todo-filter-btn" onclick="phFilterHabits('Fortnightly',this)">Fortnightly</button>
+        <button class="todo-filter-btn" onclick="phFilterHabits('Monthly',this)">Monthly</button>
+        <button class="todo-filter-btn" onclick="phFilterHabits('6-Monthly',this)">6-Monthly</button>
+        <button class="todo-filter-btn" onclick="phFilterHabits('Annual',this)">Annual</button>
+      </div>
       <div id="ph-habits-list"></div>
     </div>
 
@@ -2502,10 +2510,20 @@
     MONTHLY_TASKS=[];phMonthly();
   };
 
+  let habitsFilter='All';
+
+  window.phFilterHabits=function(freq,btn){
+    habitsFilter=freq;
+    $$('#ph-habits-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    phHabits();
+  };
+
   window.phHabits=function(){
     const freqs=['Weekly','Fortnightly','Monthly','6-Monthly','Annual'];
     let html='';
     freqs.forEach(freq=>{
+      if(habitsFilter!=='All'&&habitsFilter!==freq)return;
       const items=HABITS.filter(h=>h.frequency===freq);
       if(items.length===0)return;
       const done=items.filter(h=>h.completedThisCycle).length;

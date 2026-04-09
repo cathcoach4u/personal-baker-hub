@@ -98,6 +98,7 @@
     <span class="progress-label">Progress</span>
     <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
     <span class="progress-count" id="prog-count">0 / 0</span>
+    <button onclick="clearAllItems()" aria-label="Clear list" style="background:none;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:#ef4444;cursor:pointer;white-space:nowrap;font-family:inherit;">Clear All</button>
   </div>
 
   <div id="items-container"><div class="loading">Loading...</div></div>
@@ -297,8 +298,35 @@
     }
   });
 
+  // ─── CLEAR ALL ───
+  window.clearAllItems = async function() {
+    if(!confirm('Clear all items from the shopping list?'))return;
+    var { error } = await sb.from('shopping_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if(error){shopToast('Could not clear list: '+error.message,'error');return;}
+    shopToast('Shopping list cleared!','success');
+    loadItems();
+  };
+
+  // ─── MONDAY AUTO-CLEAR PROMPT ───
+  function checkWeeklyReset(){
+    var today = new Date();
+    if(today.getDay() !== 1) return; // Only on Monday
+    var key = 'aislemate-cleared-week';
+    var yearWeek = today.getFullYear()+'-W'+Math.ceil(((today - new Date(today.getFullYear(),0,1))/86400000 + new Date(today.getFullYear(),0,1).getDay()+1)/7);
+    if(localStorage.getItem(key) === yearWeek) return; // Already prompted this week
+    if(confirm('It\'s Monday! Clear last week\'s shopping list?')){
+      sb.from('shopping_items').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(function(res){
+        if(res.error){shopToast('Could not clear: '+res.error.message,'error');return;}
+        shopToast('List cleared for the new week!','success');
+        loadItems();
+      });
+    }
+    localStorage.setItem(key, yearWeek);
+  }
+
   // ─── INIT ───
   loadItems();
+  checkWeeklyReset();
 
   // Auto-refresh every 30 seconds so family members see each other's additions
   setInterval(loadItems, 30000);

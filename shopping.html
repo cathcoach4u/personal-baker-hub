@@ -84,7 +84,7 @@
 
 <div class="container">
   <div class="add-bar">
-    <input class="add-input" id="add-input" type="text" placeholder="Add an item..." autocomplete="off" aria-label="Item name">
+    <input class="add-input" id="add-input" type="text" placeholder="Add items (comma separated)..." autocomplete="off" aria-label="Item names">
     <div style="display:flex;align-items:center;gap:2px;background:white;border:1px solid #e2e8f0;border-radius:8px;padding:2px 4px;">
       <button onclick="shopQtyChange(-1)" aria-label="Decrease quantity" style="border:none;background:none;font-size:18px;font-weight:700;color:#64748b;cursor:pointer;padding:8px 10px;min-width:44px;min-height:44px;">&minus;</button>
       <span id="add-qty" style="font-size:14px;font-weight:600;min-width:18px;text-align:center;" aria-label="Quantity">1</span>
@@ -231,30 +231,35 @@
     el.textContent = qty;
   };
 
-  // ─── ADD ITEM ───
+  // ─── ADD ITEM (supports comma-separated multiple items) ───
   window.addItem = async function() {
     var input = document.getElementById('add-input');
-    var name = input.value.trim();
-    if (!name) return;
+    var raw = input.value.trim();
+    if (!raw) return;
     document.getElementById('add-btn').disabled = true;
 
-    // Check if it's in master list for auto category/store
-    var { data: match } = await sb.from('master_items').select('*').ilike('name', name).limit(1);
-    var row = { name: name, category: 'Other', store: 'Other' };
-    if (match && match.length) {
-      row.name = match[0].name;
-      row.category = match[0].category || 'Other';
-      row.store = match[0].store || 'Other';
-    }
+    var names = raw.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
     var qty = parseInt(document.getElementById('add-qty').textContent) || 1;
-    if (qty > 1) row.name = row.name + ' x' + qty;
 
-    var { error } = await sb.from('shopping_items').insert(row);
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
+      var { data: match } = await sb.from('master_items').select('*').ilike('name', name).limit(1);
+      var row = { name: name, category: 'Other', store: 'Other' };
+      if (match && match.length) {
+        row.name = match[0].name;
+        row.category = match[0].category || 'Other';
+        row.store = match[0].store || 'Other';
+      }
+      if (qty > 1 && names.length === 1) row.name = row.name + ' x' + qty;
+      var { error } = await sb.from('shopping_items').insert(row);
+      if (error) { shopToast('Could not add "' + name + '": ' + error.message, 'error'); }
+    }
+
     document.getElementById('add-btn').disabled = false;
-    if(error){shopToast('Could not add item: '+error.message,'error');return;}
     input.value = '';
     document.getElementById('add-qty').textContent = '1';
     document.getElementById('suggest-list').classList.remove('visible');
+    if (names.length > 1) shopToast('Added ' + names.length + ' items', 'success');
     loadItems();
     input.focus();
   };

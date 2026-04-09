@@ -59,6 +59,10 @@
   .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
 
   .loading { text-align: center; padding: 40px; color: #94a3b8; }
+
+  .shop-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 9999; display: none; max-width: 90%; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .shop-toast.error { background: #ef4444; }
+  .shop-toast.success { background: #10b981; }
 </style>
 </head>
 <body>
@@ -88,12 +92,18 @@
 
   <div id="items-container"><div class="loading">Loading...</div></div>
 </div>
+<div class="shop-toast" id="shop-toast"></div>
 
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (async function(){
   var sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+  function shopToast(msg,type){
+    var t=document.getElementById('shop-toast');t.textContent=msg;t.className='shop-toast '+(type||'');t.style.display='block';
+    clearTimeout(t._tid);t._tid=setTimeout(function(){t.style.display='none';},3500);
+  }
 
   var CAT_ICONS = {'Fruit & Veg':'\u{1F96C}','Meat':'\u{1F969}','Dairy':'\u{1F95B}','Pantry':'\u{1F96B}','Frozen':'\u{2744}','Drinks':'\u{1F964}','Household':'\u{1F9F9}','Other':'\u{1F4E6}'};
   var CAT_ORDER = ['Fruit & Veg','Meat','Dairy','Pantry','Frozen','Drinks','Household','Other'];
@@ -121,7 +131,8 @@
 
   // ─── LOAD ITEMS ───
   async function loadItems() {
-    var { data: items } = await sb.from('shopping_items').select('*').order('created_at');
+    var { data: items, error: loadErr } = await sb.from('shopping_items').select('*').order('created_at');
+    if(loadErr){shopToast('Could not load items: '+loadErr.message,'error');return;}
     items = items || [];
     var { data: masterData } = await sb.from('master_items').select('name');
     var masterNames = (masterData || []).map(function(m) { return m.name.toLowerCase(); });
@@ -186,7 +197,8 @@
   window.toggleItem = async function(el) {
     var id = el.closest('.shop-item').dataset.id;
     var isDone = !el.classList.contains('done');
-    await sb.from('shopping_items').update({ checked: isDone }).eq('id', id);
+    var { error } = await sb.from('shopping_items').update({ checked: isDone }).eq('id', id);
+    if(error){shopToast('Could not update item: '+error.message,'error');return;}
     loadItems();
   };
 
@@ -217,11 +229,12 @@
     var qty = parseInt(document.getElementById('add-qty').textContent) || 1;
     if (qty > 1) row.name = row.name + ' x' + qty;
 
-    await sb.from('shopping_items').insert(row);
+    var { error } = await sb.from('shopping_items').insert(row);
+    document.getElementById('add-btn').disabled = false;
+    if(error){shopToast('Could not add item: '+error.message,'error');return;}
     input.value = '';
     document.getElementById('add-qty').textContent = '1';
     document.getElementById('suggest-list').classList.remove('visible');
-    document.getElementById('add-btn').disabled = false;
     loadItems();
     input.focus();
   };

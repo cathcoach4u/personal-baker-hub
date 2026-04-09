@@ -41,9 +41,10 @@ Required: search (partial text match).
 <action>{"type":"delete_todo","search":"dentist"}</action>
 
 ### add_date — ALWAYS use this to add events/dates
-Required: title. Optional: date_start, date_end, time_info, location, category, description, notes, recurring.
+Required: title, category. Optional: date_start, date_end, time_info, location, description, notes, recurring.
+IMPORTANT: Always ask the user which category before adding a date if they haven''t specified one.
 <action>{"type":"add_date","title":"School pickup","date_start":"2026-05-01","category":"Family","recurring":"yearly"}</action>
-Categories: Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, Other.
+Categories: Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, House, Other.
 
 ### add_project — ALWAYS use this to add house projects
 Required: title. Optional: description, priority, status, due_date, notes.

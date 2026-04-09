@@ -3622,7 +3622,8 @@
   };
 
   async function amLoadMaster() {
-    var { data } = await sb.from('master_items').select('*').order('name');
+    var { data, error } = await sb.from('master_items').select('*').order('name');
+    if(error){console.error('Master list error:',error);if(window.phToast)phToast('Master list error: '+error.message,'error');return;}
     masterItems = data || [];
     masterSelected.clear();
     var stores = {};
@@ -3666,7 +3667,7 @@
       html += '<span>' + icon + ' ' + esc(cat) + '</span>';
       html += '<span class="cat-count">' + groups[cat].length + ' items</span>';
       html += '</div>';
-      html += '<div style="display:none !important;">';
+      html += '<div>';
       groups[cat].forEach(function(item) {
         var sel = masterSelected.has(item.id);
         var storeCls = (item.store || '').toLowerCase().replace(/[^a-z]/g,'');

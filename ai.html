@@ -163,7 +163,7 @@
       .replace(/\n/g,'<br>');
     if(html.includes('<li>'))html='<ul>'+html+'</ul>';
     if(role==='ai'){
-      div.innerHTML='<button class="copy-btn" onclick="copyMsg(this)" title="Copy">\u{1F4CB}</button><p>'+html+'</p>';
+      div.innerHTML='<button class="copy-btn" onclick="copyMsg(this)" title="Copy" aria-label="Copy message">\u{1F4CB}</button><p>'+html+'</p>';
     } else {
       div.innerHTML='<p>'+html+'</p>';
     }

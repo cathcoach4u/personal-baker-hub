@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d9488">
+<title>NDIS Transactions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; }
+
+  .header { background: #0d9488; color: white; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .header h1 { font-size: 18px; font-weight: 700; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+
+  .fund-cards { display: flex; gap: 10px; margin-bottom: 16px; }
+  .fund-card { flex: 1; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; }
+  .fund-name { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+  .fund-remaining { font-size: 20px; font-weight: 700; }
+  .fund-detail { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+  .healthy { color: #16a34a; }
+  .warning { color: #eab308; }
+  .danger { color: #ef4444; }
+
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .filter-bar select, .filter-bar input { padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; font-family: inherit; background: white; flex: 1; min-width: 100px; }
+  .filter-bar input { min-width: 120px; }
+
+  .action-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .action-btn { padding: 10px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .action-btn.primary { background: #0d9488; color: white; }
+  .action-btn.secondary { background: white; border: 1px solid #e2e8f0; color: #64748b; }
+
+  .tx-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tx-card:active { background: #f8fafc; }
+  .tx-top { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
+  .tx-provider { font-size: 15px; font-weight: 700; }
+  .tx-amount { font-size: 16px; font-weight: 700; }
+  .tx-meta { font-size: 12px; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .tx-badge { font-size: 10px; padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+  .tx-badge.paid { background: #f0fdf4; color: #16a34a; }
+  .tx-badge.outstanding { background: #fef2f2; color: #ef4444; }
+  .tx-fund { font-size: 10px; padding: 3px 8px; border-radius: 99px; font-weight: 600; }
+  .tx-fund.idl { background: #eff6ff; color: #2563eb; }
+  .tx-fund.isc { background: #faf5ff; color: #7c3aed; }
+  .tx-receipt { font-size: 11px; color: #0d9488; text-decoration: none; font-weight: 600; }
+  .tx-notes { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+
+  .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
+  .loading { text-align: center; padding: 40px; color: #94a3b8; }
+  .count-label { font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+
+  .form-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; }
+  .form-overlay.open { display: block; }
+  .form-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 16px 16px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 101; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s; }
+  .form-sheet.open { transform: translateY(0); }
+  .form-sheet h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 600; color: #64748b; }
+  .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
+  .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .form-actions button { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; }
+  .btn-save { background: #0d9488; color: white; }
+  .btn-cancel { background: #f1f5f9; color: #64748b; }
+  .btn-delete { background: #ef4444; color: white; }
+  .form-msg { font-size: 12px; margin-top: 10px; padding: 8px 12px; border-radius: 8px; display: none; }
+  .form-msg.success { display: block; background: #f0fdf4; color: #16a34a; }
+  .form-msg.error { display: block; background: #fef2f2; color: #ef4444; }
+
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 200; display: none; max-width: 90%; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .toast.error { background: #ef4444; }
+  .toast.success { background: #0d9488; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>NDIS Transactions 2026</h1>
+</div>
+
+<div class="container">
+  <div class="fund-cards" id="fund-cards"></div>
+
+  <div class="filter-bar">
+    <select id="f-status" onchange="render()"><option value="">All Statuses</option><option>Paid</option><option>Outstanding</option></select>
+    <select id="f-fund" onchange="render()"><option value="">All Funds</option><option>Improved Daily Living</option><option>Increased Social and Community</option></select>
+    <input type="text" id="f-search" placeholder="Search..." oninput="render()">
+  </div>
+
+  <div class="action-bar">
+    <button class="action-btn primary" onclick="openForm()">+ Add Transaction</button>
+    <button class="action-btn secondary" onclick="exportCSV()">Export CSV</button>
+  </div>
+
+  <div class="count-label" id="count-label"></div>
+  <div id="tx-list"><div class="loading">Loading...</div></div>
+</div>
+
+<div class="form-overlay" id="form-overlay" onclick="closeForm()"></div>
+<div class="form-sheet" id="form-sheet">
+  <h3 id="form-title">New Transaction</h3>
+  <div class="form-grid">
+    <div class="form-group full"><label>Provider</label><select id="nf-provider" onchange="providerChanged()"></select></div>
+    <div class="form-group full" id="nf-newprov-group" style="display:none;"><label>New Provider Name</label><input type="text" id="nf-newprov" placeholder="Provider name"></div>
+    <div class="form-group"><label>Invoice No</label><input type="text" id="nf-invoice" placeholder="e.g. 20"></div>
+    <div class="form-group"><label>Date</label><input type="date" id="nf-date"></div>
+    <div class="form-group"><label>Amount ($)</label><input type="number" id="nf-amount" step="0.01" placeholder="0.00"></div>
+    <div class="form-group"><label>Fund</label><select id="nf-fund"><option>Increased Social and Community</option><option>Improved Daily Living</option></select></div>
+    <div class="form-group"><label>NDIS Number</label><input type="text" id="nf-ndis" placeholder="e.g. 432335528"></div>
+    <div class="form-group"><label>Status</label><select id="nf-status"><option>Outstanding</option><option>Paid</option></select></div>
+    <div class="form-group full"><label>Notes</label><input type="text" id="nf-notes" placeholder="Optional"></div>
+    <div class="form-group full"><label>Receipt / Invoice</label><input type="file" id="nf-file" accept=".pdf,.jpg,.jpeg,.png,.heic"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn-save" id="btn-save" onclick="save()">Save</button>
+    <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+    <button class="btn-delete" id="btn-delete" onclick="deleteTx()" style="display:none;">Delete</button>
+  </div>
+  <div class="form-msg" id="form-msg"></div>
+</div>
+
+<div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(async function(){
+  var sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+  var FUNDS = {};
+  var NDIS = [];
+  var PROVIDERS = [];
+  var editingId = null;
+
+  function $(s){return document.querySelector(s);}
+  function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast '+(type||'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},3500);}
+  function money(n){return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+  function fmtD(d){if(!d)return '\u2014';var dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
+  function ftc(f){return f.includes('Daily Living')?'idl':'isc';}
+  function ftn(f){return f.includes('Daily Living')?'Improved Daily Living':'Social & Community';}
+
+  // ─── LOAD DATA ───
+  var fundsRes = await sb.from('ndis_funds').select('*');
+  var ndisRes = await sb.from('ndis_transactions').select('*').order('date',{ascending:false});
+  var provRes = await sb.from('ndis_providers').select('*').order('name');
+
+  if(fundsRes.error||ndisRes.error||provRes.error){
+    $('#tx-list').innerHTML='<div class="empty">Could not load data. Please check your connection.</div>';
+    return;
+  }
+
+  (fundsRes.data||[]).forEach(function(r){FUNDS[r.fund_name]=parseFloat(r.budget_amount);});
+  NDIS=(ndisRes.data||[]).map(function(r){return{id:r.id,p:r.provider_name,inv:r.invoice_number,fund:r.funded_support,ndis:r.ndis_number,date:r.date,amt:parseFloat(r.amount),status:r.status,notes:r.notes||'',receipt:r.receipt_path||''};});
+  PROVIDERS=(provRes.data||[]).map(function(r){return{id:r.id,name:r.name,ndis:r.ndis_number||'',fund:r.default_fund||''};});
+
+  // ─── RENDER ───
+  window.render = function(){
+    var sf=$('#f-status').value, ff=$('#f-fund').value, ns=$('#f-search').value.toLowerCase();
+    var spent={};for(var f in FUNDS)spent[f]=0;
+    NDIS.forEach(function(t){if(spent[t.fund]!==undefined)spent[t.fund]+=t.amt;});
+
+    var fundHtml='';
+    for(var fn in FUNDS){
+      var rem=FUNDS[fn]-(spent[fn]||0);
+      var pct=rem/FUNDS[fn];
+      var cls=pct>0.3?'healthy':pct>0.1?'warning':'danger';
+      fundHtml+='<div class="fund-card"><div class="fund-name">'+(fn.includes('Daily')?'Daily Living':'Social & Community')+'</div><div class="fund-remaining '+cls+'">'+money(rem)+'</div><div class="fund-detail">of '+money(FUNDS[fn])+' \u2022 spent '+money(spent[fn]||0)+'</div></div>';
+    }
+    $('#fund-cards').innerHTML=fundHtml;
+
+    var fl=NDIS.slice();
+    if(sf)fl=fl.filter(function(t){return t.status===sf;});
+    if(ff)fl=fl.filter(function(t){return t.fund===ff;});
+    if(ns)fl=fl.filter(function(t){return t.p.toLowerCase().indexOf(ns)!==-1||t.inv.toLowerCase().indexOf(ns)!==-1;});
+    fl.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+
+    $('#count-label').textContent=fl.length+' transaction'+(fl.length!==1?'s':'');
+
+    if(!fl.length){$('#tx-list').innerHTML='<div class="empty">No transactions found</div>';return;}
+
+    var html='';
+    fl.forEach(function(t){
+      var receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-invoices/'+t.receipt:'';
+      html+='<div class="tx-card" onclick="editTx('+t.id+')">';
+      html+='<div class="tx-top"><div class="tx-provider">'+t.p+'</div><div class="tx-amount">'+(t.amt?money(t.amt):'TBC')+'</div></div>';
+      html+='<div class="tx-meta"><span>Inv '+t.inv+'</span><span>\u2022</span><span>'+fmtD(t.date)+'</span><span class="tx-badge '+t.status.toLowerCase()+'">'+t.status+'</span><span class="tx-fund '+ftc(t.fund)+'">'+ftn(t.fund)+'</span>';
+      if(receiptUrl)html+='<a class="tx-receipt" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View Receipt</a>';
+      html+='</div>';
+      if(t.notes)html+='<div class="tx-notes">'+t.notes+'</div>';
+      html+='</div>';
+    });
+    $('#tx-list').innerHTML=html;
+  };
+
+  // ─── FORM ───
+  function populateProviders(selectedName){
+    var html='<option value="">Select provider...</option>';
+    PROVIDERS.forEach(function(p){html+='<option value="'+p.id+'"'+(selectedName&&p.name===selectedName?' selected':'')+'>'+p.name+'</option>';});
+    html+='<option value="__new">+ Add new provider...</option>';
+    $('#nf-provider').innerHTML=html;
+  }
+
+  window.providerChanged=function(){
+    var val=$('#nf-provider').value;
+    if(val==='__new'){$('#nf-newprov-group').style.display='flex';return;}
+    $('#nf-newprov-group').style.display='none';$('#nf-newprov').value='';
+    if(!val||editingId)return;
+    var prov=PROVIDERS.find(function(p){return p.id===parseInt(val);});
+    if(prov){if(prov.ndis)$('#nf-ndis').value=prov.ndis;if(prov.fund)$('#nf-fund').value=prov.fund;}
+  };
+
+  window.openForm=function(){
+    editingId=null;
+    $('#form-title').textContent='New Transaction';
+    $('#btn-save').textContent='Save';
+    $('#btn-delete').style.display='none';
+    populateProviders();
+    $('#nf-newprov-group').style.display='none';
+    $('#nf-newprov').value='';$('#nf-invoice').value='';$('#nf-date').value='';$('#nf-amount').value='';
+    $('#nf-fund').value='Increased Social and Community';$('#nf-ndis').value='';$('#nf-status').value='Outstanding';$('#nf-notes').value='';$('#nf-file').value='';
+    $('#form-msg').className='form-msg';$('#form-msg').textContent='';
+    $('#form-overlay').classList.add('open');$('#form-sheet').classList.add('open');
+  };
+
+  window.closeForm=function(){
+    $('#form-overlay').classList.remove('open');$('#form-sheet').classList.remove('open');
+  };
+
+  window.editTx=function(id){
+    var t=NDIS.find(function(x){return x.id===id;});if(!t)return;
+    editingId=id;
+    $('#form-title').textContent='Edit Transaction';
+    $('#btn-save').textContent='Update';
+    $('#btn-delete').style.display='block';
+    populateProviders(t.p);
+    $('#nf-newprov-group').style.display='none';
+    $('#nf-invoice').value=t.inv;$('#nf-date').value=t.date;$('#nf-amount').value=t.amt;
+    $('#nf-fund').value=t.fund;$('#nf-ndis').value=t.ndis;$('#nf-status').value=t.status;$('#nf-notes').value=t.notes;$('#nf-file').value='';
+    $('#form-msg').className='form-msg';$('#form-msg').textContent='';
+    $('#form-overlay').classList.add('open');$('#form-sheet').classList.add('open');
+  };
+
+  window.save=async function(){
+    var btn=$('#btn-save');btn.disabled=true;var origText=btn.textContent;btn.textContent='Saving...';
+    var provVal=$('#nf-provider').value;
+    var newProvName=$('#nf-newprov').value.trim();
+    var provider='';
+    if(provVal==='__new'){
+      if(!newProvName){$('#form-msg').className='form-msg error';$('#form-msg').textContent='Enter provider name.';btn.disabled=false;btn.textContent=origText;return;}
+      provider=newProvName;
+    }else if(provVal){var prov=PROVIDERS.find(function(p){return p.id===parseInt(provVal);});provider=prov?prov.name:'';}
+    else if(editingId){var et=NDIS.find(function(x){return x.id===editingId;});provider=et?et.p:'';}
+
+    var invoice=$('#nf-invoice').value.trim();
+    var date=$('#nf-date').value;
+    var amount=parseFloat($('#nf-amount').value)||0;
+    var fund=$('#nf-fund').value;
+    var ndisNo=$('#nf-ndis').value.trim();
+    var status=$('#nf-status').value;
+    var notes=$('#nf-notes').value.trim();
+
+    if(!provider||!invoice||!date){$('#form-msg').className='form-msg error';$('#form-msg').textContent='Fill in Provider, Invoice, and Date.';btn.disabled=false;btn.textContent=origText;return;}
+
+    try{
+      if(provVal==='__new'){
+        var res=await sb.from('ndis_providers').insert({name:newProvName,ndis_number:ndisNo,default_fund:fund}).select().single();
+        if(res.error)throw res.error;
+        PROVIDERS.push({id:res.data.id,name:res.data.name,ndis:ndisNo,fund:fund});
+      }
+
+      var receiptPath='';
+      var fileInput=$('#nf-file');
+      if(fileInput.files&&fileInput.files[0]){
+        var file=fileInput.files[0];
+        var ext=file.name.split('.').pop().toLowerCase();
+        var fileName=date+'_'+provider.replace(/\s+/g,'-')+'_inv-'+invoice+'.'+ext;
+        var filePath='receipts/'+fileName;
+        var upRes=await sb.storage.from('ndis-invoices').upload(filePath,file,{upsert:true});
+        if(upRes.error)throw upRes.error;
+        receiptPath=filePath;
+      }
+
+      var row={provider_name:provider,invoice_number:invoice,date:date,amount:amount,funded_support:fund,ndis_number:ndisNo,status:status,notes:notes};
+      if(receiptPath)row.receipt_path=receiptPath;
+
+      if(editingId){
+        var upd=await sb.from('ndis_transactions').update(row).eq('id',editingId);
+        if(upd.error)throw upd.error;
+        var idx=NDIS.findIndex(function(x){return x.id===editingId;});
+        if(idx>=0)NDIS[idx]={id:editingId,p:provider,inv:invoice,fund:fund,ndis:ndisNo,date:date,amt:amount,status:status,notes:notes,receipt:receiptPath||NDIS[idx].receipt};
+        toast('Transaction updated!','success');
+      }else{
+        var ins=await sb.from('ndis_transactions').insert(row).select().single();
+        if(ins.error)throw ins.error;
+        NDIS.unshift({id:ins.data.id,p:provider,inv:invoice,fund:fund,ndis:ndisNo,date:date,amt:amount,status:status,notes:notes,receipt:receiptPath});
+        toast('Transaction saved!','success');
+      }
+      render();closeForm();
+    }catch(e){
+      $('#form-msg').className='form-msg error';$('#form-msg').textContent='Error: '+e.message;
+    }finally{btn.disabled=false;btn.textContent=origText;}
+  };
+
+  window.deleteTx=async function(){
+    if(!editingId||!confirm('Delete this transaction?'))return;
+    var res=await sb.from('ndis_transactions').delete().eq('id',editingId);
+    if(res.error){toast('Delete error: '+res.error.message,'error');return;}
+    NDIS=NDIS.filter(function(t){return t.id!==editingId;});
+    toast('Transaction deleted','success');
+    render();closeForm();
+  };
+
+  // ─── EXPORT ───
+  window.exportCSV=function(){
+    var sf=$('#f-status').value,ff=$('#f-fund').value,ns=$('#f-search').value.toLowerCase();
+    var fl=NDIS.slice();
+    if(sf)fl=fl.filter(function(t){return t.status===sf;});
+    if(ff)fl=fl.filter(function(t){return t.fund===ff;});
+    if(ns)fl=fl.filter(function(t){return t.p.toLowerCase().indexOf(ns)!==-1;});
+    if(!fl.length){toast('No transactions to export','error');return;}
+    var esc=function(v){var s=String(v==null?'':v);return s.indexOf(',')!==-1||s.indexOf('"')!==-1?'"'+s.replace(/"/g,'""')+'"':s;};
+    var csv='Provider,Invoice,Date,Fund,Amount,Status,Notes\n';
+    fl.forEach(function(t){csv+=esc(t.p)+','+esc(t.inv)+','+esc(t.date)+','+esc(t.fund)+','+t.amt+','+esc(t.status)+','+esc(t.notes)+'\n';});
+    var blob=new Blob([csv],{type:'text/csv'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ndis-transactions.csv';a.click();URL.revokeObjectURL(a.href);
+    toast('Exported '+fl.length+' transactions','success');
+  };
+
+  // ─── INIT ───
+  render();
+})();
+</script>
+</body>
+</html>

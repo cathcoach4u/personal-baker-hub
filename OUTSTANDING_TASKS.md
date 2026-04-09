@@ -11,14 +11,8 @@
 ## Outstanding Tasks
 
 ### 1. AisleMate Separation
-**Status**: Pending  
-**Description**: AisleMate currently shares Supabase tables with Cath Hub. Clarify scope:
-- Should it remain shared?
-- Should it be separated into Baker Hub's own shopping system?
-- What tables/features does it need?
-
-**Related Code**: `shopping.html` (standalone AisleMate page)  
-**Tables**: `shopping_items`, `master_items`, `receipts`, `receipt_items` (currently shared with Cath Hub)
+**Status**: Closed (not needed)  
+**Description**: AisleMate remains shared with Cath Hub. Now works as a standalone PWA with its own manifest and icon, and is listed on the Apps Hub directory.
 
 ---
 
@@ -57,13 +51,8 @@
 ---
 
 ### 5. Update Navigation Documentation
-**Status**: Pending  
-**Description**: CLAUDE.md navigation list (lines 24-35) is missing Monthly Tasks and Habits & Rhythms sections.
-
-**File**: `Personal-hub/CLAUDE.md`  
-**Action**: Add to sidebar navigation list:
-- Monthly Tasks (Week-based organization)
-- Habits & Rhythms (Frequency-based tracking)
+**Status**: Fixed  
+**Description**: Added Habits & Rhythms to the CLAUDE.md navigation list.
 
 ---
 

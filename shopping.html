@@ -285,5 +285,6 @@
   setInterval(loadItems, 30000);
 })();
 </script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('shopping-sw.js').catch(()=>{});</script>
 </body>
 </html>

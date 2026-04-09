@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d9488">
+<title>Sarah's MS & Epilepsy Protocol</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; line-height: 1.5; }
+
+  .header { background: #0d9488; color: white; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header a { color: white; text-decoration: none; font-size: 13px; opacity: 0.8; }
+
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+
+  .purpose { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13px; color: #1e40af; }
+
+  .section { background: white; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+  .section-header { padding: 16px; font-size: 16px; font-weight: 700; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; -webkit-tap-highlight-color: transparent; }
+  .section-header .arrow { font-size: 12px; color: #94a3b8; transition: transform 0.2s; }
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+  .section-body { padding: 16px; }
+  .section-body.hidden { display: none; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  .detail-card { background: #f8fafc; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+  .detail-card:last-child { margin-bottom: 0; }
+  .detail-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #0d9488; }
+  .detail-card ul { list-style: none; padding: 0; }
+  .detail-card li { font-size: 13px; padding: 4px 0; padding-left: 16px; position: relative; }
+  .detail-card li::before { content: '\2022'; position: absolute; left: 0; color: #94a3b8; }
+  .detail-card .label { font-weight: 600; color: #475569; }
+
+  .reminder-card { display: flex; align-items: start; gap: 12px; padding: 12px; background: #fef9c3; border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+  .reminder-card:last-child { margin-bottom: 0; }
+  .reminder-month { font-weight: 700; color: #92400e; min-width: 70px; }
+  .reminder-action { color: #78350f; }
+
+  @media (max-width: 600px) {
+    table { font-size: 12px; }
+    th, td { padding: 8px; }
+    .section-body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html">&larr; Baker Hub</a>
+  <h1>Sarah's MS & Epilepsy Management Protocol</h1>
+</div>
+
+<div class="container">
+
+  <div class="purpose">
+    This protocol captures the regular medical requirements for managing Sarah's MS and epilepsy. It ensures nothing is missed and supports forward planning for appointments, tests, and documentation.
+  </div>
+
+  <!-- Section 1: Annual Cycle Overview -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Annual Cycle Overview
+      <span class="arrow">&#x25BC;</span>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead>
+          <tr><th>Month</th><th>Requirement</th><th>Provider</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Feb / Mar</td><td>JC Virus Blood Test</td><td>Douglas Hanley Moir Pathology</td><td>Every 6 months</td></tr>
+          <tr><td>June</td><td>MRI Scan</td><td>Royal North Shore Imaging</td><td>Every 6 months</td></tr>
+          <tr><td>June</td><td>Neurologist (Telehealth)</td><td>Suite 405, Level 4 "The William", St Leonards</td><td>Request driver's licence letter</td></tr>
+          <tr><td>Aug / Sep</td><td>JC Virus Blood Test</td><td>Douglas Hanley Moir Pathology</td><td>Every 6 months</td></tr>
+          <tr><td>December</td><td>MRI Scan</td><td>Royal North Shore Imaging</td><td>Every 6 months</td></tr>
+          <tr><td>December</td><td>Neurologist (Face-to-face)</td><td>Suite 405, Level 4 "The William", St Leonards</td><td>Review year and plan ahead</td></tr>
+          <tr><td>Annual</td><td>Full Blood Test</td><td>GP or pathology</td><td>Once per year</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 2: Regular Requirements (Detail) -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Regular Requirements (Detail)
+      <span class="arrow">&#x25BC;</span>
+    </div>
+    <div class="section-body">
+
+      <div class="detail-card">
+        <h4>MRI Scans</h4>
+        <ul>
+          <li><span class="label">Frequency:</span> Every 6 months (June and December)</li>
+          <li><span class="label">Location:</span> Royal North Shore Imaging, MRI Department</li>
+          <li><span class="label">Purpose:</span> Monitor MS progression and treatment effectiveness</li>
+          <li><span class="label">Booking lead time:</span> Book 2&ndash;3 months in advance</li>
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h4>JC Virus Blood Test</h4>
+        <ul>
+          <li><span class="label">Frequency:</span> Every 6 months (February/March and August/September)</li>
+          <li><span class="label">Location:</span> Douglas Hanley Moir Pathology</li>
+          <li><span class="label">Purpose:</span> Monitor risk related to MS treatment</li>
+          <li><span class="label">Booking lead time:</span> Book 1 month in advance</li>
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h4>Full Blood Test</h4>
+        <ul>
+          <li><span class="label">Frequency:</span> Annual</li>
+          <li><span class="label">Location:</span> GP or pathology provider</li>
+          <li><span class="label">Purpose:</span> General health monitoring</li>
+          <li><span class="label">Booking lead time:</span> Book 1 month in advance</li>
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h4>Neurologist Appointments</h4>
+        <ul>
+          <li><span class="label">Frequency:</span> Twice per year (June and December)</li>
+          <li><span class="label">Location:</span> Suite 405, Level 4 "The William", 480 Pacific Hwy, St Leonards NSW 2065</li>
+          <li><span class="label">Format:</span> June &mdash; Telehealth / December &mdash; Face-to-face</li>
+          <li><span class="label">June appointment:</span> Request driver's licence medical letter</li>
+          <li><span class="label">Booking lead time:</span> Book 3&ndash;6 months in advance</li>
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h4>Driver's Licence Medical Letter</h4>
+        <ul>
+          <li><span class="label">Frequency:</span> Annual (June neurologist appointment)</li>
+          <li><span class="label">Purpose:</span> NSW driver's licence medical clearance</li>
+          <li><span class="label">Action required:</span> Request letter during June telehealth appointment</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 3: Specialist Contacts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Specialist Contacts
+      <span class="arrow">&#x25BC;</span>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead>
+          <tr><th>Specialist</th><th>Contact Details</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Neurologist</td><td>Suite 405, Level 4 "The William", 480 Pacific Hwy, St Leonards NSW 2065</td><td>MS and epilepsy management</td></tr>
+          <tr><td>Royal North Shore Imaging</td><td>MRI Department, Royal North Shore Hospital<br><a href="tel:0292964444">(02) 9926 4444</a></td><td>MRI scans</td></tr>
+          <tr><td>Douglas Hanley Moir Pathology</td><td><a href="tel:1800313010">1800 313 010</a></td><td>JC Virus blood tests</td></tr>
+          <tr><td>NB Dermatology</td><td>Dr Andrea Tomizawa<br>20 Bungan St, Suite 304, Mona Vale NSW 2103</td><td>Dermatology</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Planning Reminders -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Planning Reminders
+      <span class="arrow">&#x25BC;</span>
+    </div>
+    <div class="section-body">
+      <div class="reminder-card">
+        <span class="reminder-month">January</span>
+        <span class="reminder-action">Book February/March JC Virus blood test</span>
+      </div>
+      <div class="reminder-card">
+        <span class="reminder-month">April</span>
+        <span class="reminder-action">Book December MRI and neurologist face-to-face appointment</span>
+      </div>
+      <div class="reminder-card">
+        <span class="reminder-month">July</span>
+        <span class="reminder-action">Book August/September JC Virus blood test</span>
+      </div>
+      <div class="reminder-card">
+        <span class="reminder-month">October</span>
+        <span class="reminder-action">Book June MRI and neurologist telehealth appointment</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  var body = header.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+</script>
+
+</body>
+</html>

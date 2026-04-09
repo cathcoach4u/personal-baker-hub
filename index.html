@@ -1371,7 +1371,7 @@
     if(!fl.length){$('#ph-ntb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">No transactions found</td></tr>';}
     else{$('#ph-ntb').innerHTML=fl.map(t=>{
       const receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-invoices/'+t.receipt:'';
-      const receiptCol=receiptUrl?'<a class="receipt-link" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View</a>':'\u2014';
+      const receiptCol=receiptUrl?'<a class="receipt-link" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">\u2705 View</a>':'<span style="color:#ef4444;font-size:10px;font-weight:600;">\u274C Missing</span>';
       return '<tr class="clickable" onclick="phEditNdis('+t.id+')"><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td><td>'+receiptCol+'</td></tr>';
     }).join('');}
 
@@ -1382,7 +1382,8 @@
       let c='<div class="ndis-card" onclick="phEditNdis('+t.id+')">';
       c+='<div class="ndis-card-top"><div class="ndis-card-provider">'+t.p+'</div><div class="ndis-card-amt">'+(t.amt?money(t.amt):'TBC')+'</div></div>';
       c+='<div class="ndis-card-meta"><span>Inv '+t.inv+'</span><span>\u2022</span><span>'+fmtD(t.date)+'</span><span class="ndis-card-badge '+t.status+'">'+t.status+'</span><span class="ndis-card-fund '+ftc(t.fund)+'">'+ftn(t.fund)+'</span>';
-      if(receiptUrl)c+='<a class="ndis-card-receipt" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View Receipt</a>';
+      if(receiptUrl)c+='<a class="ndis-card-receipt" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">\u2705 Receipt</a>';
+      else c+='<span style="color:#ef4444;font-size:10px;font-weight:600;">\u274C No Receipt</span>';
       c+='</div>';
       if(t.notes)c+='<div class="ndis-card-notes">'+t.notes+'</div>';
       c+='</div>';

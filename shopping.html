@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1e293b">
@@ -13,12 +13,13 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; }
 
-  .header { background: #1e293b; color: white; padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  .header { background: #1e293b; color: white; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: 10px; }
   .header h1 { font-size: 18px; font-weight: 700; }
 
-  .container { max-width: 500px; margin: 0 auto; padding: 16px; }
+  .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 
-  .add-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .add-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .add-bar .add-input { min-width: 0; }
   .add-input { flex: 1; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; outline: none; font-family: inherit; background: white; }
   .add-input:focus { border-color: #3b82f6; }
   .add-btn { padding: 12px 20px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
@@ -59,6 +60,15 @@
   .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
 
   .loading { text-align: center; padding: 40px; color: #94a3b8; }
+
+  .shop-del { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 16px; padding: 8px; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+  .shop-del:hover { color: #ef4444; }
+
+  @media (max-width: 400px) {
+    .add-bar .add-input { flex: 1 1 100%; }
+    .add-bar { gap: 6px; }
+    .add-btn { flex: 1; }
+  }
 
   .shop-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 9999; display: none; max-width: 90%; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
   .shop-toast.error { background: #ef4444; }
@@ -189,9 +199,18 @@
     h += '<div class="shop-check' + (item.checked ? ' done' : '') + '" onclick="toggleItem(this)"></div>';
     h += '<span class="shop-name' + (item.checked ? ' checked' : '') + '">' + esc(item.name) + '</span>';
     if (item.store) h += '<span class="store-tag ' + storeCls + '">' + esc(item.store) + '</span>';
+    h += '<button class="shop-del" onclick="deleteItem(this)" aria-label="Delete item">\u00D7</button>';
     h += '</div>';
     return h;
   }
+
+  // ─── DELETE ITEM ───
+  window.deleteItem = async function(el) {
+    var id = el.closest('.shop-item').dataset.id;
+    var { error } = await sb.from('shopping_items').delete().eq('id', id);
+    if(error){shopToast('Could not delete item: '+error.message,'error');return;}
+    loadItems();
+  };
 
   // ─── TOGGLE CHECK ───
   window.toggleItem = async function(el) {

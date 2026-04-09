@@ -74,11 +74,11 @@
 
 <div class="container">
   <div class="add-bar">
-    <input class="add-input" id="add-input" type="text" placeholder="Add an item..." autocomplete="off">
+    <input class="add-input" id="add-input" type="text" placeholder="Add an item..." autocomplete="off" aria-label="Item name">
     <div style="display:flex;align-items:center;gap:2px;background:white;border:1px solid #e2e8f0;border-radius:8px;padding:2px 4px;">
-      <button onclick="shopQtyChange(-1)" style="border:none;background:none;font-size:16px;font-weight:700;color:#64748b;cursor:pointer;padding:4px 6px;">&minus;</button>
-      <span id="add-qty" style="font-size:14px;font-weight:600;min-width:18px;text-align:center;">1</span>
-      <button onclick="shopQtyChange(1)" style="border:none;background:none;font-size:16px;font-weight:700;color:#64748b;cursor:pointer;padding:4px 6px;">+</button>
+      <button onclick="shopQtyChange(-1)" aria-label="Decrease quantity" style="border:none;background:none;font-size:18px;font-weight:700;color:#64748b;cursor:pointer;padding:8px 10px;min-width:44px;min-height:44px;">&minus;</button>
+      <span id="add-qty" style="font-size:14px;font-weight:600;min-width:18px;text-align:center;" aria-label="Quantity">1</span>
+      <button onclick="shopQtyChange(1)" aria-label="Increase quantity" style="border:none;background:none;font-size:18px;font-weight:700;color:#64748b;cursor:pointer;padding:8px 10px;min-width:44px;min-height:44px;">+</button>
     </div>
     <button class="add-btn" id="add-btn" onclick="addItem()">Add</button>
   </div>
@@ -92,7 +92,7 @@
 
   <div id="items-container"><div class="loading">Loading...</div></div>
 </div>
-<div class="shop-toast" id="shop-toast"></div>
+<div class="shop-toast" id="shop-toast" role="alert" aria-live="polite"></div>
 
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

@@ -469,7 +469,7 @@
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
     <div id="ph-error"></div>
-    <div id="ph-toast"></div>
+    <div id="ph-toast" role="alert" aria-live="polite"></div>
     <div class="screen" id="ph-home">
       <h2 id="ph-greeting">Dashboard</h2>
       <div class="bin-widget" id="ph-thisweek"></div>
@@ -488,6 +488,7 @@
         <select id="ph-ff" onchange="phNDIS()"><option value="">All Funds</option><option>Improved Daily Living</option><option>Increased Social and Community</option></select>
         <input type="text" id="ph-ns" placeholder="Search..." oninput="phNDIS()">
         <button class="add-btn" onclick="phToggleNdisForm()">+ Add Transaction</button>
+        <button class="add-btn" onclick="phCopyNdis()" aria-label="Copy transactions" style="background:#64748b;">Copy List</button>
       </div>
       <div class="add-form" id="ph-ndis-form">
         <h3 id="nf-title">New NDIS Transaction</h3>
@@ -1340,11 +1341,23 @@
     if(ns)fl=fl.filter(t=>t.p.toLowerCase().includes(ns)||t.inv.toLowerCase().includes(ns));
     fl.sort((a,b)=>new Date(b.date)-new Date(a.date));
 
-    $('#ph-ntb').innerHTML=fl.map(t=>{
+    if(!fl.length){$('#ph-ntb').innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">No transactions found</td></tr>';}
+    else{$('#ph-ntb').innerHTML=fl.map(t=>{
       const receiptUrl=t.receipt?SUPABASE_CONFIG.url+'/storage/v1/object/public/ndis-invoices/'+t.receipt:'';
       const receiptCol=receiptUrl?'<a class="receipt-link" href="'+receiptUrl+'" target="_blank" onclick="event.stopPropagation()">View</a>':'\u2014';
       return '<tr class="clickable" onclick="phEditNdis('+t.id+')"><td><strong>'+t.p+'</strong></td><td>'+t.inv+'</td><td>'+fmtD(t.date)+'</td><td><span class="fund-tag '+ftc(t.fund)+'">'+ftn(t.fund)+'</span></td><td><strong>'+(t.amt?money(t.amt):'TBC')+'</strong></td><td><span class="status '+t.status+'">'+t.status+'</span></td><td>'+receiptCol+'</td></tr>';
-    }).join('');
+    }).join('');}
+  };
+
+  window.phCopyNdis=function(){
+    const sf=$('#ph-sf').value,ff=$('#ph-ff').value,ns=$('#ph-ns').value.toLowerCase();
+    let fl=NDIS;
+    if(sf)fl=fl.filter(t=>t.status===sf);
+    if(ff)fl=fl.filter(t=>t.fund===ff);
+    if(ns)fl=fl.filter(t=>t.p.toLowerCase().includes(ns)||t.inv.toLowerCase().includes(ns));
+    if(!fl.length){phToast('No transactions to copy','error');return;}
+    const text=fl.map(t=>t.p+' | Inv '+t.inv+' | '+fmtD(t.date)+' | '+(t.amt?money(t.amt):'TBC')+' | '+t.status).join('\n');
+    navigator.clipboard.writeText(text).then(()=>phToast('Copied '+fl.length+' transaction'+(fl.length!==1?'s':'')+'!','success'));
   };
 
   let editingNdisId=null; // null = adding new, number = editing existing
@@ -1536,6 +1549,7 @@
       }).join('');
       html+='</tbody></table></div></div></div>';
     }
+    if(!fl.length)html='<div class="todo-empty">No policies found</div>';
     $('#ph-ins-groups').innerHTML=html;
   };
 
@@ -1669,6 +1683,7 @@
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     fl.sort((a,b)=>a.name.localeCompare(b.name));
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
+    if(!fl.length){$('#ph-cg').innerHTML='<div class="todo-empty">No contacts found</div>';return;}
 
     // Toggle button active states
     $('#cg-by-person').className='todo-filter-btn'+(contactGroupBy==='person'?' active':'');
@@ -1722,13 +1737,21 @@
     }
   };
 
+  window.phCopyContact=function(id,e){
+    e.stopPropagation();
+    const c=CONTACTS.find(x=>x.id===id);if(!c)return;
+    let text=c.name;if(c.person)text+='\n'+c.person;if(c.phone)text+='\n'+c.phone;if(c.email)text+='\n'+c.email;
+    navigator.clipboard.writeText(text).then(()=>phToast('Copied!','success'));
+  };
+
   function renderContactCards(items){
     return items.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'';
       const emailLink=c.email?'<a href="mailto:'+c.email+'" style="font-size:11px;color:#0d9488;text-decoration:none;">'+c.email+'</a>':'';
       const meetLink=c.link?'<a href="'+c.link+'" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;" onclick="event.stopPropagation()">Book / Portal</a>':'';
       const personTag=c.forPerson?c.forPerson.split(', ').map(p=>'<span class="person-tag">'+p+'</span>').join(''):'';
-      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;"><div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;gap:2px;">'+(phoneLink||'')+(emailLink?'<div>'+emailLink+'</div>':'')+(meetLink?'<div>'+meetLink+'</div>':'')+'</div>'+(c.notes?'<div style="font-size:10px;color:#94a3b8;margin-top:4px;">'+c.notes+'</div>':'')+personTag+'</div>';
+      const copyBtn='<button onclick="phCopyContact('+c.id+',event)" aria-label="Copy contact" style="position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#94a3b8;" title="Copy">\u{1F4CB}</button>';
+      return '<div class="contact-card" onclick="phEditContact('+c.id+')" style="cursor:pointer;position:relative;">'+copyBtn+'<div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;gap:2px;">'+(phoneLink||'')+(emailLink?'<div>'+emailLink+'</div>':'')+(meetLink?'<div>'+meetLink+'</div>':'')+'</div>'+(c.notes?'<div style="font-size:10px;color:#94a3b8;margin-top:4px;">'+c.notes+'</div>':'')+personTag+'</div>';
     }).join('');
   }
 
@@ -2659,7 +2682,7 @@
   @media(max-width:480px){.bai-panel{right:8px;left:8px;width:auto;bottom:84px;max-height:70vh;}}
 </style>
 
-<button class="bai-toggle" onclick="baiToggle()" title="Baker AI" style="font-size:22px;font-weight:800;">B</button>
+<button class="bai-toggle" onclick="baiToggle()" title="Baker AI" aria-label="Open Baker AI chat" style="font-size:22px;font-weight:800;">B</button>
 
 <div class="bai-panel" id="baiPanel">
   <div class="bai-hdr">
@@ -2706,7 +2729,7 @@
     let html=baiEscHtml(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n- /g,'\n<li>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
     if(html.includes('<li>'))html='<ul>'+html+'</ul>';
     if(role==='ai'){
-      div.innerHTML='<div class="bub"><button class="bai-copy" onclick="baiCopy(this)" title="Copy">\u{1F4CB}</button><p>'+html+'</p></div>';
+      div.innerHTML='<div class="bub"><button class="bai-copy" onclick="baiCopy(this)" title="Copy" aria-label="Copy message">\u{1F4CB}</button><p>'+html+'</p></div>';
     } else {
       div.innerHTML='<div class="bub"><p>'+html+'</p></div>';
     }

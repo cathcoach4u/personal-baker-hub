@@ -29,10 +29,11 @@ Sidebar (desktop) + slide-out drawer (mobile, 768px breakpoint):
 5. Contacts
 6. House Projects
 7. Dates
-8. Animals
-9. AisleMate (shopping)
-10. Fiona Tasks
-11. About
+8. Habits & Rhythms (frequency-based tracking)
+9. Animals
+10. AisleMate (shopping)
+11. Fiona Tasks
+12. About
 
 Baker AI accessible via purple B button (bottom-right popup) on all pages.
 

@@ -3208,7 +3208,9 @@
 </script>
 
 <script>
+(function(){
   // ═══════ AISLEMATE ═══════
+  try {
   var sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
   var CAT_ICONS = {'Fruit & Veg':'&#x1F96C;','Meat':'&#x1F969;','Dairy':'&#x1F95B;','Pantry':'&#x1F96B;','Frozen':'&#x2744;','Drinks':'&#x1F964;','Household':'&#x1F9F9;','Other':'&#x1F4E6;'};
   var CAT_ORDER = ['Fruit & Veg','Meat','Dairy','Pantry','Frozen','Drinks','Household','Other'];
@@ -3295,7 +3297,8 @@
   }
 
   async function amLoadItems() {
-    var { data: items } = await sb.from('shopping_items').select('*').order('created_at');
+    var { data: items, error: loadErr } = await sb.from('shopping_items').select('*').order('created_at');
+    if(loadErr){console.error('AisleMate load error:',loadErr);if(window.phToast)phToast('Shopping load error: '+loadErr.message,'error');return;}
     items = items || [];
     var { data: masterData } = await sb.from('master_items').select('name');
     var masterNames = (masterData || []).map(function(m) { return m.name.toLowerCase(); });
@@ -3882,6 +3885,7 @@
     var basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
     qlEl.value = window.location.origin + basePath + 'shopping.html';
   }
+  } catch(e) { console.error('AisleMate init error:', e); if(window.phToast) phToast('AisleMate error: '+e.message,'error'); }
 })();
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>

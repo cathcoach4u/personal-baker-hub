@@ -707,6 +707,7 @@
       <h2>🐾 Animals</h2>
       <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
         <button class="add-btn" onclick="phToggleAnimalForm()">+ Add Animal</button>
+        <button class="add-btn" onclick="phToggleMedForm()" style="background:#3b82f6;">+ Medical Record</button>
         <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgDHdC1FsWjISKIjQtgHXMEnASJyu5nzyWbypDw_w2VeaS4?e=L2amSC" target="_blank" style="padding:8px 16px;background:#0d9488;color:white;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:inherit;">Animal File</a>
       </div>
       <div class="add-form" id="ph-animal-form" style="display:none;">
@@ -733,6 +734,25 @@
           <button class="add-btn" id="aif-del-btn" onclick="phDeleteAnimalFromForm()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="aif-msg"></div>
+      </div>
+      <!-- Medical Record Form -->
+      <div class="add-form" id="ph-med-form" style="display:none;">
+        <h3 id="mf-title">Add Medical Record</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Animal</label><select id="mf-animal"></select></div>
+          <div class="form-group"><label>Type</label><select id="mf-type" onchange="phMedTypeChanged()"><option>Weight Check</option><option>Tick & Flea Treatment</option><option>Vaccination</option><option>Vet Visit</option><option>Worming</option><option>Treatment</option></select></div>
+          <div class="form-group"><label>Date</label><input type="date" id="mf-date"></div>
+          <div class="form-group"><label>Cost ($)</label><input type="number" id="mf-cost" step="0.01" placeholder="Optional"></div>
+          <div class="form-group full"><label>Description</label><input type="text" id="mf-desc" placeholder="e.g. Weight: 2.3 kg"></div>
+          <div class="form-group"><label>Veterinarian</label><input type="text" id="mf-vet" placeholder="Optional"></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="mf-notes" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="mf-save-btn" onclick="phSaveMedRecord()">Save Record</button>
+          <button class="add-btn cancel" onclick="phToggleMedForm()">Cancel</button>
+          <button class="add-btn" id="mf-del-btn" onclick="phDeleteMedRecord()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
+        </div>
+        <div class="form-msg" id="mf-msg"></div>
       </div>
       <div id="ph-animals-list"></div>
     </div>
@@ -2570,20 +2590,66 @@
     }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
+  function getLatestWeight(records){
+    const wr=records.filter(r=>r.description&&r.description.match(/weight[:\s]+[\d.]+\s*kg/i));
+    if(!wr.length)return null;
+    wr.sort((a,b)=>new Date(b.date_recorded)-new Date(a.date_recorded));
+    const m=wr[0].description.match(/weight[:\s]+([\d.]+)\s*kg/i);
+    return m?{weight:m[1],date:wr[0].date_recorded}:null;
+  }
+  function getTickDue(records){
+    const tr=records.filter(r=>r.record_type==='Tick & Flea Treatment'||r.record_type==='Treatment'&&r.description&&r.description.toLowerCase().includes('tick'));
+    if(!tr.length)return null;
+    tr.sort((a,b)=>new Date(b.date_recorded)-new Date(a.date_recorded));
+    const last=new Date(tr[0].date_recorded+'T00:00:00');
+    const due=new Date(last);due.setMonth(due.getMonth()+3);
+    return{last:tr[0].date_recorded,due:due.toISOString().split('T')[0]};
+  }
+
   window.phAnimals=function(){
     let html='';
     if(!ANIMALS.length){html='<div class="todo-empty">No animals recorded</div>';$('#ph-animals-list').innerHTML=html;return;}
     ANIMALS.forEach(a=>{
+      const lw=getLatestWeight(a.medicalRecords||[]);
+      const tick=getTickDue(a.medicalRecords||[]);
       html+='<div class="card" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;"><div><div style="font-size:14px;font-weight:700;">'+a.name+'</div><div style="font-size:12px;color:#64748b;">'+a.type;
-      if(a.breed)html+=' • '+a.breed;
-      if(a.dob)html+=' • DOB: '+fmtD(a.dob);
-      if(a.microchip)html+=' • Microchip: '+a.microchip;
-      if(a.desexed)html+=' • Desexed '+fmtD(a.desexedDate);
+      if(a.breed)html+=' \u2022 '+a.breed;
+      if(a.dob)html+=' \u2022 DOB: '+fmtD(a.dob);
+      if(a.microchip)html+=' \u2022 Microchip: '+a.microchip;
+      if(a.desexed)html+=' \u2022 Desexed '+fmtD(a.desexedDate);
       html+='</div></div><button onclick="phEditAnimal('+a.id+')" style="padding:6px 12px;background:#0d9488;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit;">Edit</button></div>';
+
+      // Quick stats: weight + tick due
+      if(lw||tick){
+        html+='<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">';
+        if(lw)html+='<div style="font-size:11px;background:#eff6ff;padding:6px 10px;border-radius:6px;"><strong>Weight:</strong> '+lw.weight+' kg <span style="color:#94a3b8;">('+fmtD(lw.date)+')</span></div>';
+        if(tick){
+          const daysLeft=Math.floor((new Date(tick.due+'T00:00:00')-new Date())/86400000);
+          const tickColor=daysLeft<=14?'#ef4444':daysLeft<=30?'#eab308':'#16a34a';
+          html+='<div style="font-size:11px;background:#fef2f2;padding:6px 10px;border-radius:6px;"><strong>Tick Treatment Due:</strong> <span style="color:'+tickColor+';font-weight:700;">'+fmtD(tick.due)+'</span>'+(daysLeft<=0?' <span style="color:#ef4444;font-weight:700;">OVERDUE</span>':daysLeft<=14?' <span style="color:#ef4444;">('+daysLeft+' days)</span>':'')+'</div>';
+        }
+        html+='</div>';
+      }
+
       if(a.vetName||a.vetPhone||a.vetEmail){html+='<div style="font-size:12px;background:#f1f5f9;padding:10px;border-radius:6px;margin-bottom:10px;"><div style="font-weight:600;margin-bottom:6px;">Vet Clinic</div>';if(a.vetName)html+=a.vetName+'<br>';if(a.vetPhone)html+='<a href="tel:'+a.vetPhone+'">'+a.vetPhone+'</a><br>';if(a.vetEmail)html+='<a href="mailto:'+a.vetEmail+'">'+a.vetEmail+'</a>';html+='</div>';}
       if(a.insuranceProvider||a.insurancePolicy){html+='<div style="font-size:12px;background:#fef9c3;padding:10px;border-radius:6px;margin-bottom:10px;"><div style="font-weight:600;margin-bottom:6px;">Pet Insurance</div>';if(a.insuranceProvider)html+=a.insuranceProvider;if(a.insurancePolicy)html+=' - Policy: '+a.insurancePolicy;if(a.insurancePhone)html+='<br><a href="tel:'+a.insurancePhone+'">'+a.insurancePhone+'</a>';html+='</div>';}
-      if(a.notes){html+='<div style="font-size:12px;padding:10px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;"><strong>Notes:</strong> '+a.notes+'</div>';}
-      if(a.medicalRecords && a.medicalRecords.length>0){html+='<div style="margin-top:12px;"><div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;">Medical Records</div>';a.medicalRecords.forEach(r=>{html+='<div style="font-size:11px;padding:8px;background:#f1f5f9;border-radius:4px;margin-bottom:4px;"><div style="font-weight:600;">'+r.record_type+' - '+fmtD(r.date_recorded)+'</div><div>'+r.description+(r.veterinarian_name?' ('+r.veterinarian_name+')':'')+(r.cost?' - $'+parseFloat(r.cost).toFixed(2):'')+'</div></div>';});html+='</div>';}
+      if(a.notes){html+='<div style="font-size:12px;padding:10px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;margin-bottom:10px;"><strong>Notes:</strong> '+a.notes+'</div>';}
+      if(a.medicalRecords && a.medicalRecords.length>0){
+        html+='<div style="margin-top:12px;">';
+        const groups={};a.medicalRecords.forEach(r=>{const g=r.record_type||'Other';if(!groups[g])groups[g]=[];groups[g].push(r);});
+        const groupOrder=['Weight Check','Tick & Flea Treatment','Vaccination','Worming','Vet Visit','Treatment'];
+        const allTypes=[...new Set([...groupOrder,...Object.keys(groups)])];
+        const colors={'Weight Check':'#eff6ff','Tick & Flea Treatment':'#fef2f2','Vaccination':'#f0fdf4','Worming':'#faf5ff','Vet Visit':'#fefce8','Treatment':'#f1f5f9'};
+        allTypes.forEach(type=>{
+          if(!groups[type]||!groups[type].length)return;
+          const bg=colors[type]||'#f1f5f9';
+          html+='<div style="margin-bottom:8px;"><div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;">'+type+' ('+groups[type].length+')</div>';
+          groups[type].forEach(r=>{html+='<div style="font-size:11px;padding:8px;background:'+bg+';border-radius:4px;margin-bottom:3px;cursor:pointer;" onclick="phEditMedRecord('+r.id+','+a.id+')"><div style="display:flex;justify-content:space-between;"><span style="font-weight:600;">'+fmtD(r.date_recorded)+'</span>'+(r.cost?'<span style="font-weight:600;">$'+parseFloat(r.cost).toFixed(2)+'</span>':'')+'</div><div>'+r.description+(r.veterinarian_name?' ('+r.veterinarian_name+')':'')+'</div></div>';});
+          html+='</div>';
+        });
+        html+='</div>';
+      }
+      html+='<button onclick="phAddMedForAnimal('+a.id+')" style="margin-top:8px;padding:8px 14px;background:#3b82f6;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit;">+ Add Record</button>';
       html+='</div>';
     });
     $('#ph-animals-list').innerHTML=html;
@@ -2614,6 +2680,124 @@
     $('#aif-del-btn').style.display='inline-block';
     $('#aif-msg').className='form-msg';$('#aif-msg').textContent='';
     form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  // ─── Medical Record Functions ───
+  let editingMedId=null;
+  let editingMedAnimalId=null;
+
+  function populateAnimalDropdown(selectedId){
+    $('#mf-animal').innerHTML=ANIMALS.map(a=>'<option value="'+a.id+'"'+(selectedId===a.id?' selected':'')+'>'+a.name+'</option>').join('');
+  }
+
+  window.phToggleMedForm=function(){
+    const form=$('#ph-med-form');
+    if(form.style.display==='none'){
+      editingMedId=null;editingMedAnimalId=null;
+      form.style.display='block';
+      populateAnimalDropdown(ANIMALS.length?ANIMALS[0].id:null);
+      $('#mf-title').textContent='Add Medical Record';
+      $('#mf-type').value='Weight Check';$('#mf-date').value=new Date().toISOString().split('T')[0];
+      $('#mf-cost').value='';$('#mf-desc').value='';$('#mf-vet').value='';$('#mf-notes').value='';
+      $('#mf-del-btn').style.display='none';$('#mf-save-btn').textContent='Save Record';
+      $('#mf-msg').className='form-msg';$('#mf-msg').textContent='';
+      phMedTypeChanged();
+      form.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{form.style.display='none';}
+  };
+
+  window.phAddMedForAnimal=function(animalId){
+    editingMedId=null;editingMedAnimalId=null;
+    const form=$('#ph-med-form');form.style.display='block';
+    populateAnimalDropdown(animalId);
+    $('#mf-title').textContent='Add Medical Record';
+    $('#mf-type').value='Weight Check';$('#mf-date').value=new Date().toISOString().split('T')[0];
+    $('#mf-cost').value='';$('#mf-desc').value='';$('#mf-vet').value='';$('#mf-notes').value='';
+    $('#mf-del-btn').style.display='none';$('#mf-save-btn').textContent='Save Record';
+    $('#mf-msg').className='form-msg';$('#mf-msg').textContent='';
+    phMedTypeChanged();
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phEditMedRecord=function(recordId,animalId){
+    const animal=ANIMALS.find(a=>a.id===animalId);if(!animal)return;
+    const r=animal.medicalRecords.find(m=>m.id===recordId);if(!r)return;
+    editingMedId=recordId;editingMedAnimalId=animalId;
+    const form=$('#ph-med-form');form.style.display='block';
+    populateAnimalDropdown(animalId);
+    $('#mf-title').textContent='Edit Medical Record';
+    $('#mf-type').value=r.record_type;$('#mf-date').value=r.date_recorded;
+    $('#mf-cost').value=r.cost||'';$('#mf-desc').value=r.description;
+    $('#mf-vet').value=r.veterinarian_name||'';$('#mf-notes').value=r.notes||'';
+    $('#mf-del-btn').style.display='inline-block';$('#mf-save-btn').textContent='Update Record';
+    $('#mf-msg').className='form-msg';$('#mf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phMedTypeChanged=function(){
+    const type=$('#mf-type').value;
+    if(type==='Weight Check')$('#mf-desc').placeholder='e.g. Weight: 2.3 kg';
+    else if(type==='Tick & Flea Treatment')$('#mf-desc').placeholder='e.g. Tick & Flea injection (next due in 3 months)';
+    else if(type==='Vaccination')$('#mf-desc').placeholder='e.g. Annual vaccination, C5';
+    else if(type==='Worming')$('#mf-desc').placeholder='e.g. Milpro worming tablet';
+    else if(type==='Vet Visit')$('#mf-desc').placeholder='e.g. General check-up';
+    else $('#mf-desc').placeholder='Description';
+  };
+
+  window.phSaveMedRecord=async function(){
+    const btn=lockBtn('#mf-save-btn');
+    const animalId=parseInt($('#mf-animal').value);
+    const recordType=$('#mf-type').value;
+    const date=$('#mf-date').value;
+    const desc=$('#mf-desc').value.trim();
+    const cost=parseFloat($('#mf-cost').value)||null;
+    const vet=$('#mf-vet').value.trim()||null;
+    const notes=$('#mf-notes').value.trim()||null;
+
+    if(!date||!desc){$('#mf-msg').className='form-msg error';$('#mf-msg').textContent='Please enter a date and description.';unlockBtn(btn);return;}
+
+    const row={animal_id:animalId,record_type:recordType,date_recorded:date,description:desc,cost:cost,veterinarian_name:vet,notes:notes};
+
+    try{
+      if(editingMedId){
+        const {error}=await sb.from('animal_medical_records').update(row).eq('id',editingMedId);
+        if(error)throw error;
+        // Update local data
+        const animal=ANIMALS.find(a=>a.id===editingMedAnimalId);
+        if(animal){
+          const idx=animal.medicalRecords.findIndex(m=>m.id===editingMedId);
+          if(idx>=0)animal.medicalRecords[idx]={...animal.medicalRecords[idx],...row,id:editingMedId};
+          // If animal changed, move the record
+          if(animalId!==editingMedAnimalId){
+            animal.medicalRecords=animal.medicalRecords.filter(m=>m.id!==editingMedId);
+            const newAnimal=ANIMALS.find(a=>a.id===animalId);
+            if(newAnimal)newAnimal.medicalRecords.push({...row,id:editingMedId});
+          }
+        }
+        $('#mf-msg').className='form-msg success';$('#mf-msg').textContent='Record updated!';
+      }else{
+        const {data:inserted,error}=await sb.from('animal_medical_records').insert(row).select().single();
+        if(error)throw error;
+        const animal=ANIMALS.find(a=>a.id===animalId);
+        if(animal)animal.medicalRecords.push(inserted);
+        $('#mf-msg').className='form-msg success';$('#mf-msg').textContent='Record saved!';
+      }
+      phAnimals();
+      setTimeout(()=>{$('#ph-med-form').style.display='none';},1500);
+    }catch(e){$('#mf-msg').className='form-msg error';$('#mf-msg').textContent='Error: '+e.message;console.error(e);}finally{unlockBtn(btn);}
+  };
+
+  window.phDeleteMedRecord=async function(){
+    if(!editingMedId||!confirm('Delete this medical record?'))return;
+    try{
+      const {error}=await sb.from('animal_medical_records').delete().eq('id',editingMedId);
+      if(error){phToast('Delete error: '+error.message,'error');return;}
+      const animal=ANIMALS.find(a=>a.id===editingMedAnimalId);
+      if(animal)animal.medicalRecords=animal.medicalRecords.filter(m=>m.id!==editingMedId);
+      $('#ph-med-form').style.display='none';
+      phAnimals();
+      phToast('Record deleted','success');
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phAddFiona=async function(){

@@ -2316,13 +2316,29 @@
     const pending=TODOS.filter(t=>!t.done);
     const done=TODOS.filter(t=>t.done);
 
-    // Filters
-    const cats=['All',...new Set(TODOS.map(t=>t.cat))];
+    // Filters — add Fiona as special pill
+    const cats=['All',...new Set(TODOS.map(t=>t.cat)),'Fiona'];
     $('#td-filters').innerHTML=cats.map(c=>{
+      if(c==='Fiona'){
+        const fCount=(FIONA_TASKS||[]).filter(t=>!t.done).length;
+        return '<button class="todo-filter-btn'+(todoFilter==='Fiona'?' active':'')+'" onclick="todoFilter=\'Fiona\';phTodos()">\u{1F9F9} Fiona ('+fCount+')</button>';
+      }
       const count=c==='All'?TODOS.length:TODOS.filter(t=>t.cat===c).length;
       const icon=c==='All'?'':((TODO_CATS[c]||'')+' ');
       return '<button class="todo-filter-btn'+(todoFilter===c?' active':'')+'" onclick="todoFilter=\''+c+'\';phTodos()">'+icon+c+' ('+count+')</button>';
     }).join('');
+
+    // If Fiona selected, show Fiona tasks
+    if(todoFilter==='Fiona'){
+      const fPending=(FIONA_TASKS||[]).filter(t=>!t.done);
+      const fDone=(FIONA_TASKS||[]).filter(t=>t.done);
+      $('#td-stats').innerHTML='<span>'+fPending.length+' pending, '+fDone.length+' done</span>'+(fDone.length?'<button class="todo-clear-btn" onclick="phClearCompletedFiona()">Clear completed</button>':'');
+      if(!fPending.length)$('#td-pending').innerHTML='<div class="todo-empty">No pending Fiona tasks</div>';
+      else $('#td-pending').innerHTML=fPending.map(t=>'<div class="todo-item"><div class="todo-check" onclick="phToggleFionaFromTodo('+t.id+')"></div><div class="todo-content"><div class="todo-text">'+t.task+'</div><div class="todo-meta"><span class="todo-cat-badge">\u{1F9F9} Fiona</span></div></div><div class="todo-actions"><button class="todo-del-btn" onclick="phDeleteFionaFromTodo('+t.id+')">\u{1F5D1}</button></div></div>').join('');
+      if(!fDone.length)$('#td-done').innerHTML='<div class="todo-empty">No completed Fiona tasks</div>';
+      else $('#td-done').innerHTML=fDone.map(t=>'<div class="todo-item done"><div class="todo-check checked" onclick="phToggleFionaFromTodo('+t.id+')">\u2713</div><div class="todo-content"><div class="todo-text">'+t.task+'</div><div class="todo-meta"><span class="todo-cat-badge">\u{1F9F9} Fiona</span></div></div><div class="todo-actions"><button class="todo-del-btn" onclick="phDeleteFionaFromTodo('+t.id+')">\u{1F5D1}</button></div></div>').join('');
+      return;
+    }
 
     // Stats
     $('#td-stats').innerHTML='<span>'+pending.length+' pending, '+done.length+' done</span>'+(done.length?'<button class="todo-clear-btn" onclick="phClearDone()">Clear completed</button>':'');
@@ -2382,6 +2398,26 @@
       TODOS=TODOS.filter(t=>t.id!==id);
       phTodos();
     } catch(e){console.error(e);}
+  };
+
+  window.phToggleFionaFromTodo=async function(id){
+    const t=FIONA_TASKS.find(x=>x.id===id);if(!t)return;
+    const {error}=await sb.from('fiona_tasks').update({done:!t.done}).eq('id',id);
+    if(error){phToast('Error: '+error.message,'error');return;}
+    t.done=!t.done;phTodos();
+  };
+
+  window.phDeleteFionaFromTodo=async function(id){
+    const {error}=await sb.from('fiona_tasks').delete().eq('id',id);
+    if(error){phToast('Error: '+error.message,'error');return;}
+    FIONA_TASKS=FIONA_TASKS.filter(t=>t.id!==id);phTodos();
+  };
+
+  window.phClearCompletedFiona=async function(){
+    const done=FIONA_TASKS.filter(t=>t.done);
+    if(!done.length)return;
+    for(const t of done){await sb.from('fiona_tasks').delete().eq('id',t.id);}
+    FIONA_TASKS=FIONA_TASKS.filter(t=>!t.done);phTodos();
   };
 
   window.phClearDone=async function(){

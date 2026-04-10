@@ -1386,24 +1386,22 @@
 
     // Week badge
     let html='<div style="display:flex;align-items:center;justify-content:center;margin-bottom:16px;">';
-    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;">\u{1F4C5} <strong>Week '+week+'</strong> \u2014 '+whoName+' <a href="tel:'+whoPhone+'" style="color:white;text-decoration:none;font-weight:400;font-size:12px;opacity:0.8;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></span>';
+    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;">\u{1F4C5} <strong>Week '+week+'</strong></span>';
     html+='</div>';
-
-    // Bin info
-    html+='<div style="font-size:12px;color:#64748b;text-align:center;margin-bottom:12px;">'+(isToday?'\u{1F5D1} Bins today':'\u{1F5D1} Next bins: '+thuStr)+' \u2014 Red'+(isA?' + Yellow (recycling)':' + Green (vegetation)')+'</div>';
 
     // Weekly checklist
     const done=getWeekDone();
+    const binLabel=(isToday?'Bins out today':' Bins out ('+thuStr+')')+' — Red'+(isA?' + Yellow':' + Green');
     const weekItems=isA?[
-      {key:'cleaner',label:'Paula (Cleaners) visited',icon:'\u{1F9F9}'},
-      {key:'bins',label:'Bins out (Red + Yellow)',icon:'\u{1F5D1}'},
+      {key:'cleaner',label:'Paula (Cleaners)',icon:'\u{1F9F9}',sub:whoPhoneDisplay,phone:whoPhone},
+      {key:'bins',label:binLabel,icon:'\u{1F5D1}'},
       {key:'bins-in',label:'Bins brought in',icon:'\u{2705}'},
-      {key:'animals',label:'Animal care done',icon:'\u{1F43E}'}
+      {key:'animals',label:'Animal care',icon:'\u{1F43E}'}
     ]:[
-      {key:'fiona',label:'Fiona visited',icon:'\u{1F9D1}\u200D\u{1F9AF}'},
-      {key:'bins',label:'Bins out (Red + Green)',icon:'\u{1F5D1}'},
+      {key:'fiona',label:'Fiona',icon:'\u{1F9D1}\u200D\u{1F9AF}',sub:whoPhoneDisplay,phone:whoPhone},
+      {key:'bins',label:binLabel,icon:'\u{1F5D1}'},
       {key:'bins-in',label:'Bins brought in',icon:'\u{2705}'},
-      {key:'animals',label:'Animal care done',icon:'\u{1F43E}'}
+      {key:'animals',label:'Animal care',icon:'\u{1F43E}'}
     ];
     const doneCount=weekItems.filter(i=>done[i.key]).length;
     html+='<div style="margin-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-size:13px;font-weight:700;color:#64748b;">Weekly Checklist</div><div style="font-size:11px;color:#94a3b8;">'+doneCount+'/'+weekItems.length+' done</div></div>';
@@ -1412,7 +1410,8 @@
       const isDone=done[i.key];
       html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;cursor:pointer;'+(isDone?'opacity:0.5;':'') +'" onclick="phToggleWeekItem(\''+i.key+'\')">';
       html+='<div style="width:24px;height:24px;border:2px solid '+(isDone?'#0d9488':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:13px;font-weight:700;">'+(isDone?'\u2713':'')+'</div>';
-      html+='<span style="font-size:13px;'+(isDone?'text-decoration:line-through;color:#94a3b8;':'font-weight:500;')+'">'+i.icon+' '+i.label+'</span>';
+      html+='<div style="flex:1;"><span style="font-size:13px;'+(isDone?'text-decoration:line-through;color:#94a3b8;':'font-weight:500;')+'">'+i.icon+' '+i.label+'</span></div>';
+      if(i.phone)html+='<a href="tel:'+i.phone+'" style="font-size:11px;color:#0d9488;text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">'+i.sub+'</a>';
       html+='</div>';
     });
     html+='</div>';

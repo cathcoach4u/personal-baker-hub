@@ -1386,13 +1386,11 @@
 
     // Week badge
     let html='<div style="display:flex;align-items:center;justify-content:center;margin-bottom:16px;">';
-    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;">\u{1F4C5} <strong>Week '+week+'</strong></span>';
+    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;">\u{1F4C5} <strong>Week '+week+'</strong> \u2014 '+whoName+' <a href="tel:'+whoPhone+'" style="color:white;text-decoration:none;font-weight:400;font-size:12px;opacity:0.8;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></span>';
     html+='</div>';
-    // Info cards
-    html+='<div class="weekly-row">';
-    html+='<div class="weekly-item"><span class="wi-icon">'+whoIcon+'</span><div style="flex:1;"><div class="wi-value">'+whoName+'</div><div class="wi-label">This week</div></div><a href="tel:'+whoPhone+'" style="font-size:12px;color:#0d9488;text-decoration:none;font-weight:600;" onclick="event.stopPropagation()">'+whoPhoneDisplay+'</a></div>';
-    html+='<div class="weekly-item"><span class="wi-icon">\u{1F5D1}</span><div style="flex:1;"><div class="wi-value">'+(isToday?'Bins today':'Next bins ('+thuStr+')')+'</div><div class="wi-label">Red'+(isA?' + Yellow (recycling)':' + Green (vegetation)')+'</div></div></div>';
-    html+='</div>';
+
+    // Bin info
+    html+='<div style="font-size:12px;color:#64748b;text-align:center;margin-bottom:12px;">'+(isToday?'\u{1F5D1} Bins today':'\u{1F5D1} Next bins: '+thuStr)+' \u2014 Red'+(isA?' + Yellow (recycling)':' + Green (vegetation)')+'</div>';
 
     // Weekly checklist
     const done=getWeekDone();

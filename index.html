@@ -1759,15 +1759,17 @@
     let html='';
     for(const person in groups){
       const policies=groups[person];
-      const monthly=policies.filter(p=>p.freq==='Monthly');
-      const annual=policies.filter(p=>p.freq==='Annually');
-      const other=policies.filter(p=>p.freq!=='Monthly'&&p.freq!=='Annually');
-      const monthlyTotal=monthly.reduce((s,p)=>s+p.prem,0);
-      const annualTotal=annual.reduce((s,p)=>s+p.prem,0);
+      const isSuper=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey'));
+      const superPolicies=policies.filter(p=>isSuper(p));
+      const personalPolicies=policies.filter(p=>!isSuper(p));
+      const personalMonthly=personalPolicies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
+      const personalAnnual=personalPolicies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
+      const superTotal=superPolicies.reduce((s,p)=>s+p.prem,0);
       let totalStr='';
-      if(monthlyTotal)totalStr+=money(monthlyTotal)+'/mo';
-      if(monthlyTotal&&annualTotal)totalStr+=' + ';
-      if(annualTotal)totalStr+=money(annualTotal)+'/yr';
+      if(personalMonthly)totalStr+=money(personalMonthly)+'/mo';
+      if(personalMonthly&&personalAnnual)totalStr+=' + ';
+      if(personalAnnual)totalStr+=money(personalAnnual)+'/yr';
+      if(superTotal)totalStr+=(totalStr?' | ':'')+'Super: '+money(superTotal)+'/yr';
 
       const gid='ins-group-'+person.replace(/\s/g,'-');
       html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
@@ -1777,19 +1779,17 @@
         if(!items.length)return '';
         var total=items.reduce(function(s,p){return s+p.prem;},0);
         var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:10px 14px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="var b=document.getElementById(\''+subId+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.sub-arrow\').textContent=b.style.display===\'none\'?\'\u25B6\':\'\u25BC\';"><span><span class="sub-arrow">\u25B6</span> '+label+' ('+items.length+')</span><span style="font-weight:600;font-size:11px;color:#0d9488;">'+money(total)+'</span></div>';
-        t+='<div id="'+subId+'" style="display:none;"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
+        t+='<div id="'+subId+'" style="display:none;"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th></tr></thead><tbody>';
         t+=items.map(function(p){
-          var d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
-          return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
+          return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td></tr>';
         }).join('');
         t+='</tbody></table></div></div>';
         return t;
       }
 
       var pid=person.replace(/\s/g,'-');
-      html+=renderInsTable(monthly,'Monthly',gid+'-monthly');
-      html+=renderInsTable(annual,'Annually',gid+'-annual');
-      html+=renderInsTable(other,'Other',gid+'-other');
+      html+=renderInsTable(personalPolicies,'\u{1F4B3} Paid Personally',gid+'-personal');
+      html+=renderInsTable(superPolicies,'\u{1F3E6} Paid via Super',gid+'-super');
       html+='</div></div>';
     }
     if(!fl.length)html='<div class="todo-empty">No policies found</div>';

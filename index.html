@@ -2570,7 +2570,7 @@
 
   // Populate contacts filters
   const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
-  $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
+  // Category pills rebuilt by phContacts
   const contactPeople=[...new Set(CONTACTS.map(c=>c.forPerson).filter(p=>p))].sort();
   $('#ph-cpf').innerHTML='<option value="">All People</option>'+contactPeople.map(p=>'<option>'+p+'</option>').join('');
 

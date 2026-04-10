@@ -456,7 +456,7 @@
       <button class="nav-item" onclick="phNavDrawer('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
       <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
       <button class="nav-item" onclick="phNavDrawer('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
-      <button class="nav-item" onclick="phNavDrawer('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+      <button class="nav-item" onclick="phNavDrawer('insurance',this)"><span class="icon">&#x1F6E1;</span> Finance</button>
       <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
@@ -474,7 +474,7 @@
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
     <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
-    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Insurance</button>
+    <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Finance</button>
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
@@ -534,21 +534,23 @@
       <div class="ndis-card-view" id="ph-ndis-cards"></div>
     </div>
     <div class="screen" id="ph-insurance">
-      <h2>Personal Insurances & Superannuation</h2>
+      <h2>Finance & Insurance</h2>
       <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
         <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:8px 16px;background:#0d9488;color:white;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:inherit;">Insurance Files</a>
       </div>
+      <div id="ph-ins-cat-pills" class="filter-bar" style="margin-bottom:8px;"></div>
       <div class="filter-bar">
         <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
         <select id="ph-if" onchange="phIns()"><option value="">All People</option></select>
         <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
-        <button class="add-btn" onclick="phToggleInsForm()">+ Add Policy</button>
+        <button class="add-btn" onclick="phToggleInsForm()">+ Add</button>
       </div>
       <div class="add-form" id="ph-ins-form">
         <h3 id="if-title">New Insurance Policy</h3>
         <div class="form-grid">
-          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option></select></div>
-          <div class="form-group"><label>Insurer</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
+          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Family</option></select></div>
+          <div class="form-group"><label>Category</label><select id="if-cat"><option>Personal Insurance</option><option>Household</option><option>Car</option><option>Investments</option><option>Superannuation</option></select></div>
+          <div class="form-group"><label>Insurer / Provider</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
           <div class="form-group"><label>Policy No</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
           <div class="form-group"><label>Cover Type</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
           <div class="form-group"><label>Premium ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
@@ -1216,7 +1218,8 @@
       cover: r.cover_type,
       due: r.due_date || '',
       paid: r.paid_to_date || '',
-      super: r.superannuation_amount ? parseFloat(r.superannuation_amount) : null
+      super: r.superannuation_amount ? parseFloat(r.superannuation_amount) : null,
+      category: r.category || 'Personal Insurance'
     }));
 
     CONTACTS = (contactsRes.data || []).map(r => ({
@@ -1714,9 +1717,27 @@
     } finally { unlockBtn(btn); }
   };
 
+  let insCatFilter='All';
+
+  window.phFilterInsCat=function(cat,btn){
+    insCatFilter=cat;
+    $$('#ph-ins-cat-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    phIns();
+  };
+
   window.phIns=function(){
+    // Build category pills
+    const allCats=['All','Personal Insurance','Household','Car','Investments','Superannuation'];
+    $('#ph-ins-cat-pills').innerHTML=allCats.map(c=>{
+      const count=c==='All'?INS.length:INS.filter(p=>p.category===c).length;
+      if(c!=='All'&&count===0)return '';
+      return '<button class="todo-filter-btn'+(insCatFilter===c?' active':'')+'" onclick="phFilterInsCat(\''+c+'\',this)">'+c+(c!=='All'?' ('+count+')':'')+'</button>';
+    }).join('');
+
     const tf=$('#ph-tf').value,pf=$('#ph-if').value,is=$('#ph-is').value.toLowerCase();
     let fl=INS;
+    if(insCatFilter!=='All')fl=fl.filter(p=>p.category===insCatFilter);
     if(tf)fl=fl.filter(p=>p.cover===tf);
     if(pf)fl=fl.filter(p=>p.name===pf);
     if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
@@ -1818,7 +1839,8 @@
     form.classList.add('open');
     $('#if-title').textContent='Edit Policy \u2014 '+p.ins+' ('+p.cover+')';
     $('#if-save-btn').textContent='Update Policy';
-    $('#if-name').value=p.name;$('#if-ins').value=p.ins;$('#if-pol').value=p.pol;
+    $('#if-name').value=p.name;$('#if-cat').value=p.category||'Personal Insurance';
+    $('#if-ins').value=p.ins;$('#if-pol').value=p.pol;
     $('#if-cover').value=p.cover;$('#if-prem').value=p.prem||'';$('#if-freq').value=p.freq;
     $('#if-pay').value=p.pay;$('#if-due').value=p.due;$('#if-paid').value=p.paid;
     $('#if-super').value=p.super||'';
@@ -1829,6 +1851,7 @@
   window.phSaveIns=async function(){
     const btn=lockBtn('#if-save-btn');
     const name=$('#if-name').value;
+    const category=$('#if-cat').value;
     const ins=$('#if-ins').value.trim();
     const pol=$('#if-pol').value.trim();
     const cover=$('#if-cover').value.trim();
@@ -1841,14 +1864,15 @@
 
     if(!ins||!cover){
       $('#if-msg').className='form-msg error';
-      $('#if-msg').textContent='Please fill in Insurer and Cover Type.';
+      $('#if-msg').textContent='Please fill in Provider and Cover Type.';
       unlockBtn(btn);return;
     }
 
     const row={
       person_name:name,insurer:ins,policy_number:pol,cover_type:cover,
       premium:prem,premium_frequency:freq,payment_method:pay,
-      due_date:due,paid_to_date:paid,superannuation_amount:superAmt
+      due_date:due,paid_to_date:paid,superannuation_amount:superAmt,
+      category:category
     };
 
     try {
@@ -1856,13 +1880,13 @@
         const {error}=await sb.from('insurance_policies').update(row).eq('id',editingInsId);
         if(error)throw error;
         const idx=INS.findIndex(x=>x.id===editingInsId);
-        if(idx>=0)INS[idx]={id:editingInsId,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt};
+        if(idx>=0)INS[idx]={id:editingInsId,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category};
         $('#if-msg').className='form-msg success';
-        $('#if-msg').textContent='Policy updated!';
+        $('#if-msg').textContent='Updated!';
       } else {
         const {data:inserted,error}=await sb.from('insurance_policies').insert(row).select().single();
         if(error)throw error;
-        INS.push({id:inserted.id,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt});
+        INS.push({id:inserted.id,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category});
         $('#if-msg').className='form-msg success';
         $('#if-msg').textContent='Policy saved!';
       }

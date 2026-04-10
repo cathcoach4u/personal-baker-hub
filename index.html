@@ -1727,8 +1727,11 @@
     let html='';
     for(const person in groups){
       const policies=groups[person];
-      const monthlyTotal=policies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
-      const annualTotal=policies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
+      const monthly=policies.filter(p=>p.freq==='Monthly');
+      const annual=policies.filter(p=>p.freq==='Annually');
+      const other=policies.filter(p=>p.freq!=='Monthly'&&p.freq!=='Annually');
+      const monthlyTotal=monthly.reduce((s,p)=>s+p.prem,0);
+      const annualTotal=annual.reduce((s,p)=>s+p.prem,0);
       let totalStr='';
       if(monthlyTotal)totalStr+=money(monthlyTotal)+'/mo';
       if(monthlyTotal&&annualTotal)totalStr+=' + ';
@@ -1736,12 +1739,24 @@
 
       const gid='ins-group-'+person.replace(/\s/g,'-');
       html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
-      html+='<div class="group-body" id="'+gid+'"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
-      html+=policies.map(p=>{
-        const d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
-        return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
-      }).join('');
-      html+='</tbody></table></div></div></div>';
+      html+='<div class="group-body" id="'+gid+'">';
+
+      function renderInsTable(items,label){
+        if(!items.length)return '';
+        var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:10px 14px 4px;">'+label+'</div>';
+        t+='<div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Payment</th><th>Next Due</th><th>Paid To</th></tr></thead><tbody>';
+        t+=items.map(function(p){
+          var d=p.due?daysUntil(p.due):999,dc=d<=7?'soon':'ok';
+          return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.pay||'\u2014')+'</td><td>'+(p.due?'<span class="due-tag '+dc+'">'+shortD(p.due)+'</span>':'\u2014')+'</td><td>'+fmtD(p.paid)+'</td></tr>';
+        }).join('');
+        t+='</tbody></table></div>';
+        return t;
+      }
+
+      html+=renderInsTable(monthly,'Monthly');
+      html+=renderInsTable(annual,'Annually');
+      html+=renderInsTable(other,'Other');
+      html+='</div></div>';
     }
     if(!fl.length)html='<div class="todo-empty">No policies found</div>';
     $('#ph-ins-groups').innerHTML=html;

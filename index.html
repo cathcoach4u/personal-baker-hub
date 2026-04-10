@@ -1709,7 +1709,16 @@
     if(tf)fl=fl.filter(p=>p.cover===tf);
     if(pf)fl=fl.filter(p=>p.name===pf);
     if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
-    fl.sort((a,b)=>a.due&&b.due?new Date(a.due)-new Date(b.due):a.due?-1:1);
+    fl.sort((a,b)=>{
+      // Sort by person first
+      const nameCompare=a.name.localeCompare(b.name);
+      if(nameCompare!==0)return nameCompare;
+      // Then monthly before annually
+      const freqOrder={'Monthly':0,'Annually':1};
+      const fa=freqOrder[a.freq]!==undefined?freqOrder[a.freq]:2;
+      const fb=freqOrder[b.freq]!==undefined?freqOrder[b.freq]:2;
+      return fa-fb;
+    });
 
     // Group by person
     const groups={};

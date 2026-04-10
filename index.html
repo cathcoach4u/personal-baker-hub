@@ -570,8 +570,8 @@
     </div>
     <div class="screen" id="ph-contacts">
       <h2>Baker Contacts</h2>
+      <div id="ph-contact-cat-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
       <div class="filter-bar">
-        <select id="ph-cf" onchange="phContacts()"><option value="">All Categories</option></select>
         <select id="ph-cpf" onchange="phContacts()"><option value="">All People</option></select>
         <input type="text" id="ph-cs" placeholder="Search contacts..." oninput="phContacts()">
         <button class="add-btn" onclick="phToggleContactForm()">+ Add Contact</button>
@@ -1920,11 +1920,27 @@
   const CAT_DISPLAY_ORDER=['Medical','Massage','Pharmacy','NDIS','Insurance','Home & Services','Recreation','Government','Food & Lifestyle'];
   const PERSON_ORDER=['Family','Cath','Andrew','Sarah','Russell'];
   let contactGroupBy='person';
+  let contactCatFilter='All';
+
+  window.phFilterContactCat=function(cat,btn){
+    contactCatFilter=cat;
+    $$('#ph-contact-cat-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    phContacts();
+  };
 
   window.phContacts=function(){
-    const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
+    // Build category pills
+    const allCatsList=['All',...CAT_DISPLAY_ORDER.filter(c=>CONTACTS.some(x=>x.cat===c)),...[...new Set(CONTACTS.map(c=>c.cat))].filter(c=>CAT_DISPLAY_ORDER.indexOf(c)===-1).sort()];
+    $('#ph-contact-cat-pills').innerHTML=allCatsList.map(c=>{
+      const count=c==='All'?CONTACTS.length:CONTACTS.filter(x=>x.cat===c).length;
+      if(c!=='All'&&count===0)return '';
+      return '<button class="todo-filter-btn'+(contactCatFilter===c?' active':'')+'" onclick="phFilterContactCat(\''+c+'\',this)">'+c+(c!=='All'?' ('+count+')':'')+'</button>';
+    }).join('');
+
+    const cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
     let fl=CONTACTS;
-    if(cf)fl=fl.filter(c=>c.cat===cf);
+    if(contactCatFilter!=='All')fl=fl.filter(c=>c.cat===contactCatFilter);
     if(cpf)fl=fl.filter(c=>c.forPerson&&c.forPerson.split(', ').includes(cpf));
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     fl.sort((a,b)=>a.name.localeCompare(b.name));
@@ -2014,9 +2030,9 @@
   }
 
   window.phExportContacts=function(){
-    const cf=$('#ph-cf').value,cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
+    const cpf=$('#ph-cpf').value,cs=$('#ph-cs').value.toLowerCase();
     let fl=CONTACTS;
-    if(cf)fl=fl.filter(c=>c.cat===cf);
+    if(contactCatFilter!=='All')fl=fl.filter(c=>c.cat===contactCatFilter);
     if(cpf)fl=fl.filter(c=>c.forPerson&&c.forPerson.split(', ').includes(cpf));
     if(cs)fl=fl.filter(c=>c.name.toLowerCase().includes(cs)||c.person.toLowerCase().includes(cs));
     if(!fl.length){phToast('No contacts to export','error');return;}
@@ -2088,7 +2104,7 @@
       phContacts();
       // Refresh filters
       const cats=[...new Set(CONTACTS.map(c=>c.cat))].sort();
-      $('#ph-cf').innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');
+      // Category pills rebuilt by phContacts
       const contactPeople=[...new Set(CONTACTS.map(c=>c.forPerson).filter(p=>p))].sort();
       $('#ph-cpf').innerHTML='<option value="">All People</option>'+contactPeople.map(p=>'<option>'+p+'</option>').join('');
       setTimeout(()=>{$('#ph-contact-form').classList.remove('open');resetContactForm();},1500);

@@ -1313,8 +1313,8 @@
   const money=n=>'$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
   const fmtD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});};
   const shortD=d=>{if(!d)return'\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});};
-  const daysDiff=d=>Math.floor((new Date()-new Date(d+'T00:00:00'))/86400000);
-  const daysUntil=d=>Math.floor((new Date(d+'T00:00:00')-new Date())/86400000);
+  const daysDiff=d=>{const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());const target=new Date(d+'T00:00:00');return Math.round((today-target)/86400000);};
+  const daysUntil=d=>{const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());const target=new Date(d+'T00:00:00');return Math.round((target-today)/86400000);};
   const ftc=f=>f.includes('Daily Living')?'idl':'isc';
   const ftn=f=>f.includes('Daily Living')?'Improved Daily Living':'Social & Community';
 

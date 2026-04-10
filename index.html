@@ -599,8 +599,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div class="cat-count" id="ph-cc"></div>
         <div style="display:flex;gap:4px;">
-          <button class="todo-filter-btn" id="cg-by-person" onclick="contactGroupBy='person';phContacts();" style="font-size:10px;padding:4px 10px;">By Person</button>
-          <button class="todo-filter-btn" id="cg-by-cat" onclick="contactGroupBy='category';phContacts();" style="font-size:10px;padding:4px 10px;">By Category</button>
+          <button class="todo-filter-btn active" id="cg-by-person" onclick="contactGroupBy='person';phContacts();" style="font-size:10px;padding:4px 10px;">By Person</button>
         </div>
       </div>
       <div id="ph-cg"></div>
@@ -1948,8 +1947,7 @@
     if(!fl.length){$('#ph-cg').innerHTML='<div class="todo-empty">No contacts found</div>';return;}
 
     // Toggle button active states
-    $('#cg-by-person').className='todo-filter-btn'+(contactGroupBy==='person'?' active':'');
-    $('#cg-by-cat').className='todo-filter-btn'+(contactGroupBy==='category'?' active':'');
+    contactGroupBy='person';
 
     // If searching, show flat grid
     if(cs){

@@ -1527,7 +1527,7 @@
     });
     html+='</div>';
 
-    html+='<div style="display:flex;justify-content:space-between;margin-top:6px;"><span style="font-size:12px;color:#0d9488;cursor:pointer;font-weight:600;" onclick="phNav(\'habits\',document.querySelector(\'.nav-item\'));setTimeout(function(){var el=document.getElementById(\'ph-checklist-items-list\');if(el)el.scrollIntoView({behavior:\'smooth\'});},300);">Edit checklist</span><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;gap:6px;"><span style="font-size:12px;color:#0d9488;cursor:pointer;font-weight:600;" onclick="phNav(\'habits\',document.querySelector(\'.nav-item\'));setTimeout(function(){var el=document.getElementById(\'ph-checklist-items-list\');if(el)el.scrollIntoView({behavior:\'smooth\'});},300);">Edit checklist</span><a href="https://files.northernbeaches.nsw.gov.au/nbc-prod-files/documents/2024-01/ThursdayA.pdf?1775882823" target="_blank" style="font-size:12px;color:#3b82f6;text-decoration:none;font-weight:600;">Bin calendar</a><span class="bin-toggle" onclick="phFlipBin()">Wrong week? Swap</span></div>';
     $('#ph-thisweek').innerHTML=html;
   }
 

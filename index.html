@@ -1457,23 +1457,24 @@
     const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
     $('#ph-greeting').textContent=greeting;
 
-    // Bin day
+    // Week date range
     const today=new Date();
-    const dayOfWeek=today.getDay();
-    const daysToThursday=(4-dayOfWeek+7)%7;
-    const nextThursday=new Date(today);
-    nextThursday.setDate(today.getDate()+(daysToThursday===0?0:daysToThursday));
-    const thuStr=nextThursday.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
-    const isToday=daysToThursday===0;
+    const dayOfWeek=today.getDay()||7;
+    const monday=new Date(today);monday.setDate(today.getDate()-(dayOfWeek-1));
+    const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+    const weekRange=monday.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+' \u2013 '+sunday.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
 
-    // Week badge
+    // Week badge with date range
     let html='<div style="display:flex;align-items:center;justify-content:center;margin-bottom:16px;">';
-    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;">\u{1F4C5} <strong>Week '+week+'</strong></span>';
+    html+='<span class="bin-week-label '+wClass+'" style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:12px 20px;font-size:15px;flex-direction:column;">';
+    html+='\u{1F4C5} <strong>Week '+week+'</strong>';
+    html+='<span style="font-size:12px;opacity:0.85;font-weight:400;">'+weekRange+'</span>';
+    html+='</span>';
     html+='</div>';
 
     // Weekly checklist
     const done=getWeekDone();
-    const binLabel=(isToday?'Bins out today':' Bins out ('+thuStr+')')+' — Red'+(isA?' + Yellow':' + Green');
+    const binLabel='Bins out Thursday — Red'+(isA?' + Yellow':' + Green');
     const weekItems=isA?[
       {key:'cleaner',label:'Paula (Cleaners)',icon:'\u{1F9F9}',sub:whoPhoneDisplay,phone:whoPhone},
       {key:'bins',label:binLabel,icon:'\u{1F5D1}'},

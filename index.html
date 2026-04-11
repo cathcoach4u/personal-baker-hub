@@ -641,6 +641,7 @@
     </div>
     <div class="screen" id="ph-projects">
       <h2>House Projects</h2>
+      <div id="ph-zone-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
       <div class="filter-bar">
         <select id="ph-pf" onchange="phProjects()"><option value="">All Statuses</option><option>Not Started</option><option>In Progress</option><option>Complete</option></select>
         <select id="ph-pp" onchange="phProjects()"><option value="">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
@@ -2360,9 +2361,31 @@
 
   const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Public Holidays'?'holidays':c==='Financial'?'financial':c==='House'?'council':c==='Cath'||c==='Andrew'||c==='Sarah'||c==='Russell'?'family':'other';
 
+  let projectZoneFilter='All';
+
+  window.phFilterZone=function(zone,btn){
+    projectZoneFilter=zone;
+    $$('#ph-zone-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    phProjects();
+  };
+
+  function getZone(p){
+    if(p.notes&&p.notes.startsWith('Zone: '))return p.notes.replace('Zone: ','');
+    return '';
+  }
+
   window.phProjects=function(){
+    // Zone pills
+    const zones=['All',...new Set(PROJECTS.map(p=>getZone(p)).filter(z=>z))];
+    $('#ph-zone-pills').innerHTML=zones.map(z=>{
+      const count=z==='All'?PROJECTS.length:PROJECTS.filter(p=>getZone(p)===z).length;
+      return '<button class="todo-filter-btn'+(projectZoneFilter===z?' active':'')+'" onclick="phFilterZone(\''+z+'\',this)">'+z+(z!=='All'?' ('+count+')':'')+'</button>';
+    }).join('');
+
     const pf=$('#ph-pf').value,pp=$('#ph-pp').value,ps=$('#ph-ps').value.toLowerCase();
     let fl=PROJECTS;
+    if(projectZoneFilter!=='All')fl=fl.filter(p=>getZone(p)===projectZoneFilter);
     if(pf)fl=fl.filter(p=>p.status===pf);
     if(pp)fl=fl.filter(p=>p.priority===pp);
     if(ps)fl=fl.filter(p=>p.title.toLowerCase().includes(ps)||(p.desc&&p.desc.toLowerCase().includes(ps)));
@@ -2371,11 +2394,29 @@
     $('#ph-pc').textContent=fl.length+' project'+(fl.length!==1?'s':'');
     if(!fl.length){$('#ph-pg').innerHTML='';$('#ph-pe').style.display='block';return;}
     $('#ph-pe').style.display='none';
-    $('#ph-pg').innerHTML=fl.map(p=>{
-      const sc=p.status==='Complete'?'complete':p.status==='In Progress'?'in-progress':'not-started';
-      return '<div class="proj-card" style="cursor:pointer;position:relative;"><div onclick="phEditProj('+p.id+')" style="display:flex;align-items:center;flex:1;gap:10px;"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'No due date')+(p.notes?' \u2014 '+p.notes:'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div><button onclick="event.stopPropagation();phDeleteProj('+p.id+')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
-    }).join('');
+
+    // Group by zone
+    if(projectZoneFilter==='All'){
+      const zoneGroups={};
+      fl.forEach(p=>{const z=getZone(p)||'Other';if(!zoneGroups[z])zoneGroups[z]=[];zoneGroups[z].push(p);});
+      let html='';
+      for(const zone in zoneGroups){
+        const items=zoneGroups[zone];
+        const doneCount=items.filter(p=>p.status==='Complete').length;
+        html+='<div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:700;color:#64748b;margin-bottom:8px;">'+zone+' ('+doneCount+'/'+items.length+' done)</div>';
+        items.forEach(p=>{html+=renderProjectCard(p);});
+        html+='</div>';
+      }
+      $('#ph-pg').innerHTML=html;
+    }else{
+      $('#ph-pg').innerHTML=fl.map(p=>renderProjectCard(p)).join('');
+    }
   };
+
+  function renderProjectCard(p){
+    const sc=p.status==='Complete'?'complete':p.status==='In Progress'?'in-progress':'not-started';
+    return '<div class="proj-card" style="cursor:pointer;position:relative;"><div onclick="phEditProj('+p.id+')" style="display:flex;align-items:center;flex:1;gap:10px;"><div class="pc-left"><div class="pc-title"><span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'<div class="pc-meta">'+(p.due?'Due: '+fmtD(p.due):'')+'</div></div><span class="proj-status '+sc+'">'+p.status+'</span></div><button onclick="event.stopPropagation();phDeleteProj('+p.id+')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div>';
+  }
 
   let editingProjId=null;
 

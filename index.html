@@ -634,7 +634,6 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div class="cat-count" id="ph-cc"></div>
         <div style="display:flex;gap:4px;">
-          <button class="todo-filter-btn active" id="cg-by-person" onclick="contactGroupBy='person';phContacts();" style="font-size:10px;padding:4px 10px;">By Person</button>
         </div>
       </div>
       <div id="ph-cg"></div>
@@ -1461,8 +1460,9 @@
   async function loadWeekDone(){
     const wk=getWeekKey();
     try{
-      const {data}=await sb.from('weekly_checklist').select('*').eq('week_key',wk).single();
-      weekDoneCache=data?JSON.parse(data.done_items||'{}'):{};
+      const {data,error}=await sb.from('weekly_checklist').select('*').eq('week_key',wk).maybeSingle();
+      if(!error&&data){weekDoneCache=JSON.parse(data.done_items||'{}');}
+      else{weekDoneCache=JSON.parse(localStorage.getItem('week-done-'+wk)||'{}');}
     }catch(e){weekDoneCache=JSON.parse(localStorage.getItem('week-done-'+wk)||'{}');}
     weekDoneLoaded=true;
   }
@@ -2045,55 +2045,29 @@
     $('#ph-cc').textContent=fl.length+' contact'+(fl.length!==1?'s':'');
     if(!fl.length){$('#ph-cg').innerHTML='<div class="todo-empty">No contacts found</div>';return;}
 
-    // Toggle button active states
-    contactGroupBy='person';
-
     // If searching, show flat grid
     if(cs){
       $('#ph-cg').innerHTML='<div class="contact-grid">'+renderContactCards(fl)+'</div>';
       return;
     }
 
-    if(contactGroupBy==='person'){
-      // Group by person
-      const groups={};
-      fl.forEach(c=>{
-        const people=c.forPerson?c.forPerson.split(', '):['Unassigned'];
-        people.forEach(p=>{if(!groups[p])groups[p]=[];groups[p].push(c);});
-      });
-      const keys=Object.keys(groups).sort((a,b)=>{
-        const ai=PERSON_ORDER.indexOf(a),bi=PERSON_ORDER.indexOf(b);
-        return (ai===-1?99:ai)-(bi===-1?99:bi);
-      });
-      let html='';
-      keys.forEach(person=>{
-        const items=groups[person];
-        const gid='cp-'+person.replace(/[^a-zA-Z]/g,'');
-        html+='<div class="group-section" style="margin-bottom:12px;">';
-        html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span style="font-size:14px;font-weight:700;">'+person+'</span><span style="color:#64748b;font-size:12px;margin-left:8px;">'+items.length+'</span></span></div>';
-        html+='<div class="group-body" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
-        html+='</div>';
-      });
-      $('#ph-cg').innerHTML=html;
-    } else {
-      // Group by category
-      const groups={};
-      fl.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
-      const catKeys=Object.keys(groups).sort((a,b)=>{
-        const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);
-        return (ai===-1?99:ai)-(bi===-1?99:bi);
-      });
-      let html='';
-      catKeys.forEach(cat=>{
-        const items=groups[cat];
-        const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
-        html+='<div class="group-section" style="margin-bottom:12px;">';
-        html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
-        html+='<div class="group-body" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
-        html+='</div>';
-      });
-      $('#ph-cg').innerHTML=html;
-    }
+    // Group by category
+    const groups={};
+    fl.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c);});
+    const catKeys=Object.keys(groups).sort((a,b)=>{
+      const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);
+      return (ai===-1?99:ai)-(bi===-1?99:bi);
+    });
+    let html='';
+    catKeys.forEach(cat=>{
+      const items=groups[cat];
+      const gid='cg-'+cat.replace(/[^a-zA-Z]/g,'');
+      html+='<div class="group-section" style="margin-bottom:12px;">';
+      html+='<div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)" style="padding:10px 14px;"><span class="group-left"><span class="group-arrow">\u25BC</span><span class="cat-tag '+catClass(cat)+'" style="font-size:11px;padding:3px 10px;">'+cat+'</span><span style="color:#64748b;font-size:12px;margin-left:4px;">'+items.length+'</span></span></div>';
+      html+='<div class="group-body" id="'+gid+'"><div class="contact-grid" style="padding:8px 0;">'+renderContactCards(items)+'</div></div>';
+      html+='</div>';
+    });
+    $('#ph-cg').innerHTML=html;
   };
 
   window.phCopyContact=function(id,e){

@@ -1381,15 +1381,30 @@
   function getWeekKey(){
     const now=new Date();const day=now.getDay()||7;
     const mon=new Date(now);mon.setDate(now.getDate()-(day-1));
-    return 'week-done-'+mon.getFullYear()+'-'+(mon.getMonth()+1)+'-'+mon.getDate();
+    return mon.getFullYear()+'-'+(mon.getMonth()+1)+'-'+mon.getDate();
   }
-  function getWeekDone(){try{return JSON.parse(localStorage.getItem(getWeekKey()))||{};}catch(e){return {};}}
-  function setWeekDone(done){localStorage.setItem(getWeekKey(),JSON.stringify(done));}
+  var weekDoneCache=null;
+  var weekDoneLoaded=false;
+  async function loadWeekDone(){
+    const wk=getWeekKey();
+    try{
+      const {data}=await sb.from('weekly_checklist').select('*').eq('week_key',wk).single();
+      weekDoneCache=data?JSON.parse(data.done_items||'{}'):{};
+    }catch(e){weekDoneCache=JSON.parse(localStorage.getItem('week-done-'+wk)||'{}');}
+    weekDoneLoaded=true;
+  }
+  function getWeekDone(){return weekDoneCache||JSON.parse(localStorage.getItem('week-done-'+getWeekKey())||'{}');}
+  async function setWeekDone(done){
+    const wk=getWeekKey();
+    localStorage.setItem('week-done-'+wk,JSON.stringify(done));
+    weekDoneCache=done;
+    try{await sb.from('weekly_checklist').upsert({week_key:wk,done_items:JSON.stringify(done)},{onConflict:'week_key'});}catch(e){}
+  }
 
-  window.phToggleWeekItem=function(key){
+  window.phToggleWeekItem=async function(key){
     const done=getWeekDone();
     if(done[key])delete done[key];else done[key]=true;
-    setWeekDone(done);
+    await setWeekDone(done);
     renderThisWeek();
   };
 
@@ -1499,7 +1514,8 @@
     $('#ph-reminders-list').innerHTML='<div class="weekly-row">'+items.join('')+'</div>';
   }
 
-  function renderHome(){
+  async function renderHome(){
+    if(!weekDoneLoaded)await loadWeekDone();
     renderThisWeek();
     renderReminders();
     const spent={};

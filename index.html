@@ -2403,9 +2403,15 @@
       for(const zone in zoneGroups){
         const items=zoneGroups[zone];
         const doneCount=items.filter(p=>p.status==='Complete').length;
-        html+='<div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:700;color:#64748b;margin-bottom:8px;">'+zone+' ('+doneCount+'/'+items.length+' done)</div>';
-        items.forEach(p=>{html+=renderProjectCard(p);});
+        const zid='zone-'+zone.replace(/[^a-zA-Z]/g,'');
+        html+='<div style="margin-bottom:12px;background:white;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">';
+        html+='<div style="padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="var b=document.getElementById(\''+zid+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.z-arrow\').textContent=b.style.display===\'none\'?\'\u25B6\':\'\u25BC\';">';
+        html+='<span style="font-size:13px;font-weight:700;color:#1e293b;"><span class="z-arrow">\u25B6</span> '+zone+'</span>';
+        html+='<span style="font-size:11px;color:#94a3b8;">'+doneCount+'/'+items.length+' done</span>';
         html+='</div>';
+        html+='<div id="'+zid+'" style="display:none;padding:0 8px 8px;">';
+        items.forEach(p=>{html+=renderProjectCard(p);});
+        html+='</div></div>';
       }
       $('#ph-pg').innerHTML=html;
     }else{

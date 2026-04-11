@@ -535,9 +535,14 @@
     </div>
     <div class="screen" id="ph-insurance">
       <h2>Finance & Insurance</h2>
-      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
-        <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:8px 16px;background:#0d9488;color:white;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:inherit;">Finance Files</a>
+      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <button class="todo-filter-btn active" id="fin-tab-ins" onclick="phFinTab('insurance',this)">Insurance & Super</button>
+        <button class="todo-filter-btn" id="fin-tab-bills" onclick="phFinTab('bills',this)">Bills</button>
+        <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:8px 16px;background:#0d9488;color:white;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:inherit;margin-left:auto;">Finance Files</a>
       </div>
+
+      <!-- Insurance view -->
+      <div id="fin-view-insurance">
       <div id="ph-ins-cat-pills" class="filter-bar" style="margin-bottom:8px;"></div>
       <div class="filter-bar">
         <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
@@ -567,6 +572,36 @@
         <div class="form-msg" id="if-msg"></div>
       </div>
       <div id="ph-ins-groups"></div>
+      </div>
+
+      <!-- Bills view -->
+      <div id="fin-view-bills" style="display:none;">
+        <div class="filter-bar" style="flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <button class="add-btn" onclick="phToggleBillForm()">+ Add Bill</button>
+        </div>
+        <div class="add-form" id="ph-bill-form" style="display:none;">
+          <h3 id="bf-title">New Bill</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Bill Name</label><input type="text" id="bf-name" placeholder="e.g. Electricity"></div>
+            <div class="form-group"><label>Provider</label><input type="text" id="bf-provider" placeholder="e.g. AGL"></div>
+            <div class="form-group"><label>Category</label><select id="bf-cat"><option>Utilities</option><option>Internet & Phone</option><option>Streaming</option><option>Council</option><option>Car</option><option>Other</option></select></div>
+            <div class="form-group"><label>Amount ($)</label><input type="number" id="bf-amount" step="0.01" placeholder="0.00"></div>
+            <div class="form-group"><label>Frequency</label><select id="bf-freq"><option>Monthly</option><option>Quarterly</option><option>Annually</option><option>Weekly</option></select></div>
+            <div class="form-group"><label>Payment Method</label><input type="text" id="bf-pay" placeholder="e.g. Direct Debit"></div>
+            <div class="form-group"><label>Account / Ref No</label><input type="text" id="bf-account" placeholder="Optional"></div>
+            <div class="form-group full"><label>Notes</label><input type="text" id="bf-notes" placeholder="Optional"></div>
+          </div>
+          <div class="form-actions">
+            <button class="add-btn" id="bf-save-btn" onclick="phSaveBill()">Save Bill</button>
+            <button class="add-btn cancel" onclick="phToggleBillForm()">Cancel</button>
+            <button class="add-btn" id="bf-del-btn" onclick="phDeleteBill()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
+          </div>
+          <div class="form-msg" id="bf-msg"></div>
+        </div>
+        <div id="ph-bills-cat-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
+        <div id="ph-bills-list"></div>
+      </div>
+
     </div>
     <div class="screen" id="ph-contacts">
       <h2>Baker Contacts</h2>
@@ -2146,6 +2181,153 @@
       $('#cf-msg').textContent='Error: '+e.message;
       console.error(e);
     } finally { unlockBtn(btn); }
+  };
+
+  // ─── FINANCE TAB SWITCH ───
+  window.phFinTab=function(tab,btn){
+    $$('#ph-insurance .filter-bar:first-of-type .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $('#fin-view-insurance').style.display=tab==='insurance'?'block':'none';
+    $('#fin-view-bills').style.display=tab==='bills'?'block':'none';
+    if(tab==='bills')phBills();
+  };
+
+  // ─── BILLS ───
+  let BILLS=[];
+  let editingBillId=null;
+  let billsCatFilter='All';
+
+  async function loadBills(){
+    const {data,error}=await sb.from('bills').select('*').order('name');
+    if(error){console.error('Bills load error:',error);return;}
+    BILLS=(data||[]).map(r=>({id:r.id,name:r.name,provider:r.provider||'',category:r.category||'Other',amount:parseFloat(r.amount)||0,freq:r.frequency||'Monthly',pay:r.payment_method||'',account:r.account_ref||'',notes:r.notes||''}));
+  }
+
+  window.phFilterBillsCat=function(cat,btn){
+    billsCatFilter=cat;
+    $$('#ph-bills-cat-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    phBills();
+  };
+
+  window.phBills=function(){
+    if(!BILLS.length){loadBills().then(()=>renderBills());return;}
+    renderBills();
+  };
+
+  function renderBills(){
+    // Category pills
+    const cats=['All',...new Set(BILLS.map(b=>b.category))];
+    $('#ph-bills-cat-pills').innerHTML=cats.map(c=>{
+      const count=c==='All'?BILLS.length:BILLS.filter(b=>b.category===c).length;
+      if(c!=='All'&&count===0)return '';
+      return '<button class="todo-filter-btn'+(billsCatFilter===c?' active':'')+'" onclick="phFilterBillsCat(\''+c+'\',this)">'+c+(c!=='All'?' ('+count+')':'')+'</button>';
+    }).join('');
+
+    let fl=BILLS;
+    if(billsCatFilter!=='All')fl=fl.filter(b=>b.category===billsCatFilter);
+
+    if(!fl.length){$('#ph-bills-list').innerHTML='<div class="todo-empty">No bills yet</div>';return;}
+
+    // Group by category
+    const groups={};
+    fl.forEach(b=>{if(!groups[b.category])groups[b.category]=[];groups[b.category].push(b);});
+
+    let html='';
+    for(const cat in groups){
+      const items=groups[cat];
+      const total=items.reduce((s,b)=>s+b.amount,0);
+      html+='<div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:700;color:#64748b;margin-bottom:8px;">'+cat+' ('+items.length+') — '+money(total)+'</div>';
+      items.forEach(b=>{
+        html+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditBill('+b.id+')">';
+        html+='<div style="display:flex;justify-content:space-between;align-items:start;"><div><div style="font-size:14px;font-weight:700;">'+b.name+'</div>';
+        if(b.provider)html+='<div style="font-size:12px;color:#64748b;">'+b.provider+'</div>';
+        html+='</div><div style="text-align:right;"><div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(b.amount)+'</div><div style="font-size:11px;color:#94a3b8;">'+b.freq+'</div></div></div>';
+        if(b.pay||b.account){html+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">';if(b.pay)html+=b.pay;if(b.pay&&b.account)html+=' \u2022 ';if(b.account)html+='Ref: '+b.account;html+='</div>';}
+        if(b.notes)html+='<div style="font-size:11px;color:#94a3b8;margin-top:4px;">'+b.notes+'</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+
+    // Summary
+    const monthlyTotal=BILLS.filter(b=>b.freq==='Monthly').reduce((s,b)=>s+b.amount,0);
+    const quarterlyTotal=BILLS.filter(b=>b.freq==='Quarterly').reduce((s,b)=>s+b.amount,0);
+    const annualTotal=BILLS.filter(b=>b.freq==='Annually').reduce((s,b)=>s+b.amount,0);
+    let summary='<div style="background:#f1f5f9;border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;"><strong>Total Bills:</strong> ';
+    if(monthlyTotal)summary+=money(monthlyTotal)+'/mo ';
+    if(quarterlyTotal)summary+=money(quarterlyTotal)+'/qtr ';
+    if(annualTotal)summary+=money(annualTotal)+'/yr';
+    summary+='</div>';
+
+    $('#ph-bills-list').innerHTML=summary+html;
+  }
+
+  window.phToggleBillForm=function(){
+    const form=$('#ph-bill-form');
+    if(form.style.display==='none'){
+      editingBillId=null;form.style.display='block';
+      $('#bf-title').textContent='New Bill';$('#bf-save-btn').textContent='Save Bill';$('#bf-del-btn').style.display='none';
+      $('#bf-name').value='';$('#bf-provider').value='';$('#bf-cat').value='Utilities';$('#bf-amount').value='';$('#bf-freq').value='Monthly';$('#bf-pay').value='';$('#bf-account').value='';$('#bf-notes').value='';
+      $('#bf-msg').className='form-msg';$('#bf-msg').textContent='';
+      form.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{form.style.display='none';}
+  };
+
+  window.phEditBill=function(id){
+    const b=BILLS.find(x=>x.id===id);if(!b)return;
+    editingBillId=id;
+    const form=$('#ph-bill-form');form.style.display='block';
+    $('#bf-title').textContent='Edit Bill';$('#bf-save-btn').textContent='Update Bill';$('#bf-del-btn').style.display='inline-block';
+    $('#bf-name').value=b.name;$('#bf-provider').value=b.provider;$('#bf-cat').value=b.category;
+    $('#bf-amount').value=b.amount||'';$('#bf-freq').value=b.freq;$('#bf-pay').value=b.pay;$('#bf-account').value=b.account;$('#bf-notes').value=b.notes;
+    $('#bf-msg').className='form-msg';$('#bf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveBill=async function(){
+    const btn=lockBtn('#bf-save-btn');
+    const name=$('#bf-name').value.trim();
+    const provider=$('#bf-provider').value.trim();
+    const category=$('#bf-cat').value;
+    const amount=parseFloat($('#bf-amount').value)||0;
+    const freq=$('#bf-freq').value;
+    const pay=$('#bf-pay').value.trim();
+    const account=$('#bf-account').value.trim();
+    const notes=$('#bf-notes').value.trim();
+
+    if(!name){$('#bf-msg').className='form-msg error';$('#bf-msg').textContent='Please enter a bill name.';unlockBtn(btn);return;}
+
+    const row={name:name,provider:provider||null,category:category,amount:amount,frequency:freq,payment_method:pay||null,account_ref:account||null,notes:notes||null};
+
+    try{
+      if(editingBillId){
+        const {error}=await sb.from('bills').update(row).eq('id',editingBillId);
+        if(error)throw error;
+        const idx=BILLS.findIndex(x=>x.id===editingBillId);
+        if(idx>=0)BILLS[idx]={id:editingBillId,name:name,provider:provider,category:category,amount:amount,freq:freq,pay:pay,account:account,notes:notes};
+        $('#bf-msg').className='form-msg success';$('#bf-msg').textContent='Bill updated!';
+      }else{
+        const {data:inserted,error}=await sb.from('bills').insert(row).select().single();
+        if(error)throw error;
+        BILLS.push({id:inserted.id,name:name,provider:provider,category:category,amount:amount,freq:freq,pay:pay,account:account,notes:notes});
+        $('#bf-msg').className='form-msg success';$('#bf-msg').textContent='Bill saved!';
+      }
+      renderBills();
+      setTimeout(()=>{$('#ph-bill-form').style.display='none';},1500);
+    }catch(e){$('#bf-msg').className='form-msg error';$('#bf-msg').textContent='Error: '+e.message;}finally{unlockBtn(btn);}
+  };
+
+  window.phDeleteBill=async function(){
+    if(!editingBillId||!confirm('Delete this bill?'))return;
+    try{
+      const {error}=await sb.from('bills').delete().eq('id',editingBillId);
+      if(error){phToast('Delete error: '+error.message,'error');return;}
+      BILLS=BILLS.filter(b=>b.id!==editingBillId);
+      $('#ph-bill-form').style.display='none';
+      renderBills();
+      phToast('Bill deleted','success');
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   const dateBadgeClass=c=>c==='Council'?'council':c==='Family'?'family':c==='Public Holidays'?'holidays':c==='Financial'?'financial':c==='House'?'council':c==='Cath'||c==='Andrew'||c==='Sarah'||c==='Russell'?'family':'other';

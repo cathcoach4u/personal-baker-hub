@@ -967,6 +967,31 @@
         <button class="todo-filter-btn" onclick="phFilterHabits('Annual',this)">Annual</button>
       </div>
       <div id="ph-habits-list"></div>
+
+      <!-- Weekly Checklist Management -->
+      <div style="margin-top:24px;border-top:2px solid #e2e8f0;padding-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:15px;font-weight:700;">Weekly Checklist Items</div>
+          <button class="add-btn" onclick="phToggleChecklistForm()" style="font-size:12px;padding:6px 14px;">+ Add Item</button>
+        </div>
+        <div class="add-form" id="ph-checklist-form" style="display:none;margin-bottom:12px;">
+          <h3 id="clf-title">New Checklist Item</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Label</label><input type="text" id="clf-label" placeholder="e.g. Bins out Wednesday"></div>
+            <div class="form-group"><label>Week</label><select id="clf-week"><option>Both</option><option>A</option><option>B</option></select></div>
+            <div class="form-group"><label>Icon (emoji)</label><input type="text" id="clf-icon" placeholder="e.g. 🗑️"></div>
+            <div class="form-group"><label>Phone (optional)</label><input type="text" id="clf-phone" placeholder="e.g. +61450042221"></div>
+            <div class="form-group full"><label>Sub text (optional)</label><input type="text" id="clf-sub" placeholder="e.g. +61 450 042 221"></div>
+          </div>
+          <div class="form-actions">
+            <button class="add-btn" id="clf-save-btn" onclick="phSaveChecklistItem()">Save</button>
+            <button class="add-btn cancel" onclick="phToggleChecklistForm()">Cancel</button>
+            <button class="add-btn" id="clf-del-btn" onclick="phDeleteChecklistItem()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
+          </div>
+          <div class="form-msg" id="clf-msg"></div>
+        </div>
+        <div id="ph-checklist-items-list"></div>
+      </div>
     </div>
 
     <!-- ═══ AISLEMATE ═══ -->
@@ -1193,6 +1218,7 @@
   let MONTHLY_TASKS = [];
   let ANIMALS = [];
   let HABITS = [];
+  let CHECKLIST_ITEMS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
@@ -1205,7 +1231,7 @@
   // --- Load data with auto-retry ---
   async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1217,14 +1243,15 @@
       sb.from('animals').select('*').order('name'),
       sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false }),
       sb.from('monthly_tasks').select('*').eq('month_year',currentMonth),
-      sb.from('habits').select('*').order('frequency')
+      sb.from('habits').select('*').order('frequency'),
+      sb.from('checklist_items').select('*').order('sort_order')
     ]);
 
     const errors=[];
-    [fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes].forEach(r=>{if(r.error)errors.push(r.error.message);});
+    [fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes].forEach(r=>{if(r.error)errors.push(r.error.message);});
     if(errors.length)throw new Error(errors[0]);
 
-    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes};
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes};
   }
 
   let res;
@@ -1243,7 +1270,7 @@
   }
 
   try {
-    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes}=res;
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1365,6 +1392,16 @@
       notes: r.notes || ''
     }));
 
+    CHECKLIST_ITEMS = (checklistRes.data || []).map(r => ({
+      id: r.id,
+      label: r.label,
+      icon: r.icon || '',
+      week: r.week_type || 'Both',
+      sub: r.sub_text || '',
+      phone: r.phone || '',
+      sortOrder: r.sort_order || 0
+    }));
+
   } catch (err) {
     $('#ph-loading').style.display = 'none';
     $('#ph-error').style.display = 'block';
@@ -1472,20 +1509,10 @@
     html+='</span>';
     html+='</div>';
 
-    // Weekly checklist
+    // Weekly checklist — loaded from Supabase
     const done=getWeekDone();
-    const binLabel='Bins out Wednesday — Red'+(isA?' + Blue':' + Yellow + Green');
-    const weekItems=isA?[
-      {key:'cleaner',label:'Paula (Cleaners)',icon:'\u{1F9F9}',sub:whoPhoneDisplay,phone:whoPhone},
-      {key:'bins',label:binLabel,icon:'\u{1F5D1}'},
-      {key:'bins-in',label:'Bins brought in',icon:'\u{2705}'},
-      {key:'ian-rosie',label:'Ian walking Rosie (often Wed)',icon:'\u{1F415}'}
-    ]:[
-      {key:'fiona',label:'Fiona',icon:'\u{1F9D1}\u200D\u{1F9AF}',sub:whoPhoneDisplay,phone:whoPhone},
-      {key:'bins',label:binLabel,icon:'\u{1F5D1}'},
-      {key:'bins-in',label:'Bins brought in',icon:'\u{2705}'},
-      {key:'ian-rosie',label:'Ian walking Rosie (often Wed)',icon:'\u{1F415}'}
-    ];
+    const weekItems=(CHECKLIST_ITEMS||[]).filter(i=>i.week===week||i.week==='Both').map(i=>({key:'chk-'+i.id,label:i.label,icon:i.icon||'',sub:i.sub||'',phone:i.phone||''}));
+    if(!weekItems.length)weekItems.push({key:'empty',label:'No checklist items — add some in Habits',icon:'\u{2139}\u{FE0F}'});
     const doneCount=weekItems.filter(i=>done[i.key]).length;
     html+='<div style="margin-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-size:13px;font-weight:700;color:#64748b;">Weekly Checklist</div><div style="font-size:11px;color:#94a3b8;">'+doneCount+'/'+weekItems.length+' done</div></div>';
     html+='<div style="background:#f1f5f9;border-radius:8px;height:6px;overflow:hidden;margin-bottom:10px;"><div style="background:#0d9488;height:100%;width:'+Math.round((doneCount/weekItems.length)*100)+'%;border-radius:8px;transition:width 0.3s;"></div></div>';
@@ -2934,6 +2961,7 @@
     });
     if(html==='')html='<div style="text-align:center;padding:40px;color:#94a3b8;">No habits yet. Add some to get started!</div>';
     $('#ph-habits-list').innerHTML=html;
+    phRenderChecklistItems();
   };
 
   window.phToggleHabit=async function(id){
@@ -2941,6 +2969,90 @@
     const {error}=await sb.from('habits').update({completed_this_cycle:!h.completedThisCycle}).eq('id',id);
     if(error){phToast('Error: '+error.message,'error');return;}
     h.completedThisCycle=!h.completedThisCycle;phHabits();
+  };
+
+  // ─── CHECKLIST ITEM MANAGEMENT ───
+  let editingChecklistId=null;
+
+  function phRenderChecklistItems(){
+    const el=$('#ph-checklist-items-list');if(!el)return;
+    if(!CHECKLIST_ITEMS.length){el.innerHTML='<div class="todo-empty">No checklist items. Add some to show on the dashboard.</div>';return;}
+    let html='';
+    ['A','B','Both'].forEach(w=>{
+      const items=CHECKLIST_ITEMS.filter(i=>i.week===w);
+      if(!items.length)return;
+      const label=w==='Both'?'Every Week':'Week '+w+' Only';
+      html+='<div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:6px;margin-top:12px;">'+label+'</div>';
+      items.forEach(i=>{
+        html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:4px;cursor:pointer;" onclick="phEditChecklistItem('+i.id+')">';
+        html+='<span>'+i.icon+'</span><span style="flex:1;font-size:13px;">'+i.label+'</span>';
+        if(i.sub)html+='<span style="font-size:11px;color:#94a3b8;">'+i.sub+'</span>';
+        html+='</div>';
+      });
+    });
+    el.innerHTML=html;
+  }
+
+  window.phToggleChecklistForm=function(){
+    const form=$('#ph-checklist-form');
+    if(form.style.display==='none'){
+      editingChecklistId=null;form.style.display='block';
+      $('#clf-title').textContent='New Checklist Item';$('#clf-save-btn').textContent='Save';$('#clf-del-btn').style.display='none';
+      $('#clf-label').value='';$('#clf-week').value='Both';$('#clf-icon').value='';$('#clf-phone').value='';$('#clf-sub').value='';
+      $('#clf-msg').className='form-msg';$('#clf-msg').textContent='';
+    }else{form.style.display='none';}
+  };
+
+  window.phEditChecklistItem=function(id){
+    const item=CHECKLIST_ITEMS.find(i=>i.id===id);if(!item)return;
+    editingChecklistId=id;
+    const form=$('#ph-checklist-form');form.style.display='block';
+    $('#clf-title').textContent='Edit Checklist Item';$('#clf-save-btn').textContent='Update';$('#clf-del-btn').style.display='inline-block';
+    $('#clf-label').value=item.label;$('#clf-week').value=item.week;$('#clf-icon').value=item.icon;$('#clf-phone').value=item.phone;$('#clf-sub').value=item.sub;
+    $('#clf-msg').className='form-msg';$('#clf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveChecklistItem=async function(){
+    const btn=lockBtn('#clf-save-btn');
+    const label=$('#clf-label').value.trim();
+    const week=$('#clf-week').value;
+    const icon=$('#clf-icon').value.trim();
+    const phone=$('#clf-phone').value.trim();
+    const sub=$('#clf-sub').value.trim();
+
+    if(!label){$('#clf-msg').className='form-msg error';$('#clf-msg').textContent='Please enter a label.';unlockBtn(btn);return;}
+
+    const row={label:label,week_type:week,icon:icon||null,phone:phone||null,sub_text:sub||null,sort_order:CHECKLIST_ITEMS.length};
+
+    try{
+      if(editingChecklistId){
+        const {error}=await sb.from('checklist_items').update(row).eq('id',editingChecklistId);
+        if(error)throw error;
+        const idx=CHECKLIST_ITEMS.findIndex(i=>i.id===editingChecklistId);
+        if(idx>=0)CHECKLIST_ITEMS[idx]={id:editingChecklistId,label:label,icon:icon,week:week,sub:sub,phone:phone,sortOrder:row.sort_order};
+        $('#clf-msg').className='form-msg success';$('#clf-msg').textContent='Updated!';
+      }else{
+        const {data:inserted,error}=await sb.from('checklist_items').insert(row).select().single();
+        if(error)throw error;
+        CHECKLIST_ITEMS.push({id:inserted.id,label:label,icon:icon,week:week,sub:sub,phone:phone,sortOrder:row.sort_order});
+        $('#clf-msg').className='form-msg success';$('#clf-msg').textContent='Added!';
+      }
+      phRenderChecklistItems();
+      setTimeout(()=>{$('#ph-checklist-form').style.display='none';},1500);
+    }catch(e){$('#clf-msg').className='form-msg error';$('#clf-msg').textContent='Error: '+e.message;}finally{unlockBtn(btn);}
+  };
+
+  window.phDeleteChecklistItem=async function(){
+    if(!editingChecklistId||!confirm('Delete this checklist item?'))return;
+    try{
+      const {error}=await sb.from('checklist_items').delete().eq('id',editingChecklistId);
+      if(error){phToast('Delete error: '+error.message,'error');return;}
+      CHECKLIST_ITEMS=CHECKLIST_ITEMS.filter(i=>i.id!==editingChecklistId);
+      $('#ph-checklist-form').style.display='none';
+      phRenderChecklistItems();
+      phToast('Item deleted','success');
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   let editingAnimalId=null;

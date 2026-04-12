@@ -33,6 +33,17 @@
   2. Baker AI popup
   3. AisleMate shopping
 
+## What is Baker Hub
+Baker Hub is the Baker family's personal dashboard — a single-page web app that manages everything for the household:
+- **Finance**: NDIS funding, insurance policies, superannuation, investments, recurring bills
+- **Health**: Sarah's MS & epilepsy protocol, animal medical records, vet tracking, tick treatments
+- **Household**: House projects by zone with assignee, weekly bin schedule, cleaner/Fiona tasks
+- **Family**: Kids profiles (Sarah & Russell) with files and schedules, contacts directory, important dates
+- **Shopping**: AisleMate shopping list with master items, receipt scanning, and Baker AI integration
+- **AI Assistant**: Baker AI chat can add todos, dates, contacts, shopping items, and manage tasks
+
+The app is owned by the Baker family. Claude Code built it but does not own the code. All data lives in Supabase. The app runs on GitHub Pages with no backend server — just static HTML/CSS/JS connecting directly to Supabase.
+
 ## Navigation
 Sidebar (desktop) + slide-out drawer (mobile, 768px breakpoint):
 1. Dashboard (home)
@@ -106,7 +117,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## Contacts
 - **Grouped by category** (not by person) with collapsible sections
 - **Category filter pills** at top (Medical, Insurance, NDIS, Home & Services, etc.)
-- **Categories**: Medical, Massage, Pharmacy, NDIS, Insurance, Home & Services, Recreation, Food & Lifestyle, Government
+- **Categories**: Medical, Vet, Massage, Pharmacy, NDIS, Insurance, Home & Services, Recreation, Food & Lifestyle, Government (+ any custom categories added by user)
+- **Dynamic categories**: Dropdown built from existing data + defaults. "Add new category" option lets user type any name — it persists with the contact and appears in future dropdowns/pills. No separate table needed.
 - **Copy button**: Clipboard icon on each contact card
 - **Export CSV**: Downloads filtered contacts
 - **For Person**: Multi-select checkboxes (Family, Cath, Andrew, Sarah, Russell)
@@ -114,6 +126,11 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## House Projects
 - **Zone filter pills**: Left Shed, Left Fence, Garage, Front Fence, Front Garden Bed, Right Fence, Right Shed, Back Deck, House, Pool Deck, Side of House
 - **Collapsible zones**: Each zone is a collapsible card with done count
+- **Assigned To**: Andrew or Cath (column `assigned_to` in `house_projects` table). Existing projects default to Andrew (from Andy's original list). New projects can be assigned to either.
+- **Checklist format**: Tap checkbox to toggle Complete — item shows strikethrough and fades. "Hide completed" toggle removes them from view.
+- **Expand all / Collapse all**: Buttons to open or close all zone groups at once
+- **Print**: Opens printable checklist grouped by zone with checkboxes and assignee names
+- **Zone dropdown in form**: Pick zone when adding/editing (stored in `notes` as "Zone: Left Shed")
 - Zones stored in `notes` field as "Zone: Left Shed" etc.
 - Status: Not Started, In Progress, Complete
 - Priority: Low, Medium, High, Urgent

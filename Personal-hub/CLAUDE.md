@@ -19,8 +19,11 @@
 - **Be specific** — say which function/section to edit (e.g. "in renderThisWeek() around line 1475") instead of vague requests
 - **Reference script blocks** — index.html has 3 separate script blocks:
   - Script 1: Main app (dashboard, NDIS, insurance, contacts, dates, todos, habits, animals, kids, house projects)
-  - Script 2: Baker AI popup (starts after `<!-- Baker AI Chat Popup -->`)
-  - Script 3: AisleMate shopping (starts with `// ═══════ AISLEMATE ═══════`)
+  - Script 2: Baker AI popup — the purple B chat bubble inside Baker Hub (NOT the standalone page). Starts after `<!-- Baker AI Chat Popup -->`
+  - Script 3: AisleMate shopping — the shopping section inside Baker Hub. Starts with `// ═══════ AISLEMATE ═══════`
+- **Baker AI exists in two places** — both need updating when changing AI tools/features:
+  - `index.html` Script block 2 = the chat popup inside Baker Hub (purple B button, bottom-right)
+  - `ai.html` = standalone full-screen Baker AI page (separate file, own PWA)
 - **Say "only change X"** — prevents unnecessary edits to other parts
 - **Use Haiku for small changes** — changing a label, colour, or word doesn't need Opus
 - **Reference CLAUDE.md** — say "as documented in CLAUDE.md" to point the session to existing context

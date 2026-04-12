@@ -619,7 +619,8 @@
           <div class="form-group"><label>Contact Person</label><input type="text" id="cf-person" placeholder="Optional"></div>
           <div class="form-group"><label>Phone</label><input type="tel" id="cf-phone" placeholder="e.g. 02 9123 4567"></div>
           <div class="form-group"><label>Email</label><input type="email" id="cf-email" placeholder="e.g. info@clinic.com.au"></div>
-          <div class="form-group"><label>Category</label><select id="cf-cat"><option>Medical</option><option>Massage</option><option>Pharmacy</option><option>Home & Services</option><option>Recreation</option><option>Food & Lifestyle</option><option>Government</option><option>NDIS</option><option>Insurance</option></select></div>
+          <div class="form-group"><label>Category</label><select id="cf-cat" onchange="if(this.value==='__new'){this.style.display='none';document.getElementById('cf-cat-new').style.display='block';document.getElementById('cf-cat-new').focus();}"></select></div>
+          <div class="form-group" id="cf-cat-new-group" style="display:none;"><label>New Category</label><input type="text" id="cf-cat-new" placeholder="e.g. Vet" style="display:none;"></div>
           <div class="form-group"><label>Meeting / Portal Link</label><input type="url" id="cf-link" placeholder="e.g. https://hotdoc.com.au/..."></div>
           <div class="form-group full"><label>Notes</label><input type="text" id="cf-notes" placeholder="Optional notes"></div>
           <div class="form-group"><label>For Person</label><div id="cf-for" style="display:flex;gap:6px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Family" style="accent-color:#0d9488;"> Family</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Cath" style="accent-color:#0d9488;"> Cath</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Andrew" style="accent-color:#0d9488;"> Andrew</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Sarah" style="accent-color:#0d9488;"> Sarah</label><label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:6px 10px;border:1px solid #e2e8f0;border-radius:8px;"><input type="checkbox" value="Russell" style="accent-color:#0d9488;"> Russell</label></div></div>
@@ -2023,9 +2024,23 @@
     }catch(e){phToast('Error: '+e.message,'error');}
   };
 
-  const catClass=c=>c==='Medical'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Recreation'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':c==='Insurance'?'financial':'medical';
+  const catClass=c=>c==='Medical'?'medical':c==='Vet'?'medical':c==='Massage'?'health':c==='Pharmacy'?'pharmacy':c==='Home & Services'?'home':c==='Recreation'?'entertainment':c==='Food & Lifestyle'?'food':c==='Government'?'government':c==='NDIS'?'ndis':c==='Insurance'?'financial':'medical';
 
-  const CAT_DISPLAY_ORDER=['Medical','Massage','Pharmacy','NDIS','Insurance','Home & Services','Recreation','Government','Food & Lifestyle'];
+  const CAT_DISPLAY_ORDER=['Medical','Vet','Massage','Pharmacy','NDIS','Insurance','Home & Services','Recreation','Government','Food & Lifestyle'];
+  const DEFAULT_CONTACT_CATS=['Medical','Vet','Massage','Pharmacy','NDIS','Insurance','Home & Services','Recreation','Government','Food & Lifestyle'];
+
+  function populateContactCatDropdown(selected){
+    const existing=[...new Set(CONTACTS.map(c=>c.cat))];
+    const allCats=[...new Set([...DEFAULT_CONTACT_CATS,...existing])];
+    allCats.sort((a,b)=>{const ai=CAT_DISPLAY_ORDER.indexOf(a),bi=CAT_DISPLAY_ORDER.indexOf(b);return (ai===-1?99:ai)-(bi===-1?99:bi);});
+    let html='';
+    allCats.forEach(c=>{html+='<option'+(c===selected?' selected':'')+'>'+c+'</option>';});
+    html+='<option value="__new">+ Add new category...</option>';
+    $('#cf-cat').innerHTML=html;
+    $('#cf-cat').style.display='block';
+    $('#cf-cat-new').style.display='none';
+    $('#cf-cat-new').value='';
+  }
   const PERSON_ORDER=['Family','Cath','Andrew','Sarah','Russell'];
   let contactGroupBy='person';
   let contactCatFilter='All';
@@ -2105,7 +2120,7 @@
     $('#cf-title').textContent='New Contact';
     $('#cf-save-btn').textContent='Save Contact';
     $('#cf-name').value='';$('#cf-person').value='';$('#cf-phone').value='';$('#cf-email').value='';$('#cf-link').value='';$('#cf-notes').value='';
-    $('#cf-cat').value='Medical';$$('#cf-for input[type=checkbox]').forEach(cb=>cb.checked=false);
+    populateContactCatDropdown('Medical');$$('#cf-for input[type=checkbox]').forEach(cb=>cb.checked=false);
     $('#cf-del-btn').style.display='none';
     $('#cf-msg').className='form-msg';$('#cf-msg').textContent='';
   }
@@ -2140,7 +2155,7 @@
     $('#cf-title').textContent='Edit \u2014 '+c.name;
     $('#cf-save-btn').textContent='Update Contact';
     $('#cf-name').value=c.name;$('#cf-person').value=c.person;$('#cf-phone').value=c.phone;$('#cf-email').value=c.email;$('#cf-link').value=c.link;$('#cf-notes').value=c.notes;
-    $('#cf-cat').value=c.cat;
+    populateContactCatDropdown(c.cat);
     const personVals=c.forPerson?c.forPerson.split(', '):[];
     $$('#cf-for input[type=checkbox]').forEach(cb=>{cb.checked=personVals.includes(cb.value);});
     $('#cf-del-btn').style.display='inline-block';
@@ -2156,7 +2171,8 @@
     const email=$('#cf-email').value.trim();
     const link=$('#cf-link').value.trim();
     const notes=$('#cf-notes').value.trim();
-    const cat=$('#cf-cat').value;
+    const newCat=$('#cf-cat-new').value.trim();
+    const cat=newCat||$('#cf-cat').value;
     const forPerson=[...$$('#cf-for input[type=checkbox]')].filter(cb=>cb.checked).map(cb=>cb.value).join(', ');
 
     if(!name){

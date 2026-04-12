@@ -1003,6 +1003,50 @@
           <li><a href="https://supabase.com/dashboard/project/ziwycymhaqghdiznyhhw" target="_blank" style="color:#0d9488;">Supabase Dashboard</a> — Database & storage</li>
         </ul>
       </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Services & Costs</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Everything you use and what it costs. You are not locked into any provider.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">GitHub Pages (Hosting)</div><div style="font-size:12px;font-weight:700;color:#16a34a;">Free</div></div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Hosts the app. Your code lives here. Free for public repos.</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: Netlify (free), Vercel (free), Cloudflare Pages (free)</div>
+          </div>
+          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Supabase (Database & Storage)</div><div style="font-size:12px;font-weight:700;color:#16a34a;">Free tier</div></div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">All your data — 20 tables, receipt file storage. Free tier: 500MB database, 1GB storage, 50K monthly requests.</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: Firebase (Google), PocketBase (self-hosted), Neon (Postgres)</div>
+          </div>
+          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude API — Baker AI Chat</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">~$1-5/month</div></div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Powers Baker AI chat (Haiku model). Runs via Supabase Edge Function. Cost depends on usage — roughly $0.003 per message.</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: OpenAI GPT-4o-mini (~same cost), Google Gemini Flash (free tier available), Groq (free tier)</div>
+          </div>
+          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude API — Receipt Scanning</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">~$0.01-0.03/scan</div></div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">Reads receipt photos (Sonnet model). Separate from chat — can use a different provider. Same Edge Function, different model.</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: OpenAI GPT-4o Vision (~same cost), Google Vision API, AWS Textract</div>
+          </div>
+          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude Code (App Development)</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">$20/month (Max plan)</div></div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px;">AI-assisted coding — builds features, fixes bugs, pushes code. Does not own the code. Only needed when actively developing.</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: GitHub Copilot ($10/mo), Cursor ($20/mo), Windsurf ($15/mo), a human developer, or do nothing (app keeps running as-is)</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#1e293b;margin-top:12px;padding:12px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
+          <strong>Total estimated cost:</strong> $0-5/month for normal use (hosting free, database free, AI chat ~$1-5 depending on usage). Claude Code only needed during active development sessions.
+        </div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">If You Move Away From Claude</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#64748b;">
+          <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>App keeps running</strong> — The code is yours on GitHub, data is yours in Supabase. Nothing stops working.</div>
+          <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>Baker AI chat stops</strong> — The only thing that breaks. Update the Supabase Edge Function to point to OpenAI/Gemini/etc instead.</div>
+          <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>Receipt scanning stops</strong> — Same fix: update the Edge Function to use a different vision API.</div>
+          <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>Rename CLAUDE.md</strong> — It's just a text file. Rename to PROJECT.md or README-dev.md. The content is provider-agnostic.</div>
+          <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>Future development</strong> — Any developer or AI coding tool (Copilot, Cursor, etc.) can work on the code. It's standard HTML/CSS/JS.</div>
+        </div>
+      </div>
     </div>
 
     <div class="screen" id="ph-habits">

@@ -3690,6 +3690,20 @@
       if(de)return 'Error: '+de.message;
       return 'Deleted Fiona task: "'+data[0].task+'"';
     }
+    if(a.type==='add_shopping'){
+      if(!a.items)return 'Error: Missing items.';
+      const items=a.items.split(',').map(s=>s.trim()).filter(s=>s.length>0);
+      let added=[];
+      for(const name of items){
+        const {data:match}=await sb.from('master_items').select('*').ilike('name',name).limit(1);
+        const row={name:name,category:'Other',store:'Other'};
+        if(match&&match.length){row.name=match[0].name;row.category=match[0].category||'Other';row.store=match[0].store||'Other';}
+        const {error}=await sb.from('shopping_items').insert(row);
+        if(!error)added.push(row.name);
+      }
+      if(!added.length)return 'Error: Could not add items.';
+      return 'Added to shopping list: '+added.join(', ');
+    }
     return 'Unknown action: '+a.type;
   }
 

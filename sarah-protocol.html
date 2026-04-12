@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d9488">
 <title>Sarah's MS & Epilepsy Protocol</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>document.documentElement.style.display = 'none';</script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; line-height: 1.5; }
@@ -199,6 +202,13 @@
 </div>
 
 <script>
+(async function() {
+  const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  document.documentElement.style.display = '';
+})();
+
 function toggleSection(header) {
   header.classList.toggle('collapsed');
   var body = header.nextElementSibling;

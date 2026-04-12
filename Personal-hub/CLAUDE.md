@@ -317,6 +317,16 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 
+## Next Session: Add Login
+- Supabase Auth is already set up (same project as Cath Hub — `ziwycymhaqghdiznyhhw`)
+- User account already exists (used for Cath Hub login)
+- Need to add login screen to Baker Hub `index.html`
+- Check how Cath Hub (`personal-cath-hub`) implements its login and replicate the same pattern
+- Show login form before loading the app
+- Check `supabase.auth.getSession()` on load — if logged in, show app; if not, show login
+- Consider adding auth check to standalone pages too (shopping.html, ai.html, sarah-protocol.html)
+- DO NOT change RLS policies until login is confirmed working — currently `allow_all` works without auth
+
 ## End of Session Checklist
 Before ending a session, ensure:
 1. All code is pushed to main

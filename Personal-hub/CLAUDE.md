@@ -199,8 +199,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **AI Tool Rules**: Every DB operation checks for errors. Dedicated handlers per action. Never silent failures.
 
 ## Apps Hub Directory
-- **URL**: https://cathcoach4u.github.io/personal-baker-hub/apps-directory.html
-- **File**: `apps-directory.html` — compact tile grid linking to all Baker family apps
+- **URL**: https://cathcoach4u.github.io/personal-businessapps/
+- **Repo**: `cathcoach4u/personal-businessapps` (separate repository — moved out of baker-hub)
 - **Design**: Gradient header (teal to purple), own PWA manifest (black A icon), installable on home screen
 - **Sections and tiles**:
   - **Personal Hubs**: Baker Hub, Cath Hub, Baker AI, Cath AI, Morning, AisleMate (blue Sh icon)

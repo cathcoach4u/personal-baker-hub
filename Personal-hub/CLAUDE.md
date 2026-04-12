@@ -192,9 +192,16 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **AI Tool Rules**: Every DB operation checks for errors. Dedicated handlers per action. Never silent failures.
 
 ## Apps Hub Directory
-- `apps-directory.html` — compact tile grid of all apps
-- Gradient header (teal to purple), own PWA manifest
-- **Tiles**: Baker Hub, Cath Hub, Baker AI, Cath AI, Morning, AisleMate (blue Sh), IAS, Coach4U Hub, C4U Bot, Coach4U Hub (old), Professional Dev, Resources, ThriveHQ
+- **URL**: https://cathcoach4u.github.io/personal-baker-hub/apps-directory.html
+- **File**: `apps-directory.html` — compact tile grid linking to all Baker family apps
+- **Design**: Gradient header (teal to purple), own PWA manifest (black A icon), installable on home screen
+- **Sections and tiles**:
+  - **Personal Hubs**: Baker Hub, Cath Hub, Baker AI, Cath AI, Morning, AisleMate (blue Sh icon)
+  - **Coach4U — Clients**: IAS (red)
+  - **Coach4U — Internal**: Coach4U Hub, C4U Bot (chat bubble icon), Coach4U Hub (old, dimmed)
+  - **Coach4U — External**: Professional Dev, Resources, ThriveHQ
+- This is the central launch page for all apps — should be the home screen shortcut
+- When adding new apps/pages, add a tile here so it's accessible from one place
 
 ## About Page
 - **Built With**: GitHub Pages (hosting), Supabase (database), Claude Code (AI coder — does not own the code), Claude (AI provider for Baker AI chat)

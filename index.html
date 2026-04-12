@@ -3983,15 +3983,15 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 2048,
+        model: 'claude-sonnet-4-5-20250514',
+        max_tokens: 4096,
         messages: [{
           role: 'user',
           content: [
             mediaType === 'application/pdf'
               ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } }
               : { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-            { type: 'text', text: 'Extract all items and prices from this receipt. Return ONLY valid JSON in this exact format, no other text:\n{"store":"Store Name","date":"DD/MM/YYYY","items":[{"name":"Item Name","price":1.99,"quantity":1}],"total":99.99}\n\nRules:\n- Use the actual store name from the receipt\n- Date in DD/MM/YYYY format\n- Price as a number (not string)\n- Include ALL items, even discounts (as negative prices)\n- Total is the final amount paid' }
+            { type: 'text', text: 'You are an expert receipt reader. Carefully extract ALL items and prices from this Australian receipt photo.\n\nReturn ONLY valid JSON in this exact format, no other text:\n{"store":"Store Name","date":"DD/MM/YYYY","items":[{"name":"Item Name","price":1.99,"quantity":1}],"total":99.99}\n\nIMPORTANT RULES:\n- Read every single line item on the receipt carefully\n- Use the EXACT item names as printed on the receipt\n- Price must be a number, not a string\n- If an item has a quantity > 1, set the quantity field\n- Include discounts and savings as separate items with NEGATIVE prices\n- Include any multi-buy deals or member discounts\n- The total should be the final amount paid (look for TOTAL, AMOUNT DUE, or similar)\n- Date format: DD/MM/YYYY (Australian format)\n- If the receipt is blurry or hard to read, do your best and include items you can identify\n- Do NOT skip items — include everything from top to bottom\n- For Woolworths/Coles receipts, the item code numbers are NOT part of the item name' }
           ]
         }]
       })

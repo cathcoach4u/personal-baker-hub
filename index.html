@@ -1009,6 +1009,39 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Using Claude Code efficiently</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Tips to make sessions faster and cheaper.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Which model to use</div>
+            <div style="font-size:12px;color:#64748b;">
+              <strong>Opus</strong> — Complex builds, big refactors, audits, multi-step tasks. Best for Baker Hub work.<br>
+              <strong>Sonnet</strong> — Feature building, bug fixes, moderate complexity. Good balance.<br>
+              <strong>Haiku</strong> — Quick simple changes (rename a label, change a colour). Cheapest and fastest.
+            </div>
+          </div>
+          <div style="padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Be specific to save cost</div>
+            <div style="font-size:12px;color:#64748b;">
+              Instead of "fix the bins" say "in renderThisWeek() around line 1475, change Wednesday to Thursday".<br><br>
+              <strong>index.html has 3 script blocks:</strong><br>
+              1. Main app — dashboard, NDIS, insurance, contacts, dates, todos, habits, animals, kids, house projects<br>
+              2. Baker AI popup — starts after the Baker AI Chat Popup comment<br>
+              3. AisleMate shopping — starts with AISLEMATE heading<br><br>
+              Tell Claude which block to work in. Say "only change X, don't touch anything else."
+            </div>
+          </div>
+          <div style="padding:12px;background:#f8fafc;border-radius:8px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Session management</div>
+            <div style="font-size:12px;color:#64748b;">
+              Start fresh sessions when switching topics — long sessions slow down.<br>
+              Reference CLAUDE.md — say "as documented in CLAUDE.md" to point to existing context.<br>
+              Update CLAUDE.md at the end of each session so the next one has full context.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">If You Move Away From Claude</div>
         <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#64748b;">
           <div style="padding:10px;background:#f8fafc;border-radius:6px;"><strong>App keeps running</strong> — The code is yours on GitHub, data is yours in Supabase. Nothing stops working.</div>

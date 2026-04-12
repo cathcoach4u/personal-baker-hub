@@ -10,6 +10,23 @@
 - **Collapsible sections** — group content into collapsible cards where possible
 - **Don't add emojis** unless the user asks
 
+## Which Model to Use
+- **Opus** — Complex builds, big refactors, audits, multi-step tasks, understanding the full app. Best for Baker Hub work.
+- **Sonnet** — Good balance for feature building, bug fixes, moderate complexity.
+- **Haiku** — Quick simple changes (rename a label, change a colour, swap a word). Cheapest and fastest.
+
+## Tips for Faster & Cheaper Sessions
+- **Be specific** — say which function/section to edit (e.g. "in renderThisWeek() around line 1475") instead of vague requests
+- **Reference script blocks** — index.html has 3 separate script blocks:
+  - Script 1: Main app (dashboard, NDIS, insurance, contacts, dates, todos, habits, animals, kids, house projects)
+  - Script 2: Baker AI popup (starts after `<!-- Baker AI Chat Popup -->`)
+  - Script 3: AisleMate shopping (starts with `// ═══════ AISLEMATE ═══════`)
+- **Say "only change X"** — prevents unnecessary edits to other parts
+- **Use Haiku for small changes** — changing a label, colour, or word doesn't need Opus
+- **Reference CLAUDE.md** — say "as documented in CLAUDE.md" to point the session to existing context
+- **Start fresh sessions** — long sessions slow down. Start new ones when switching topics
+- **Keep CLAUDE.md updated** — update it at the end of each session so the next one has full context
+
 ## User Context
 - **Owner**: Cathrine Baker (cathcoach4u)
 - **Location**: Northern Beaches, Sydney, Australia (AEST)

@@ -307,3 +307,19 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v2`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
+
+## Limitations to Know
+- **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
+- **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
+- **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
+- **Service worker caching** — after significant code changes, bump the cache version in `sw.js` (e.g. `baker-hub-v2` → `baker-hub-v3`) or users will see old cached pages.
+- **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
+- **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
+
+## End of Session Checklist
+Before ending a session, ensure:
+1. All code is pushed to main
+2. Any SQL needed is provided to the user
+3. CLAUDE.md is updated with new features, decisions, or context
+4. No open branches or PRs left behind
+5. About page updated if features were added

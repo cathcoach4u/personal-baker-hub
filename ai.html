@@ -85,6 +85,11 @@
 (async function(){
   const PROXY='https://ziwycymhaqghdiznyhhw.supabase.co/functions/v1/claude-proxy';
   const sb=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+
+  // Auth check — redirect to Baker Hub login if not signed in
+  const { data: { session: authSession } } = await sb.auth.getSession();
+  if (!authSession) { window.location.href = 'index.html'; return; }
+
   const msgs=document.getElementById('msgs');
   const inp=document.getElementById('inp');
   const sendBtn=document.getElementById('sendBtn');

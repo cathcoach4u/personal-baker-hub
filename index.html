@@ -435,9 +435,39 @@
     body.dark-mode #personalHub .am-btn { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
     body.dark-mode #personalHub .am-btn.primary { background: #10b981 !important; color: white !important; border-color: #10b981 !important; }
     body.dark-mode #personalHub .am-search { background: #1e293b !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+
+    /* Login overlay */
+    #ph-login-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 99999; display: none; align-items: center; justify-content: center; }
+    #ph-login-overlay.visible { display: flex; }
+    .login-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); margin: 20px; }
+    .login-card h1 { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+    .login-card p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+    .login-fields { display: flex; flex-direction: column; gap: 12px; }
+    .login-fields input { padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-family: inherit; color: #1e293b; outline: none; transition: border-color 0.15s; }
+    .login-fields input:focus { border-color: #0d9488; }
+    .login-submit { padding: 14px; background: #0d9488; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; width: 100%; }
+    .login-submit:hover { background: #0f766e; }
+    .login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .login-error { display: none; background: #fef2f2; color: #ef4444; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 4px; }
+    .login-error.visible { display: block; }
+    .signout-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.45); font-size: 10px; padding: 0; font-family: inherit; text-decoration: underline; }
+    .signout-btn:hover { color: rgba(255,255,255,0.7); }
   </style>
 </head>
 <body>
+
+<div id="ph-login-overlay">
+  <div class="login-card">
+    <h1>Baker Hub</h1>
+    <p>Sign in to continue</p>
+    <div id="ph-login-error" class="login-error"></div>
+    <div class="login-fields">
+      <input type="email" id="ph-login-email" placeholder="Email address" autocomplete="email">
+      <input type="password" id="ph-login-password" placeholder="Password" autocomplete="current-password">
+      <button class="login-submit" id="ph-login-btn" onclick="phDoLogin()">Sign in</button>
+    </div>
+  </div>
+</div>
 
 <div id="personalHub">
   <div class="mobile-topbar">
@@ -466,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer">Baker Hub v3.0</div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -483,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer">Baker Hub v3.0 — Supabase</div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -893,7 +923,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.0</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.1</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1320,6 +1350,44 @@
   let CHECKLIST_ITEMS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+
+  // --- Auth: check session before loading app ---
+  const { data: { session: authSession } } = await sb.auth.getSession();
+  if (!authSession) {
+    const overlay = document.getElementById('ph-login-overlay');
+    overlay.classList.add('visible');
+    document.getElementById('ph-loading').style.display = 'none';
+
+    const emailEl = document.getElementById('ph-login-email');
+    const passEl = document.getElementById('ph-login-password');
+    const errEl = document.getElementById('ph-login-error');
+    const btnEl = document.getElementById('ph-login-btn');
+
+    window.phDoLogin = async function() {
+      const email = emailEl.value.trim();
+      const password = passEl.value;
+      if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.classList.add('visible'); return; }
+      btnEl.textContent = 'Signing in...'; btnEl.disabled = true; errEl.classList.remove('visible');
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        errEl.textContent = error.message; errEl.classList.add('visible');
+        btnEl.textContent = 'Sign in'; btnEl.disabled = false;
+      } else {
+        location.reload();
+      }
+    };
+
+    const onEnter = e => { if (e.key === 'Enter') window.phDoLogin(); };
+    emailEl.addEventListener('keydown', onEnter);
+    passEl.addEventListener('keydown', onEnter);
+    return;
+  }
+
+  // --- Sign out ---
+  window.phSignOut = async function() {
+    await sb.auth.signOut();
+    location.reload();
+  };
 
   // --- Toast notifications ---
   window.phToast=function(msg,type,duration){

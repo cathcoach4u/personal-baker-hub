@@ -70,6 +70,7 @@
   <button class="sug" onclick="ask('Add a to-do: ')" style="background:#eff6ff;border-color:#bfdbfe;color:#2563eb;">&#x2705; Add To-Do</button>
   <button class="sug" onclick="ask('Add a Fiona task: ')" style="background:#fef9c3;border-color:#fef08a;color:#a16207;">&#x1F9F9; Fiona Task</button>
   <button class="sug" onclick="ask('Add a contact: ')" style="background:#f5f3ff;border-color:#ddd6fe;color:#7c3aed;">&#x1F4D6; Add Contact</button>
+  <button class="sug" onclick="ask('Add to shopping list: ')" style="background:#fef2f2;border-color:#fecaca;color:#dc2626;">&#x1F6D2; Shopping List</button>
   <button class="sug" onclick="ask(this.textContent)">NDIS budget?</button>
   <button class="sug" onclick="ask(this.textContent)">Outstanding invoices</button>
   <button class="sug" onclick="ask(this.textContent)">What's on this week?</button>
@@ -279,6 +280,23 @@
       const {error:de}=await sb.from('fiona_tasks').delete().eq('id',matches[0].id);
       if(de)return 'Error: '+de.message;
       return 'Deleted Fiona task: "'+matches[0].task+'"';
+    }
+
+    // ── ADD SHOPPING ──
+    if(action.type==='add_shopping'){
+      if(!action.items)return 'Error: Missing items.';
+      var items=action.items.split(',').map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+      var added=[];
+      for(var i=0;i<items.length;i++){
+        var name=items[i];
+        var {data:match}=await sb.from('master_items').select('*').ilike('name',name).limit(1);
+        var row={name:name,category:'Other',store:'Other'};
+        if(match&&match.length){row.name=match[0].name;row.category=match[0].category||'Other';row.store=match[0].store||'Other';}
+        var {error}=await sb.from('shopping_items').insert(row);
+        if(!error)added.push(row.name);
+      }
+      if(!added.length)return 'Error: Could not add items.';
+      return 'Added to shopping list: '+added.join(', ');
     }
 
     return 'Unknown action type: '+action.type;

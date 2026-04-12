@@ -18,20 +18,27 @@
 - **Family members**: Cath, Andrew, Sarah, Russell
 - **Address**: 11 Castle Crescent, Belrose NSW 2085
 
-## Architecture
-- **Hosting**: GitHub Pages at `cathcoach4u.github.io/personal-baker-hub/`
-- **Database**: Supabase (project ID: `ziwycymhaqghdiznyhhw`)
-- **AI Proxy**: Supabase Edge Function `claude-proxy`
-- **Entry point**: `index.html` (root of repo)
+## Architecture & Technology Stack
+
+### Infrastructure (owned by Baker family)
+- **Hosting**: GitHub Pages at `cathcoach4u.github.io/personal-baker-hub/` — Free
+- **Database**: Supabase (project ID: `ziwycymhaqghdiznyhhw`) — Free tier (20 tables, file storage, Edge Functions)
+- **Code**: Vanilla HTML/CSS/JS, Supabase JS CDN, no frameworks, no build tools
+- **PWA**: Web app manifests + service workers for home screen install
 - **Config**: `config.js` (Supabase URL + anon key)
-- **Stack**: Vanilla HTML/CSS/JS, Supabase JS CDN, no frameworks
-- **PWA**: Web app manifest for home screen install
-- **Service Workers**: `sw.js` (Baker Hub), `shopping-sw.js` (AisleMate), `apps-sw.js` (Apps Hub)
+
+### AI Services (3 separate services, all replaceable)
+1. **Claude Code** ($20/mo Max plan) — AI coder that builds/updates the app. Does NOT own the code. Only needed during development. Alternatives: GitHub Copilot, Cursor, Windsurf, any developer.
+2. **Claude Haiku API** (~$0.003/message) — Powers Baker AI chat. Runs via Supabase Edge Function `claude-proxy`. Alternatives: OpenAI GPT-4o-mini, Google Gemini Flash, Groq.
+3. **Claude Sonnet API** (~$0.02/scan) — Receipt scanning in AisleMate. Same Edge Function, different model. Separate from chat. Alternatives: OpenAI GPT-4o Vision, Google Vision API, AWS Textract.
+
+### Code Structure
 - **CSS scope**: `#personalHub` for main app
 - **Script blocks**: index.html has 3 separate `<script>` blocks, each with its own `sb` Supabase client:
   1. Main app (dashboard, NDIS, insurance, contacts, dates, todos, habits, animals, kids, house projects)
   2. Baker AI popup
   3. AisleMate shopping
+- **Service Workers**: `sw.js` (Baker Hub), `shopping-sw.js` (AisleMate), `apps-sw.js` (Apps Hub)
 
 ## What is Baker Hub
 Baker Hub is the Baker family's personal dashboard — a single-page web app that manages everything for the household:

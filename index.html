@@ -895,35 +895,40 @@
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:14px;font-weight:700;margin-bottom:4px;">cathcoach4u/personal-baker-hub</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Built With</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:4px;">Infrastructure (you own everything)</div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x1F4BB;</span>
-            <div><div style="font-weight:700;font-size:13px;">GitHub Pages</div><div style="font-size:11px;color:#64748b;">Hosting & deployment</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">GitHub Pages</div><div style="font-size:11px;color:#64748b;">Hosts all code and serves the app. You own the repository.</div></div>
+            <div style="font-size:11px;font-weight:700;color:#16a34a;">Free</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x26A1;</span>
-            <div><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Backend database & storage</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (20 tables), file storage (NDIS receipts), Edge Functions (AI proxy). You own all data.</div></div>
+            <div style="font-size:11px;font-weight:700;color:#16a34a;">Free tier</div>
           </div>
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:8px;">AI Services (3 separate services, all replaceable)</div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x1F916;</span>
-            <div><div style="font-weight:700;font-size:13px;">Claude Code (Anthropic)</div><div style="font-size:11px;color:#64748b;">AI-assisted coder — does not own the code</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Claude Code (App Development)</div><div style="font-size:11px;color:#64748b;">AI coder that builds and updates the app. Does not own the code. Only needed during active development — app runs without it.</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">Alternatives: GitHub Copilot, Cursor, Windsurf, any developer</div></div>
+            <div style="font-size:11px;font-weight:700;color:#f59e0b;">$20/mo</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x1F4AC;</span>
-            <div><div style="font-weight:700;font-size:13px;">Claude (Anthropic)</div><div style="font-size:11px;color:#64748b;">AI provider powering Baker AI chat</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Claude Haiku API (Baker AI Chat)</div><div style="font-size:11px;color:#64748b;">Powers the Baker AI chat assistant. Runs via Supabase Edge Function <code>claude-proxy</code>. Adds todos, dates, contacts, shopping items.</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">Alternatives: OpenAI GPT-4o-mini, Google Gemini Flash, Groq</div></div>
+            <div style="font-size:11px;font-weight:700;color:#f59e0b;">~$0.003/msg</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
+            <span style="font-size:20px;">&#x1F4F7;</span>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Claude Sonnet API (Receipt Scanning)</div><div style="font-size:11px;color:#64748b;">Reads receipt photos and extracts items/prices for AisleMate. Same Edge Function, different model. Separate from chat — can use a different provider.</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">Alternatives: OpenAI GPT-4o Vision, Google Vision API, AWS Textract</div></div>
+            <div style="font-size:11px;font-weight:700;color:#f59e0b;">~$0.02/scan</div>
           </div>
         </div>
-      </div>
-      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Stack</div>
-        <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
-          <li>Vanilla HTML / CSS / JavaScript (no frameworks)</li>
-          <li>Supabase for database & storage</li>
-          <li>GitHub Pages for hosting</li>
-          <li>Claude Code for AI-assisted development</li>
-          <li>PWA manifest for home screen install</li>
-        </ul>
+        <div style="font-size:12px;color:#1e293b;margin-top:12px;padding:12px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
+          <strong>Total estimated cost:</strong> $0-5/month for normal use. Hosting and database are free. AI chat ~$1-5 depending on usage. Claude Code only needed during development sessions.
+        </div>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Features</div>
@@ -1002,40 +1007,6 @@
           <li><a href="https://github.com/cathcoach4u/personal-baker-hub/blob/main/Personal-hub/CLAUDE.md" target="_blank" style="color:#0d9488;">Baker Hub CLAUDE.md</a> — Project memory</li>
           <li><a href="https://supabase.com/dashboard/project/ziwycymhaqghdiznyhhw" target="_blank" style="color:#0d9488;">Supabase Dashboard</a> — Database & storage</li>
         </ul>
-      </div>
-      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Services & Costs</div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Everything you use and what it costs. You are not locked into any provider.</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">GitHub Pages (Hosting)</div><div style="font-size:12px;font-weight:700;color:#16a34a;">Free</div></div>
-            <div style="font-size:12px;color:#64748b;margin-top:4px;">Hosts the app. Your code lives here. Free for public repos.</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: Netlify (free), Vercel (free), Cloudflare Pages (free)</div>
-          </div>
-          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Supabase (Database & Storage)</div><div style="font-size:12px;font-weight:700;color:#16a34a;">Free tier</div></div>
-            <div style="font-size:12px;color:#64748b;margin-top:4px;">All your data — 20 tables, receipt file storage. Free tier: 500MB database, 1GB storage, 50K monthly requests.</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: Firebase (Google), PocketBase (self-hosted), Neon (Postgres)</div>
-          </div>
-          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude API — Baker AI Chat</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">~$1-5/month</div></div>
-            <div style="font-size:12px;color:#64748b;margin-top:4px;">Powers Baker AI chat (Haiku model). Runs via Supabase Edge Function. Cost depends on usage — roughly $0.003 per message.</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: OpenAI GPT-4o-mini (~same cost), Google Gemini Flash (free tier available), Groq (free tier)</div>
-          </div>
-          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude API — Receipt Scanning</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">~$0.01-0.03/scan</div></div>
-            <div style="font-size:12px;color:#64748b;margin-top:4px;">Reads receipt photos (Sonnet model). Separate from chat — can use a different provider. Same Edge Function, different model.</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: OpenAI GPT-4o Vision (~same cost), Google Vision API, AWS Textract</div>
-          </div>
-          <div style="background:#f8fafc;padding:12px;border-radius:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:13px;font-weight:700;">Claude Code (App Development)</div><div style="font-size:12px;font-weight:700;color:#f59e0b;">$20/month (Max plan)</div></div>
-            <div style="font-size:12px;color:#64748b;margin-top:4px;">AI-assisted coding — builds features, fixes bugs, pushes code. Does not own the code. Only needed when actively developing.</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Alternatives: GitHub Copilot ($10/mo), Cursor ($20/mo), Windsurf ($15/mo), a human developer, or do nothing (app keeps running as-is)</div>
-          </div>
-        </div>
-        <div style="font-size:12px;color:#1e293b;margin-top:12px;padding:12px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
-          <strong>Total estimated cost:</strong> $0-5/month for normal use (hosting free, database free, AI chat ~$1-5 depending on usage). Claude Code only needed during active development sessions.
-        </div>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">If You Move Away From Claude</div>

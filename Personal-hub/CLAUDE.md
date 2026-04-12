@@ -312,7 +312,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Service worker caching** — after significant code changes, bump the cache version in `sw.js` (e.g. `baker-hub-v2` → `baker-hub-v3`) or users will see old cached pages.
+- **Version number** — currently v3.0. Shown in sidebar footer and About page. When bumping: update `index.html` (search "Baker Hub v"), `sw.js` cache name, and CLAUDE.md. User can check which version they're running on the About page or sidebar.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v3`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

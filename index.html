@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.0 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.0 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -576,34 +576,37 @@
         <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:6px 12px;background:#0d9488;color:white;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;font-family:inherit;margin-left:auto;">Finance Files</a>
       </div>
 
-      <!-- Insurance/Super/Investments/Household/Car view (shared) -->
-      <div id="fin-view-insurance">
-      <div class="filter-bar">
-        <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
-        <select id="ph-if" onchange="phIns()"><option value="">All People</option></select>
-        <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
-        <button class="add-btn" onclick="phToggleInsForm()">+ Add</button>
-      </div>
+      <!-- Shared edit form (outside view divs so accessible from any tab) -->
       <div class="add-form" id="ph-ins-form">
         <h3 id="if-title">New Policy</h3>
         <div class="form-grid">
           <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Baker Family</option><option>Russell Baker</option></select></div>
           <div class="form-group"><label>Category</label><select id="if-cat"><option>Personal Insurance</option><option>Household</option><option>Car</option><option>Health</option><option>Investments</option><option>Superannuation</option></select></div>
           <div class="form-group"><label>Insurer / Provider</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
-          <div class="form-group"><label>Policy No</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
-          <div class="form-group"><label>Cover Type</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
-          <div class="form-group"><label>Premium ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
+          <div class="form-group"><label>Policy No / Account</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
+          <div class="form-group"><label>Cover / Product</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
+          <div class="form-group"><label>Premium / Contribution ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
           <div class="form-group"><label>Frequency</label><select id="if-freq"><option>Monthly</option><option>Annually</option><option>Quarterly</option><option value="">N/A</option></select></div>
           <div class="form-group"><label>Payment Method</label><input type="text" id="if-pay" placeholder="e.g. Credit Card"></div>
           <div class="form-group"><label>Next Due</label><input type="date" id="if-due"></div>
-          <div class="form-group"><label>Paid To</label><input type="date" id="if-paid"></div>
-          <div class="form-group"><label>Super Amount ($)</label><input type="number" id="if-super" step="0.01" placeholder="Optional"></div>
+          <div class="form-group"><label>Paid To / Last Updated</label><input type="date" id="if-paid"></div>
+          <div class="form-group"><label>Balance / Value ($)</label><input type="number" id="if-super" step="0.01" placeholder="Current balance"></div>
         </div>
         <div class="form-actions">
-          <button class="add-btn" id="if-save-btn" onclick="phSaveIns()">Save Policy</button>
+          <button class="add-btn" id="if-save-btn" onclick="phSaveIns()">Save</button>
           <button class="add-btn cancel" onclick="phToggleInsForm()">Cancel</button>
+          <button class="add-btn" id="if-del-btn" onclick="phDeleteIns()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="if-msg"></div>
+      </div>
+
+      <!-- Insurance view (Personal, Household, Car) -->
+      <div id="fin-view-insurance">
+      <div class="filter-bar">
+        <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
+        <select id="ph-if" onchange="phIns()"><option value="">All People</option></select>
+        <input type="text" id="ph-is" placeholder="Search..." oninput="phIns()">
+        <button class="add-btn" onclick="phToggleInsForm()">+ Add</button>
       </div>
       <div id="ph-ins-groups"></div>
       </div>
@@ -970,7 +973,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v4.0</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v4.1</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2133,8 +2136,9 @@
 
   function resetInsForm(){
     editingInsId=null;
-    $('#if-title').textContent='New Insurance Policy';
-    $('#if-save-btn').textContent='Save Policy';
+    $('#if-title').textContent='New Policy';
+    $('#if-save-btn').textContent='Save';
+    $('#if-del-btn').style.display='none';
     $('#if-name').value='Cathrine Baker';$('#if-ins').value='';$('#if-pol').value='';
     $('#if-cover').value='';$('#if-prem').value='';$('#if-freq').value='Monthly';
     $('#if-pay').value='';$('#if-due').value='';$('#if-paid').value='';$('#if-super').value='';
@@ -2146,6 +2150,7 @@
     if(form.classList.contains('open')){form.classList.remove('open');resetInsForm();return;}
     resetInsForm();
     form.classList.add('open');
+    form.scrollIntoView({behavior:'smooth',block:'start'});
   };
 
   window.phEditIns=function(id){
@@ -2154,8 +2159,9 @@
     editingInsId=id;
     const form=$('#ph-ins-form');
     form.classList.add('open');
-    $('#if-title').textContent='Edit Policy \u2014 '+p.ins+' ('+p.cover+')';
-    $('#if-save-btn').textContent='Update Policy';
+    $('#if-title').textContent='Edit — '+p.ins;
+    $('#if-save-btn').textContent='Update';
+    $('#if-del-btn').style.display='inline-block';
     $('#if-name').value=p.name;$('#if-cat').value=p.category||'Personal Insurance';
     $('#if-ins').value=p.ins;$('#if-pol').value=p.pol;
     $('#if-cover').value=p.cover;$('#if-prem').value=p.prem||'';$('#if-freq').value=p.freq;
@@ -2207,16 +2213,36 @@
         $('#if-msg').className='form-msg success';
         $('#if-msg').textContent='Policy saved!';
       }
-      phIns();
-      // Refresh cover type filter
-      const types=[...new Set(INS.map(p=>p.cover))].sort();
-      $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+      phRefreshFinView();
       setTimeout(()=>{$('#ph-ins-form').classList.remove('open');resetInsForm();},1500);
     } catch(e){
       $('#if-msg').className='form-msg error';
       $('#if-msg').textContent='Error: '+e.message;
       console.error(e);
     } finally { unlockBtn(btn); }
+  };
+
+  // Refresh whichever finance view is currently active
+  function phRefreshFinView(){
+    const types=[...new Set(INS.map(p=>p.cover))].sort();
+    $('#ph-tf').innerHTML='<option value="">All Types</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+    if(currentFinTab==='superannuation')phSuperView();
+    else if(currentFinTab==='investments')phInvestView();
+    else if(currentFinTab==='health')phHcfClaims();
+    else if(currentFinTab==='bills')phBills();
+    else phIns();
+  }
+
+  window.phDeleteIns=async function(){
+    if(!editingInsId||!confirm('Delete this policy?'))return;
+    try{
+      const {error}=await sb.from('insurance_policies').delete().eq('id',editingInsId);
+      if(error){phToast('Delete error: '+error.message,'error');return;}
+      INS=INS.filter(p=>p.id!==editingInsId);
+      $('#ph-ins-form').classList.remove('open');resetInsForm();
+      phRefreshFinView();
+      phToast('Policy deleted','success');
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   window.phDeleteContact=async function(){

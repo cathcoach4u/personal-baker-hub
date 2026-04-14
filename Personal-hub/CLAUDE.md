@@ -137,7 +137,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Key insurance facts**:
   - Acenda = provider for several policies, Customer Number: 7150590, portal: https://my.acenda.com.au/documents
   - AIA = underlying insurer for Acenda policies, Adviser: Joanne Brassett 0282682900
-  - ClearView = formerly MLC (Andrew's Income Protection 51825896)
+  - ClearView = formerly Zurich (Andrew's Income Protection 51825896)
   - Policies paid via Macquarie Super get 15% super rebate
 - **Bills tab**: Recurring bills tracker (Utilities, Internet & Phone, Streaming, Council, Car, Other) with category pills, totals, add/edit/delete
 

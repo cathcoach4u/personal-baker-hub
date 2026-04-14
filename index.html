@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.9 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.0 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.9 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.0 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -970,7 +970,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.9</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v4.0</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2061,9 +2061,6 @@
       return (freqOrder[a.freq]||2)-(freqOrder[b.freq]||2);
     });
 
-    // Simple card layout for Super, Investments — no sub-grouping
-    const isSimple=insCatFilter==='Superannuation'||insCatFilter==='Investments';
-
     // Group by person
     const groups={};
     fl.forEach(p=>{if(!groups[p.name])groups[p.name]=[];groups[p.name].push(p);});
@@ -2071,62 +2068,45 @@
     let html='';
     for(const person in groups){
       const policies=groups[person];
-      const total=policies.reduce((s,p)=>s+p.prem,0);
-      let totalStr=total?money(total)+(policies[0].freq?'/'+policies[0].freq.toLowerCase():''):'';
+      const isSuperPay=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey')||p.pay.toLowerCase().includes('macquarie'));
+      const superPolicies=policies.filter(p=>isSuperPay(p));
+      const personalPolicies=policies.filter(p=>!isSuperPay(p));
+      const personalMonthly=personalPolicies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
+      const personalAnnual=personalPolicies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
+      const superTotal=superPolicies.reduce((s,p)=>s+p.prem,0);
+      let totalStr='';
+      if(personalMonthly)totalStr+=money(personalMonthly)+'/mo';
+      if(personalMonthly&&personalAnnual)totalStr+=' + ';
+      if(personalAnnual)totalStr+=money(personalAnnual)+'/yr';
+      if(superTotal)totalStr+=(totalStr?' | ':'')+'Super: '+money(superTotal)+'/yr';
 
       const gid='ins-group-'+person.replace(/\s/g,'-');
       html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+')</span></span><span class="group-total">'+totalStr+'</span></div>';
       html+='<div class="group-body" id="'+gid+'">';
 
-      if(isSimple){
-        // Card layout — clean and mobile-friendly
-        policies.forEach(function(p){
-          html+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
-          html+='<div style="display:flex;justify-content:space-between;align-items:start;">';
-          html+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
-          html+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
-          if(p.pol)html+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
-          if(p.pay)html+='<div style="font-size:11px;color:#94a3b8;">'+p.pay+'</div>';
-          html+='</div>';
-          html+='<div style="text-align:right;">';
-          if(p.prem)html+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
-          if(p.freq)html+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
-          if(p.super)html+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
-          html+='</div></div>';
-          if(p.due)html+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
-          html+='</div>';
+      function renderCards(items,label){
+        if(!items.length)return '';
+        var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:8px 0 6px;">'+label+' ('+items.length+')</div>';
+        items.forEach(function(p){
+          t+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
+          t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
+          t+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
+          t+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
+          if(p.pol)t+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
+          t+='</div>';
+          t+='<div style="text-align:right;">';
+          if(p.prem)t+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
+          if(p.freq)t+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+          if(p.super)t+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
+          t+='</div></div>';
+          if(p.due)t+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
+          t+='</div>';
         });
-      } else {
-        // Insurance categories — split by payment method, use cards
-        const isSuperPay=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey'));
-        const superPolicies=policies.filter(p=>isSuperPay(p));
-        const personalPolicies=policies.filter(p=>!isSuperPay(p));
-
-        function renderCards(items,label){
-          if(!items.length)return '';
-          var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:8px 0 6px;">'+label+' ('+items.length+')</div>';
-          items.forEach(function(p){
-            t+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
-            t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
-            t+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
-            t+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
-            if(p.pol)t+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
-            t+='</div>';
-            t+='<div style="text-align:right;">';
-            if(p.prem)t+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
-            if(p.freq)t+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
-            if(p.super)t+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
-            t+='</div></div>';
-            if(p.due)t+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
-            t+='</div>';
-          });
-          return t;
-        }
-
-        html+=renderCards(personalPolicies,'\u{1F4B3} Paid Personally');
-        html+=renderCards(superPolicies,'\u{1F3E6} Paid via Super');
+        return t;
       }
 
+      html+=renderCards(personalPolicies,'\u{1F4B3} Paid Personally');
+      html+=renderCards(superPolicies,'\u{1F3E6} Paid via Super');
       html+='</div></div>';
     }
     if(!fl.length)html='<div class="todo-empty">No policies found</div>';
@@ -2484,12 +2464,14 @@
     card+='<div style="font-size:12px;color:#7c3aed;font-weight:600;margin-top:4px;">Thank You Tier: DIAMOND \u{1F48E}</div>';
     card+='</div>';
     card+='<div style="text-align:right;">';
-    if(hcfPolicy){card+='<div style="font-size:17px;font-weight:700;color:#0d9488;">'+money(hcfPolicy.prem)+'</div><div style="font-size:11px;color:#94a3b8;">'+hcfPolicy.freq+'</div>';}
-    else{card+='<div style="font-size:17px;font-weight:700;color:#0d9488;">$424.39</div><div style="font-size:11px;color:#94a3b8;">Monthly</div>';}
-    card+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">Paid to: 03/05/2026</div>';
+    if(hcfPolicy){card+='<div style="font-size:20px;font-weight:700;color:#0d9488;">'+money(hcfPolicy.prem)+'</div><div style="font-size:11px;color:#94a3b8;">'+hcfPolicy.freq+'</div>';}
+    else{card+='<div style="font-size:20px;font-weight:700;color:#0d9488;">$424.39</div><div style="font-size:11px;color:#94a3b8;">Monthly</div>';}
+    if(hcfPolicy&&hcfPolicy.paid)card+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">Paid to: '+hcfPolicy.paid+'</div>';
+    else card+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">Paid to: 03/05/2026</div>';
     card+='<div style="font-size:11px;color:#94a3b8;">Auto direct debit</div>';
     card+='</div></div>';
     card+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+    if(hcfPolicy)card+='<button class="add-btn" style="font-size:11px;padding:4px 12px;" onclick="phUpdateHcfPremium('+hcfPolicy.id+')">Update Premium</button>';
     card+='<a href="https://www.hcf.com.au/member-login" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;font-weight:600;">Member Login</a>';
     card+='<a href="https://www.hcf.com.au/content/dam/hcf/pdf/brochures/3-hcf-advanced-savings-silver-plus.pdf" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;">Hospital Brochure</a>';
     card+='<a href="https://www.hcf.com.au/content/dam/hcf/pdf/brochures/5-General-Extras.pdf" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;">General Extras</a>';
@@ -2611,6 +2593,22 @@
       phHcfClaims();
       phToast('Claim deleted','success');
     }catch(e){phToast('Delete error: '+e.message,'error');}
+  };
+
+  window.phUpdateHcfPremium=async function(id){
+    const p=INS.find(x=>x.id===id);if(!p)return;
+    const input=prompt('Enter new monthly premium:',''+p.prem);
+    if(input===null)return;
+    const newVal=parseFloat(input);
+    if(isNaN(newVal)){phToast('Invalid amount','error');return;}
+    try{
+      const {error}=await sb.from('insurance_policies').update({premium:newVal}).eq('id',id);
+      if(error)throw error;
+      const idx=INS.findIndex(x=>x.id===id);
+      if(idx>=0)INS[idx].prem=newVal;
+      phHcfClaims();
+      phToast('Premium updated to '+money(newVal),'success');
+    }catch(e){phToast('Error: '+e.message,'error');}
   };
 
   // ─── SUPERANNUATION VIEW ───

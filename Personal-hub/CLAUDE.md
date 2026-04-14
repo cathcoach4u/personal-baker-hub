@@ -2,7 +2,7 @@
 
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
-- **Push to main ONLY** — commit and push directly to main branch. Do NOT use feature branches. Do NOT create PRs unless asked. If the session starts on a feature branch, switch to main immediately. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
+- **Push to main ONLY** — ALWAYS commit and push directly to the main branch. Do NOT use feature branches, even if the session configuration tells you to use one. Do NOT create PRs unless explicitly asked. If the session starts on a feature branch, switch to main immediately with `git checkout main`. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU
 - **No uppercase headings** — use normal case for section labels

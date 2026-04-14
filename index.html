@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.2 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.5 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.2 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.5 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -565,15 +565,19 @@
     </div>
     <div class="screen" id="ph-insurance">
       <h2>Finance & Insurance</h2>
-      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-        <button class="todo-filter-btn active" id="fin-tab-ins" onclick="phFinTab('insurance',this)">Insurance & Super</button>
-        <button class="todo-filter-btn" id="fin-tab-bills" onclick="phFinTab('bills',this)">Bills</button>
-        <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:8px 16px;background:#0d9488;color:white;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;font-family:inherit;margin-left:auto;">Finance Files</a>
+      <div id="fin-pills" class="filter-bar" style="flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+        <button class="todo-filter-btn active" onclick="phFinTab('personal-insurance',this)">Personal</button>
+        <button class="todo-filter-btn" onclick="phFinTab('household',this)">Household</button>
+        <button class="todo-filter-btn" onclick="phFinTab('car',this)">Car</button>
+        <button class="todo-filter-btn" onclick="phFinTab('health',this)">Health</button>
+        <button class="todo-filter-btn" onclick="phFinTab('superannuation',this)">Super</button>
+        <button class="todo-filter-btn" onclick="phFinTab('investments',this)">Investments</button>
+        <button class="todo-filter-btn" onclick="phFinTab('bills',this)">Bills</button>
+        <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:6px 12px;background:#0d9488;color:white;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;font-family:inherit;margin-left:auto;">Finance Files</a>
       </div>
 
-      <!-- Insurance view -->
+      <!-- Insurance/Super/Investments/Household/Car view (shared) -->
       <div id="fin-view-insurance">
-      <div id="ph-ins-cat-pills" class="filter-bar" style="margin-bottom:8px;"></div>
       <div class="filter-bar">
         <select id="ph-tf" onchange="phIns()"><option value="">All Types</option></select>
         <select id="ph-if" onchange="phIns()"><option value="">All People</option></select>
@@ -581,15 +585,15 @@
         <button class="add-btn" onclick="phToggleInsForm()">+ Add</button>
       </div>
       <div class="add-form" id="ph-ins-form">
-        <h3 id="if-title">New Insurance Policy</h3>
+        <h3 id="if-title">New Policy</h3>
         <div class="form-grid">
-          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Family</option></select></div>
-          <div class="form-group"><label>Category</label><select id="if-cat"><option>Personal Insurance</option><option>Household</option><option>Car</option><option>Investments</option><option>Superannuation</option></select></div>
+          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Baker Family</option><option>Russell Baker</option></select></div>
+          <div class="form-group"><label>Category</label><select id="if-cat"><option>Personal Insurance</option><option>Household</option><option>Car</option><option>Health</option><option>Investments</option><option>Superannuation</option></select></div>
           <div class="form-group"><label>Insurer / Provider</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
           <div class="form-group"><label>Policy No</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
           <div class="form-group"><label>Cover Type</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
           <div class="form-group"><label>Premium ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
-          <div class="form-group"><label>Frequency</label><select id="if-freq"><option>Monthly</option><option>Annually</option><option value="">N/A</option></select></div>
+          <div class="form-group"><label>Frequency</label><select id="if-freq"><option>Monthly</option><option>Annually</option><option>Quarterly</option><option value="">N/A</option></select></div>
           <div class="form-group"><label>Payment Method</label><input type="text" id="if-pay" placeholder="e.g. Credit Card"></div>
           <div class="form-group"><label>Next Due</label><input type="date" id="if-due"></div>
           <div class="form-group"><label>Paid To</label><input type="date" id="if-paid"></div>
@@ -602,6 +606,39 @@
         <div class="form-msg" id="if-msg"></div>
       </div>
       <div id="ph-ins-groups"></div>
+      </div>
+
+      <!-- Health (HCF) view -->
+      <div id="fin-view-health" style="display:none;">
+        <div id="hcf-policy-card" style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;"></div>
+        <div class="filter-bar" style="margin-bottom:12px;">
+          <button class="add-btn" onclick="phToggleHcfForm()">+ New Claim</button>
+          <select id="hcf-filter" onchange="phHcfClaims()" style="font-size:13px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;">
+            <option value="">All Claims</option><option>Submitted</option><option>Approved</option><option>Rejected</option><option>Pending</option>
+          </select>
+        </div>
+        <div class="add-form" id="hcf-claim-form" style="display:none;">
+          <h3 id="hcf-title">New HCF Claim</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Service Date</label><input type="date" id="hcf-date"></div>
+            <div class="form-group"><label>Service Type</label><input type="text" id="hcf-service" placeholder="e.g. Dental, Optical, Physio"></div>
+            <div class="form-group"><label>Provider</label><input type="text" id="hcf-provider" placeholder="e.g. Dr Smith"></div>
+            <div class="form-group"><label>For</label><select id="hcf-person"><option>Cath</option><option>Andrew</option><option>Sarah</option><option>Russell</option></select></div>
+            <div class="form-group"><label>Amount ($)</label><input type="number" id="hcf-amount" step="0.01" placeholder="0.00"></div>
+            <div class="form-group"><label>Refund ($)</label><input type="number" id="hcf-refund" step="0.01" placeholder="0.00"></div>
+            <div class="form-group"><label>Status</label><select id="hcf-status"><option>Submitted</option><option>Approved</option><option>Rejected</option><option>Pending</option></select></div>
+            <div class="form-group"><label>Notes</label><input type="text" id="hcf-notes" placeholder="Optional"></div>
+            <div class="form-group full"><label>Receipt / Invoice</label><input type="file" id="hcf-file" accept=".pdf,.jpg,.jpeg,.png,.heic"></div>
+          </div>
+          <div class="form-actions">
+            <button class="add-btn" id="hcf-save-btn" onclick="phSaveHcfClaim()">Save Claim</button>
+            <button class="add-btn cancel" onclick="phToggleHcfForm()">Cancel</button>
+            <button class="add-btn" id="hcf-del-btn" onclick="phDeleteHcfClaim()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
+          </div>
+          <div class="form-msg" id="hcf-msg"></div>
+        </div>
+        <div id="hcf-summary" style="margin-bottom:12px;"></div>
+        <div id="hcf-claims-list"></div>
       </div>
 
       <!-- Bills view -->
@@ -923,7 +960,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.2</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.5</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1348,6 +1385,7 @@
   let ANIMALS = [];
   let HABITS = [];
   let CHECKLIST_ITEMS = [];
+  let HCF_CLAIMS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
@@ -1398,7 +1436,7 @@
   // --- Load data with auto-retry ---
   async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1411,14 +1449,16 @@
       sb.from('animal_medical_records').select('*').order('date_recorded', { ascending: false }),
       sb.from('monthly_tasks').select('*').eq('month_year',currentMonth),
       sb.from('habits').select('*').order('frequency'),
-      sb.from('checklist_items').select('*').order('sort_order')
+      sb.from('checklist_items').select('*').order('sort_order'),
+      sb.from('health_claims').select('*').order('service_date', { ascending: false })
     ]);
 
     const errors=[];
     [fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes].forEach(r=>{if(r.error)errors.push(r.error.message);});
     if(errors.length)throw new Error(errors[0]);
+    if(hcfRes.error)console.warn('health_claims not loaded (table may not exist yet):',hcfRes.error.message);
 
-    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes};
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes};
   }
 
   let res;
@@ -1437,7 +1477,7 @@
   }
 
   try {
-    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes}=res;
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1467,6 +1507,19 @@
       paid: r.paid_to_date || '',
       super: r.superannuation_amount ? parseFloat(r.superannuation_amount) : null,
       category: r.category || 'Personal Insurance'
+    }));
+
+    HCF_CLAIMS = (hcfRes.data || []).map(r => ({
+      id: r.id,
+      date: r.service_date,
+      service: r.service_type || '',
+      provider: r.provider || '',
+      person: r.person || '',
+      amount: parseFloat(r.amount) || 0,
+      refund: parseFloat(r.refund_amount) || 0,
+      status: r.status || 'Pending',
+      notes: r.notes || '',
+      receipt: r.receipt_path || ''
     }));
 
     CONTACTS = (contactsRes.data || []).map(r => ({
@@ -1983,27 +2036,11 @@
     } finally { unlockBtn(btn); }
   };
 
-  let insCatFilter='All';
-
-  window.phFilterInsCat=function(cat,btn){
-    insCatFilter=cat;
-    $$('#ph-ins-cat-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    phIns();
-  };
+  let insCatFilter='Personal Insurance';
 
   window.phIns=function(){
-    // Build category pills
-    const allCats=['All','Personal Insurance','Household','Car','Investments','Superannuation'];
-    $('#ph-ins-cat-pills').innerHTML=allCats.map(c=>{
-      const count=c==='All'?INS.length:INS.filter(p=>p.category===c).length;
-      if(c!=='All'&&count===0)return '';
-      return '<button class="todo-filter-btn'+(insCatFilter===c?' active':'')+'" onclick="phFilterInsCat(\''+c+'\',this)">'+c+(c!=='All'?' ('+count+')':'')+'</button>';
-    }).join('');
-
     const tf=$('#ph-tf').value,pf=$('#ph-if').value,is=$('#ph-is').value.toLowerCase();
-    let fl=INS;
-    if(insCatFilter!=='All')fl=fl.filter(p=>p.category===insCatFilter);
+    let fl=INS.filter(p=>p.category===insCatFilter);
     if(tf)fl=fl.filter(p=>p.cover===tf);
     if(pf)fl=fl.filter(p=>p.name===pf);
     if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
@@ -2370,12 +2407,170 @@
   };
 
   // ─── FINANCE TAB SWITCH ───
+  const finPillToCat={'personal-insurance':'Personal Insurance','household':'Household','car':'Car','superannuation':'Superannuation','investments':'Investments'};
+  let currentFinTab='personal-insurance';
+
   window.phFinTab=function(tab,btn){
-    $$('#ph-insurance .filter-bar:first-of-type .todo-filter-btn').forEach(b=>b.classList.remove('active'));
+    $$('#fin-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    $('#fin-view-insurance').style.display=tab==='insurance'?'block':'none';
-    $('#fin-view-bills').style.display=tab==='bills'?'block':'none';
-    if(tab==='bills')phBills();
+    currentFinTab=tab;
+    $('#fin-view-insurance').style.display='none';
+    $('#fin-view-health').style.display='none';
+    $('#fin-view-bills').style.display='none';
+    if(tab==='health'){
+      $('#fin-view-health').style.display='block';
+      phHcfClaims();
+    } else if(tab==='bills'){
+      $('#fin-view-bills').style.display='block';
+      phBills();
+    } else {
+      $('#fin-view-insurance').style.display='block';
+      insCatFilter=finPillToCat[tab]||'Personal Insurance';
+      phIns();
+    }
+  };
+
+  // ─── HCF HEALTH CLAIMS ───
+  let editingHcfId=null;
+
+  window.phHcfClaims=function(){
+    // Show HCF policy card with full membership details
+    const hcfPolicy=INS.find(p=>p.category==='Health'&&p.ins.toLowerCase().includes('hcf'));
+    let card='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">';
+    card+='<div><div style="font-size:16px;font-weight:700;">HCF Health Insurance</div>';
+    card+='<div style="font-size:12px;color:#64748b;margin-top:4px;">Member: <strong>Andrew Russell</strong> &bull; #24835153</div>';
+    card+='<div style="font-size:12px;color:#64748b;">Policy: <strong>F05844</strong> &bull; Family &bull; Since 04/04/2000</div>';
+    card+='<div style="font-size:12px;color:#64748b;">Hospital: <strong>Hos Ad Sav Silvp 250</strong></div>';
+    card+='<div style="font-size:12px;color:#64748b;">Extras: <strong>General Extras</strong></div>';
+    card+='<div style="font-size:12px;color:#7c3aed;font-weight:600;margin-top:4px;">Thank You Tier: DIAMOND \u{1F48E}</div>';
+    card+='</div>';
+    card+='<div style="text-align:right;">';
+    if(hcfPolicy){card+='<div style="font-size:17px;font-weight:700;color:#0d9488;">'+money(hcfPolicy.prem)+'</div><div style="font-size:11px;color:#94a3b8;">'+hcfPolicy.freq+'</div>';}
+    else{card+='<div style="font-size:17px;font-weight:700;color:#0d9488;">$424.39</div><div style="font-size:11px;color:#94a3b8;">Monthly</div>';}
+    card+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">Paid to: 03/05/2026</div>';
+    card+='<div style="font-size:11px;color:#94a3b8;">Auto direct debit</div>';
+    card+='</div></div>';
+    card+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+    card+='<a href="https://www.hcf.com.au/member-login" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;font-weight:600;">Member Login</a>';
+    card+='<a href="https://www.hcf.com.au/content/dam/hcf/pdf/brochures/3-hcf-advanced-savings-silver-plus.pdf" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;">Hospital Brochure</a>';
+    card+='<a href="https://www.hcf.com.au/content/dam/hcf/pdf/brochures/5-General-Extras.pdf" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;background:#eff6ff;padding:4px 10px;border-radius:6px;">Extras Brochure</a>';
+    card+='</div>';
+    $('#hcf-policy-card').innerHTML=card;
+    $('#hcf-policy-card').style.display='block';
+
+    // Filter claims
+    const statusFilter=$('#hcf-filter').value;
+    let fl=HCF_CLAIMS;
+    if(statusFilter)fl=fl.filter(c=>c.status===statusFilter);
+
+    // Summary
+    const totalClaimed=HCF_CLAIMS.reduce((s,c)=>s+c.amount,0);
+    const totalRefunded=HCF_CLAIMS.reduce((s,c)=>s+c.refund,0);
+    const pending=HCF_CLAIMS.filter(c=>c.status==='Submitted'||c.status==='Pending').length;
+    $('#hcf-summary').innerHTML='<div style="background:#f1f5f9;border-radius:10px;padding:14px;font-size:13px;display:flex;gap:16px;flex-wrap:wrap;"><span><strong>Total Claimed:</strong> '+money(totalClaimed)+'</span><span><strong>Refunded:</strong> <span style="color:#16a34a;">'+money(totalRefunded)+'</span></span><span><strong>Gap:</strong> '+money(totalClaimed-totalRefunded)+'</span>'+(pending?'<span><strong>Pending:</strong> '+pending+'</span>':'')+'</div>';
+
+    // Claims list
+    if(!fl.length){$('#hcf-claims-list').innerHTML='<div class="todo-empty">No claims yet</div>';return;}
+
+    let html='';
+    fl.forEach(c=>{
+      const statusColor=c.status==='Approved'?'#16a34a':c.status==='Rejected'?'#ef4444':c.status==='Submitted'?'#f59e0b':'#94a3b8';
+      html+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditHcfClaim('+c.id+')">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;"><div><div style="font-size:14px;font-weight:700;">'+c.service+'</div>';
+      html+='<div style="font-size:12px;color:#64748b;">'+c.provider+(c.person?' \u2022 '+c.person:'')+'</div>';
+      html+='<div style="font-size:11px;color:#94a3b8;">'+c.date+'</div></div>';
+      html+='<div style="text-align:right;"><div style="font-size:15px;font-weight:700;">'+money(c.amount)+'</div>';
+      if(c.refund)html+='<div style="font-size:12px;color:#16a34a;">Refund: '+money(c.refund)+'</div>';
+      html+='<div style="font-size:11px;font-weight:600;color:'+statusColor+';">'+c.status+'</div></div></div>';
+      if(c.receipt)html+='<div style="font-size:11px;color:#7c3aed;margin-top:4px;">\uD83D\uDCCE Receipt attached</div>';
+      if(c.notes)html+='<div style="font-size:11px;color:#94a3b8;margin-top:4px;">'+c.notes+'</div>';
+      html+='</div>';
+    });
+    $('#hcf-claims-list').innerHTML=html;
+  };
+
+  window.phToggleHcfForm=function(){
+    const form=$('#hcf-claim-form');
+    if(form.style.display==='block'){form.style.display='none';editingHcfId=null;return;}
+    editingHcfId=null;
+    form.style.display='block';
+    $('#hcf-title').textContent='New HCF Claim';$('#hcf-save-btn').textContent='Save Claim';$('#hcf-del-btn').style.display='none';
+    $('#hcf-date').value='';$('#hcf-service').value='';$('#hcf-provider').value='';$('#hcf-person').value='Cath';
+    $('#hcf-amount').value='';$('#hcf-refund').value='';$('#hcf-status').value='Submitted';$('#hcf-notes').value='';
+    $('#hcf-file').value='';
+    $('#hcf-msg').className='form-msg';$('#hcf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phEditHcfClaim=function(id){
+    const c=HCF_CLAIMS.find(x=>x.id===id);if(!c)return;
+    editingHcfId=id;
+    const form=$('#hcf-claim-form');form.style.display='block';
+    $('#hcf-title').textContent='Edit Claim';$('#hcf-save-btn').textContent='Update Claim';$('#hcf-del-btn').style.display='inline-block';
+    $('#hcf-date').value=c.date;$('#hcf-service').value=c.service;$('#hcf-provider').value=c.provider;$('#hcf-person').value=c.person||'Cath';
+    $('#hcf-amount').value=c.amount||'';$('#hcf-refund').value=c.refund||'';$('#hcf-status').value=c.status;$('#hcf-notes').value=c.notes;
+    $('#hcf-file').value='';
+    $('#hcf-msg').className='form-msg';$('#hcf-msg').textContent='';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.phSaveHcfClaim=async function(){
+    const btn=lockBtn('#hcf-save-btn');
+    const date=$('#hcf-date').value;
+    const service=$('#hcf-service').value.trim();
+    const provider=$('#hcf-provider').value.trim();
+    const person=$('#hcf-person').value;
+    const amount=parseFloat($('#hcf-amount').value)||0;
+    const refund=parseFloat($('#hcf-refund').value)||0;
+    const status=$('#hcf-status').value;
+    const notes=$('#hcf-notes').value.trim();
+    const file=$('#hcf-file').files[0];
+
+    if(!date||!service){
+      $('#hcf-msg').className='form-msg error';$('#hcf-msg').textContent='Please enter date and service type.';unlockBtn(btn);return;
+    }
+
+    let receiptPath=null;
+    try{
+      if(file){
+        const ext=file.name.split('.').pop().toLowerCase();
+        const fileName=date+'_'+service.replace(/\s+/g,'-')+'_'+person+'.'+ext;
+        const filePath='claims/'+fileName;
+        const {error:uploadErr}=await sb.storage.from('hcf-claims').upload(filePath,file,{upsert:true});
+        if(uploadErr)throw uploadErr;
+        receiptPath=filePath;
+      }
+
+      const row={service_date:date,service_type:service,provider:provider||null,person:person,amount:amount,refund_amount:refund,status:status,notes:notes||null};
+      if(receiptPath)row.receipt_path=receiptPath;
+
+      if(editingHcfId){
+        const {error}=await sb.from('health_claims').update(row).eq('id',editingHcfId);
+        if(error)throw error;
+        const idx=HCF_CLAIMS.findIndex(x=>x.id===editingHcfId);
+        if(idx>=0)HCF_CLAIMS[idx]={id:editingHcfId,date:date,service:service,provider:provider,person:person,amount:amount,refund:refund,status:status,notes:notes,receipt:receiptPath||HCF_CLAIMS[idx].receipt};
+        $('#hcf-msg').className='form-msg success';$('#hcf-msg').textContent='Claim updated!';
+      } else {
+        const {data:inserted,error}=await sb.from('health_claims').insert(row).select().single();
+        if(error)throw error;
+        HCF_CLAIMS.unshift({id:inserted.id,date:date,service:service,provider:provider,person:person,amount:amount,refund:refund,status:status,notes:notes,receipt:receiptPath||''});
+        $('#hcf-msg').className='form-msg success';$('#hcf-msg').textContent='Claim saved!';
+      }
+      phHcfClaims();
+      setTimeout(()=>{$('#hcf-claim-form').style.display='none';editingHcfId=null;},1500);
+    }catch(e){$('#hcf-msg').className='form-msg error';$('#hcf-msg').textContent='Error: '+e.message;console.error(e);}finally{unlockBtn(btn);}
+  };
+
+  window.phDeleteHcfClaim=async function(){
+    if(!editingHcfId||!confirm('Delete this claim?'))return;
+    try{
+      const {error}=await sb.from('health_claims').delete().eq('id',editingHcfId);
+      if(error){phToast('Delete error: '+error.message,'error');return;}
+      HCF_CLAIMS=HCF_CLAIMS.filter(c=>c.id!==editingHcfId);
+      $('#hcf-claim-form').style.display='none';editingHcfId=null;
+      phHcfClaims();
+      phToast('Claim deleted','success');
+    }catch(e){phToast('Delete error: '+e.message,'error');}
   };
 
   // ─── BILLS ───
@@ -3055,7 +3250,7 @@
     const allBtns=$$('#personalHub .nav-item');
     allBtns.forEach(b=>{if(b.textContent.trim()===btn.textContent.trim())b.classList.add('active');});
     if(name==='ndis')phNDIS();
-    if(name==='insurance')phIns();
+    if(name==='insurance'){phFinTab(currentFinTab,$$('#fin-pills .todo-filter-btn').find(b=>b.classList.contains('active'))||$$('#fin-pills .todo-filter-btn')[0]);}
     if(name==='contacts')phContacts();
     if(name==='projects')phProjects();
     if(name==='dates')phDates();

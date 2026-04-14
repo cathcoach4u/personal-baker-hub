@@ -256,6 +256,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | checklist_items | Weekly dashboard checklist items (label, icon, week A/B/Both) | auto bigint |
 | weekly_checklist | Weekly checklist done state (JSON per week) | text (week key) |
 | bills | Recurring bills tracker | auto bigint |
+| health_claims | HCF health insurance claims with receipt uploads | auto bigint |
 | shopping_items | AisleMate shopping list | auto UUID |
 | master_items | AisleMate master item catalogue (142 items) | auto UUID |
 | receipts | AisleMate receipts | auto UUID |
@@ -265,6 +266,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 
 ## Supabase Storage
 - **Bucket**: `ndis-invoices` (public) — receipt/invoice uploads
+- **Bucket**: `hcf-claims` (public) — HCF health claim receipts
 
 ## Key Files
 | File | Purpose |
@@ -315,13 +317,13 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v3.2. Shown in sidebar footer and About page. **Every code change bumps the minor version** (v3.0 → v3.2 → v3.2 etc). **Major structural shifts** bump the major version (v3.x → v4.0). When bumping: update `index.html` (search "Baker Hub v"), the About page badge, `sw.js` cache name (use `baker-hub-v3.2` format), and this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v3.2`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v3.5. Shown in sidebar footer and About page. **Every code change bumps the minor version** (v3.0 → v3.5 → v3.5 etc). **Major structural shifts** bump the major version (v3.x → v4.0). When bumping: update `index.html` (search "Baker Hub v"), the About page badge, `sw.js` cache name (use `baker-hub-v3.5` format), and this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v3.5`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 
 ## Login / Auth
-- Login added in v3.2 using Supabase Auth (`sb.auth.getSession()` / `sb.auth.signInWithPassword()`)
+- Login added in v3.5 using Supabase Auth (`sb.auth.getSession()` / `sb.auth.signInWithPassword()`)
 - `index.html`: Shows a full-screen login overlay before loading the app if no session. On success, reloads. Sign-out button in sidebar footer and mobile drawer footer.
 - `shopping.html` and `ai.html`: Redirect to `index.html` if no session.
 - RLS policies are still `allow_all` — do NOT change until intentionally locking down

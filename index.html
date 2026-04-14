@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.8 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.9 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.8 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.9 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -639,6 +639,16 @@
         </div>
         <div id="hcf-summary" style="margin-bottom:12px;"></div>
         <div id="hcf-claims-list"></div>
+      </div>
+
+      <!-- Super view -->
+      <div id="fin-view-super" style="display:none;">
+        <div id="super-cards"></div>
+      </div>
+
+      <!-- Investments view -->
+      <div id="fin-view-investments" style="display:none;">
+        <div id="invest-cards"></div>
       </div>
 
       <!-- Bills view -->
@@ -960,7 +970,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.8</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.9</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2438,12 +2448,17 @@
     $$('#fin-pills .todo-filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     currentFinTab=tab;
-    $('#fin-view-insurance').style.display='none';
-    $('#fin-view-health').style.display='none';
-    $('#fin-view-bills').style.display='none';
+    // Hide all views
+    ['insurance','health','super','investments','bills'].forEach(v=>{$('#fin-view-'+v).style.display='none';});
     if(tab==='health'){
       $('#fin-view-health').style.display='block';
       phHcfClaims();
+    } else if(tab==='superannuation'){
+      $('#fin-view-super').style.display='block';
+      phSuperView();
+    } else if(tab==='investments'){
+      $('#fin-view-investments').style.display='block';
+      phInvestView();
     } else if(tab==='bills'){
       $('#fin-view-bills').style.display='block';
       phBills();
@@ -2596,6 +2611,100 @@
       phHcfClaims();
       phToast('Claim deleted','success');
     }catch(e){phToast('Delete error: '+e.message,'error');}
+  };
+
+  // ─── SUPERANNUATION VIEW ───
+  window.phSuperView=function(){
+    const superAccounts=INS.filter(p=>p.category==='Superannuation');
+    if(!superAccounts.length){$('#super-cards').innerHTML='<div class="todo-empty">No super accounts yet. Add one from the Personal tab.</div>';return;}
+
+    let html='';
+    superAccounts.forEach(function(p){
+      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">';
+      html+='<div><div style="font-size:17px;font-weight:700;color:#1e293b;">'+p.ins+'</div>';
+      html+='<div style="font-size:13px;color:#64748b;margin-top:4px;">'+p.cover+'</div>';
+      if(p.pol)html+='<div style="font-size:12px;color:#94a3b8;margin-top:2px;">Account: '+p.pol+'</div>';
+      html+='<div style="font-size:12px;color:#94a3b8;">Member: '+p.name+'</div>';
+      if(p.pay)html+='<div style="font-size:12px;color:#94a3b8;">Contributions: '+p.pay+'</div>';
+      html+='</div>';
+      html+='<div style="text-align:right;">';
+      html+='<div style="font-size:11px;color:#64748b;margin-bottom:2px;">Current Balance</div>';
+      html+='<div style="font-size:22px;font-weight:700;color:#0d9488;">'+(p.super?money(p.super):(p.prem?money(p.prem):'—'))+'</div>';
+      if(p.freq)html+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+      html+='</div></div>';
+      if(p.due)html+='<div style="font-size:11px;color:#94a3b8;margin-top:8px;">Paid to: '+p.due+'</div>';
+      if(p.paid)html+='<div style="font-size:11px;color:#94a3b8;">Last updated: '+p.paid+'</div>';
+      html+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;" onclick="phUpdateBalance('+p.id+',\'super\')">Update Balance</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#64748b;" onclick="phEditIns('+p.id+')">Edit Details</button>';
+      html+='</div>';
+      html+='</div>';
+    });
+
+    // Total across all super
+    const totalBalance=superAccounts.reduce((s,p)=>s+(p.super||p.prem||0),0);
+    if(superAccounts.length>1){
+      html='<div style="background:#f0fdf4;border-radius:10px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:#1e293b;">Total Superannuation</span><span style="font-size:18px;font-weight:700;color:#0d9488;">'+money(totalBalance)+'</span></div>'+html;
+    }
+    $('#super-cards').innerHTML=html;
+  };
+
+  // ─── INVESTMENTS VIEW ───
+  window.phInvestView=function(){
+    const investments=INS.filter(p=>p.category==='Investments');
+    if(!investments.length){$('#invest-cards').innerHTML='<div class="todo-empty">No investments yet. Add one from the Personal tab.</div>';return;}
+
+    let html='';
+    investments.forEach(function(p){
+      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">';
+      html+='<div><div style="font-size:17px;font-weight:700;color:#1e293b;">'+p.ins+'</div>';
+      html+='<div style="font-size:13px;color:#64748b;margin-top:4px;">'+p.cover+'</div>';
+      if(p.pol)html+='<div style="font-size:12px;color:#94a3b8;margin-top:2px;">Account: '+p.pol+'</div>';
+      html+='<div style="font-size:12px;color:#94a3b8;">Owner: '+p.name+'</div>';
+      if(p.pay)html+='<div style="font-size:12px;color:#94a3b8;">'+p.pay+'</div>';
+      html+='</div>';
+      html+='<div style="text-align:right;">';
+      html+='<div style="font-size:11px;color:#64748b;margin-bottom:2px;">Current Value</div>';
+      html+='<div style="font-size:22px;font-weight:700;color:#7c3aed;">'+(p.super?money(p.super):(p.prem?money(p.prem):'—'))+'</div>';
+      if(p.freq)html+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+      html+='</div></div>';
+      if(p.due)html+='<div style="font-size:11px;color:#94a3b8;margin-top:8px;">Next contribution: '+p.due+'</div>';
+      if(p.paid)html+='<div style="font-size:11px;color:#94a3b8;">Last updated: '+p.paid+'</div>';
+      html+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;" onclick="phUpdateBalance('+p.id+',\'invest\')">Update Value</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#64748b;" onclick="phEditIns('+p.id+')">Edit Details</button>';
+      html+='</div>';
+      html+='</div>';
+    });
+
+    // Total across all investments
+    const totalValue=investments.reduce((s,p)=>s+(p.super||p.prem||0),0);
+    if(investments.length>1){
+      html='<div style="background:#f5f3ff;border-radius:10px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:#1e293b;">Total Investments</span><span style="font-size:18px;font-weight:700;color:#7c3aed;">'+money(totalValue)+'</span></div>'+html;
+    }
+    $('#invest-cards').innerHTML=html;
+  };
+
+  // ─── UPDATE BALANCE (Super / Investments) ───
+  window.phUpdateBalance=async function(id,type){
+    const p=INS.find(x=>x.id===id);if(!p)return;
+    const label=type==='super'?'super balance':'investment value';
+    const current=p.super||p.prem||0;
+    const input=prompt('Enter new '+label+':',''+current);
+    if(input===null)return;
+    const newVal=parseFloat(input);
+    if(isNaN(newVal)){phToast('Invalid amount','error');return;}
+    try{
+      const today=new Date().toISOString().split('T')[0];
+      const {error}=await sb.from('insurance_policies').update({superannuation_amount:newVal,paid_to_date:today}).eq('id',id);
+      if(error)throw error;
+      const idx=INS.findIndex(x=>x.id===id);
+      if(idx>=0){INS[idx].super=newVal;INS[idx].paid=today;}
+      if(type==='super')phSuperView();else phInvestView();
+      phToast('Balance updated','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
   };
 
   // ─── BILLS ───

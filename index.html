@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.7 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.8 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.7 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v3.8 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -960,7 +960,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.7</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v3.8</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2045,15 +2045,14 @@
     if(pf)fl=fl.filter(p=>p.name===pf);
     if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
     fl.sort((a,b)=>{
-      // Sort by person first
       const nameCompare=a.name.localeCompare(b.name);
       if(nameCompare!==0)return nameCompare;
-      // Then monthly before annually
       const freqOrder={'Monthly':0,'Annually':1};
-      const fa=freqOrder[a.freq]!==undefined?freqOrder[a.freq]:2;
-      const fb=freqOrder[b.freq]!==undefined?freqOrder[b.freq]:2;
-      return fa-fb;
+      return (freqOrder[a.freq]||2)-(freqOrder[b.freq]||2);
     });
+
+    // Simple card layout for Super, Investments — no sub-grouping
+    const isSimple=insCatFilter==='Superannuation'||insCatFilter==='Investments';
 
     // Group by person
     const groups={};
@@ -2062,37 +2061,62 @@
     let html='';
     for(const person in groups){
       const policies=groups[person];
-      const isSuper=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey'));
-      const superPolicies=policies.filter(p=>isSuper(p));
-      const personalPolicies=policies.filter(p=>!isSuper(p));
-      const personalMonthly=personalPolicies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
-      const personalAnnual=personalPolicies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
-      const superTotal=superPolicies.reduce((s,p)=>s+p.prem,0);
-      let totalStr='';
-      if(personalMonthly)totalStr+=money(personalMonthly)+'/mo';
-      if(personalMonthly&&personalAnnual)totalStr+=' + ';
-      if(personalAnnual)totalStr+=money(personalAnnual)+'/yr';
-      if(superTotal)totalStr+=(totalStr?' | ':'')+'Super: '+money(superTotal)+'/yr';
+      const total=policies.reduce((s,p)=>s+p.prem,0);
+      let totalStr=total?money(total)+(policies[0].freq?'/'+policies[0].freq.toLowerCase():''):'';
 
       const gid='ins-group-'+person.replace(/\s/g,'-');
-      html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+' policies)</span></span><span class="group-total">'+totalStr+'</span></div>';
+      html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+')</span></span><span class="group-total">'+totalStr+'</span></div>';
       html+='<div class="group-body" id="'+gid+'">';
 
-      function renderInsTable(items,label,subId){
-        if(!items.length)return '';
-        var total=items.reduce(function(s,p){return s+p.prem;},0);
-        var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:10px 14px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="var b=document.getElementById(\''+subId+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.sub-arrow\').textContent=b.style.display===\'none\'?\'\u25B6\':\'\u25BC\';"><span><span class="sub-arrow">\u25B6</span> '+label+' ('+items.length+')</span><span style="font-weight:600;font-size:11px;color:#0d9488;">'+money(total)+'</span></div>';
-        t+='<div id="'+subId+'" style="display:none;"><div class="panel"><table class="data-table"><thead><tr><th>Insurer</th><th>Policy No</th><th>Cover</th><th>Premium</th><th>Freq</th><th>Payment</th></tr></thead><tbody>';
-        t+=items.map(function(p){
-          return '<tr class="clickable" onclick="phEditIns('+p.id+')"><td>'+p.ins+'</td><td>'+p.pol+'</td><td>'+p.cover+'</td><td><strong>'+(p.prem?money(p.prem):'\u2014')+'</strong>'+(p.super?'<br><span style="font-size:10px;color:#16a34a">Super: '+money(p.super)+'</span>':'')+'</td><td>'+(p.freq||'\u2014')+'</td><td>'+(p.pay||'\u2014')+'</td></tr>';
-        }).join('');
-        t+='</tbody></table></div></div>';
-        return t;
+      if(isSimple){
+        // Card layout — clean and mobile-friendly
+        policies.forEach(function(p){
+          html+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
+          html+='<div style="display:flex;justify-content:space-between;align-items:start;">';
+          html+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
+          html+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
+          if(p.pol)html+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
+          if(p.pay)html+='<div style="font-size:11px;color:#94a3b8;">'+p.pay+'</div>';
+          html+='</div>';
+          html+='<div style="text-align:right;">';
+          if(p.prem)html+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
+          if(p.freq)html+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+          if(p.super)html+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
+          html+='</div></div>';
+          if(p.due)html+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
+          html+='</div>';
+        });
+      } else {
+        // Insurance categories — split by payment method, use cards
+        const isSuperPay=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey'));
+        const superPolicies=policies.filter(p=>isSuperPay(p));
+        const personalPolicies=policies.filter(p=>!isSuperPay(p));
+
+        function renderCards(items,label){
+          if(!items.length)return '';
+          var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:8px 0 6px;">'+label+' ('+items.length+')</div>';
+          items.forEach(function(p){
+            t+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
+            t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
+            t+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
+            t+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
+            if(p.pol)t+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
+            t+='</div>';
+            t+='<div style="text-align:right;">';
+            if(p.prem)t+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
+            if(p.freq)t+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+            if(p.super)t+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
+            t+='</div></div>';
+            if(p.due)t+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
+            t+='</div>';
+          });
+          return t;
+        }
+
+        html+=renderCards(personalPolicies,'\u{1F4B3} Paid Personally');
+        html+=renderCards(superPolicies,'\u{1F3E6} Paid via Super');
       }
 
-      var pid=person.replace(/\s/g,'-');
-      html+=renderInsTable(personalPolicies,'\u{1F4B3} Paid Personally',gid+'-personal');
-      html+=renderInsTable(superPolicies,'\u{1F3E6} Paid via Super',gid+'-super');
       html+='</div></div>';
     }
     if(!fl.length)html='<div class="todo-empty">No policies found</div>';

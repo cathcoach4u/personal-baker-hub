@@ -496,7 +496,7 @@
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
-    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.2 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
     <h1>Baker Hub</h1>
@@ -513,7 +513,7 @@
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
-    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.1 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
+    <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between;">Baker Hub v4.2 <button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="main">
     <div id="ph-loading">Loading dashboard data...</div>
@@ -973,7 +973,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v4.1</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v4.2</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2057,62 +2057,90 @@
     if(tf)fl=fl.filter(p=>p.cover===tf);
     if(pf)fl=fl.filter(p=>p.name===pf);
     if(is)fl=fl.filter(p=>p.name.toLowerCase().includes(is)||p.ins.toLowerCase().includes(is)||p.cover.toLowerCase().includes(is));
-    fl.sort((a,b)=>{
-      const nameCompare=a.name.localeCompare(b.name);
-      if(nameCompare!==0)return nameCompare;
-      const freqOrder={'Monthly':0,'Annually':1};
-      return (freqOrder[a.freq]||2)-(freqOrder[b.freq]||2);
-    });
 
-    // Group by person
-    const groups={};
-    fl.forEach(p=>{if(!groups[p.name])groups[p.name]=[];groups[p.name].push(p);});
+    if(!fl.length){$('#ph-ins-groups').innerHTML='<div class="todo-empty">No policies found</div>';return;}
+
+    const isYearBased=insCatFilter==='Household'||insCatFilter==='Car';
+
+    function renderCard(p){
+      var t='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
+      t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
+      t+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
+      t+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
+      if(p.pol)t+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
+      if(p.pay)t+='<div style="font-size:11px;color:#94a3b8;">'+p.pay+'</div>';
+      t+='</div>';
+      t+='<div style="text-align:right;">';
+      if(p.prem)t+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
+      if(p.freq)t+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+      if(p.super)t+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
+      t+='</div></div>';
+      if(p.due){var dd=new Date(p.due);t+='<div style="font-size:11px;color:'+(daysUntil(p.due)<=30?'#f59e0b':'#94a3b8')+';margin-top:6px;">Renewal: '+dd.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';}
+      if(isYearBased&&p.name)t+='<div style="font-size:11px;color:#94a3b8;">Insured: '+p.name+'</div>';
+      t+='</div>';
+      return t;
+    }
 
     let html='';
-    for(const person in groups){
-      const policies=groups[person];
-      const isSuperPay=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey')||p.pay.toLowerCase().includes('macquarie'));
-      const superPolicies=policies.filter(p=>isSuperPay(p));
-      const personalPolicies=policies.filter(p=>!isSuperPay(p));
-      const personalMonthly=personalPolicies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
-      const personalAnnual=personalPolicies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
-      const superTotal=superPolicies.reduce((s,p)=>s+p.prem,0);
-      let totalStr='';
-      if(personalMonthly)totalStr+=money(personalMonthly)+'/mo';
-      if(personalMonthly&&personalAnnual)totalStr+=' + ';
-      if(personalAnnual)totalStr+=money(personalAnnual)+'/yr';
-      if(superTotal)totalStr+=(totalStr?' | ':'')+'Super: '+money(superTotal)+'/yr';
 
-      const gid='ins-group-'+person.replace(/\s/g,'-');
-      html+='<div class="group-section"><div class="group-header" onclick="phToggleGroup(\''+gid+'\',this)"><span class="group-left"><span class="group-arrow">\u25B6</span><span>'+person+' ('+policies.length+')</span></span><span class="group-total">'+totalStr+'</span></div>';
-      html+='<div class="group-body" id="'+gid+'">';
-
-      function renderCards(items,label){
-        if(!items.length)return '';
-        var t='<div style="font-size:12px;font-weight:700;color:#64748b;padding:8px 0 6px;">'+label+' ('+items.length+')</div>';
-        items.forEach(function(p){
-          t+='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
-          t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
-          t+='<div><div style="font-size:14px;font-weight:700;">'+p.ins+'</div>';
-          t+='<div style="font-size:12px;color:#64748b;">'+p.cover+'</div>';
-          if(p.pol)t+='<div style="font-size:11px;color:#94a3b8;">Policy: '+p.pol+'</div>';
-          t+='</div>';
-          t+='<div style="text-align:right;">';
-          if(p.prem)t+='<div style="font-size:15px;font-weight:700;color:#0d9488;">'+money(p.prem)+'</div>';
-          if(p.freq)t+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
-          if(p.super)t+='<div style="font-size:11px;color:#16a34a;margin-top:2px;">Super: '+money(p.super)+'</div>';
-          t+='</div></div>';
-          if(p.due)t+='<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Next due: '+p.due+'</div>';
-          t+='</div>';
-        });
-        return t;
+    if(isYearBased){
+      // Group by renewal year
+      fl.sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+      const years={};
+      fl.forEach(p=>{
+        const yr=p.due?new Date(p.due).getFullYear():'No Date';
+        if(!years[yr])years[yr]=[];
+        years[yr].push(p);
+      });
+      for(const yr in years){
+        const items=years[yr];
+        const total=items.reduce((s,p)=>s+p.prem,0);
+        html+='<div style="margin-bottom:16px;">';
+        html+='<div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:8px;display:flex;justify-content:space-between;"><span>'+yr+'</span>'+(total?'<span style="color:#0d9488;">'+money(total)+'</span>':'')+'</div>';
+        items.forEach(function(p){html+=renderCard(p);});
+        html+='</div>';
       }
+    } else {
+      // Personal Insurance: group by person, always expanded, no collapsible
+      fl.sort((a,b)=>{
+        const nameCompare=a.name.localeCompare(b.name);
+        if(nameCompare!==0)return nameCompare;
+        const freqOrder={'Monthly':0,'Annually':1};
+        return (freqOrder[a.freq]||2)-(freqOrder[b.freq]||2);
+      });
 
-      html+=renderCards(personalPolicies,'\u{1F4B3} Paid Personally');
-      html+=renderCards(superPolicies,'\u{1F3E6} Paid via Super');
-      html+='</div></div>';
+      const groups={};
+      fl.forEach(p=>{if(!groups[p.name])groups[p.name]=[];groups[p.name].push(p);});
+
+      for(const person in groups){
+        const policies=groups[person];
+        const isSuperPay=p=>p.pay&&(p.pay.toLowerCase().includes('super')||p.pay.toLowerCase().includes('mlc masterkey')||p.pay.toLowerCase().includes('macquarie'));
+        const superPolicies=policies.filter(p=>isSuperPay(p));
+        const personalPolicies=policies.filter(p=>!isSuperPay(p));
+        const personalMonthly=personalPolicies.filter(p=>p.freq==='Monthly').reduce((s,p)=>s+p.prem,0);
+        const personalAnnual=personalPolicies.filter(p=>p.freq==='Annually').reduce((s,p)=>s+p.prem,0);
+        const superTotal=superPolicies.reduce((s,p)=>s+p.prem,0);
+        let totalStr='';
+        if(personalMonthly)totalStr+=money(personalMonthly)+'/mo';
+        if(personalMonthly&&personalAnnual)totalStr+=' + ';
+        if(personalAnnual)totalStr+=money(personalAnnual)+'/yr';
+        if(superTotal)totalStr+=(totalStr?' | ':'')+'Super: '+money(superTotal)+'/yr';
+
+        html+='<div style="margin-bottom:20px;">';
+        html+='<div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:8px;display:flex;justify-content:space-between;"><span>'+person+' ('+policies.length+')</span><span style="font-size:12px;color:#0d9488;">'+totalStr+'</span></div>';
+
+        if(personalPolicies.length){
+          html+='<div style="font-size:12px;font-weight:700;color:#64748b;padding:4px 0 6px;">\u{1F4B3} Paid Personally ('+personalPolicies.length+')</div>';
+          personalPolicies.forEach(function(p){html+=renderCard(p);});
+        }
+        if(superPolicies.length){
+          html+='<div style="font-size:12px;font-weight:700;color:#64748b;padding:8px 0 6px;">\u{1F3E6} Paid via Super ('+superPolicies.length+')</div>';
+          superPolicies.forEach(function(p){html+=renderCard(p);});
+        }
+        html+='</div>';
+      }
     }
-    if(!fl.length)html='<div class="todo-empty">No policies found</div>';
+
     $('#ph-ins-groups').innerHTML=html;
   };
 

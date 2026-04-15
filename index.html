@@ -473,7 +473,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.2</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.3</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -499,7 +499,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.2</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.3</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -937,14 +937,11 @@
             <a href="sarah-protocol.html" style="padding:10px 20px;background:#3b82f6;color:white;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;font-family:inherit;flex:1;text-align:center;">MS & Epilepsy Protocol</a>
           </div>
           <div style="background:#f1f5f9;padding:14px;border-radius:10px;margin-bottom:12px;">
-            <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Key Medical Info</div>
-            <div style="font-size:13px;line-height:1.8;">
-              MS & Epilepsy management — see protocol for full details<br>
-              &#x1F489; JC Virus Blood Test — every 6 months (Feb/Mar & Aug/Sep)<br>
-              &#x1F9F2; MRI Scan — every 6 months (Jun & Dec)<br>
-              &#x1F9D1;&#x200D;&#x2695;&#xFE0F; Neurologist — twice yearly (Jun telehealth, Dec face-to-face)<br>
-              &#x1F698; Driver's Licence Letter — annual (June appointment)
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div style="font-size:14px;font-weight:700;">Medical Checklist</div>
+              <div style="font-size:11px;color:#64748b;">MS & Epilepsy — <a href="sarah-protocol.html" style="color:#0d9488;text-decoration:none;font-weight:600;">Protocol</a></div>
             </div>
+            <div id="sarah-med-checklist"></div>
           </div>
           <div style="background:#fef9c3;padding:14px;border-radius:10px;">
             <div style="font-size:14px;font-weight:700;margin-bottom:10px;">University Schedule (2026)</div>
@@ -999,7 +996,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.2</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.3</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1426,6 +1423,7 @@
   let CHECKLIST_ITEMS = [];
   let HCF_CLAIMS = [];
   let MH_SESSIONS = [];
+  let SARAH_MED = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
@@ -1476,7 +1474,7 @@
   // --- Load data with auto-retry ---
   async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes, sarahMedRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1491,7 +1489,8 @@
       sb.from('habits').select('*').order('frequency'),
       sb.from('checklist_items').select('*').order('sort_order'),
       sb.from('health_claims').select('*').order('service_date', { ascending: false }),
-      sb.from('mental_health_sessions').select('*').order('session_date', { ascending: false })
+      sb.from('mental_health_sessions').select('*').order('session_date', { ascending: false }),
+      sb.from('sarah_medical_checklist').select('*').order('next_due')
     ]);
 
     const errors=[];
@@ -1499,8 +1498,9 @@
     if(errors.length)throw new Error(errors[0]);
     if(hcfRes.error)console.warn('health_claims not loaded (table may not exist yet):',hcfRes.error.message);
     if(mhRes.error)console.warn('mental_health_sessions not loaded (table may not exist yet):',mhRes.error.message);
+    if(sarahMedRes.error)console.warn('sarah_medical_checklist not loaded (table may not exist yet):',sarahMedRes.error.message);
 
-    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes};
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes};
   }
 
   let res;
@@ -1519,7 +1519,7 @@
   }
 
   try {
-    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes}=res;
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1570,6 +1570,17 @@
       person: r.person || '',
       provider: r.provider || '',
       type: r.session_type || '',
+      notes: r.notes || ''
+    }));
+
+    SARAH_MED = (sarahMedRes.data || []).map(r => ({
+      id: r.id,
+      title: r.title,
+      icon: r.icon || '',
+      frequency: r.frequency || '',
+      months: r.due_months || '',
+      nextDue: r.next_due || '',
+      lastDone: r.last_done || '',
       notes: r.notes || ''
     }));
 
@@ -1836,6 +1847,16 @@
       const outTotalR=outstandingR.reduce((s,t)=>s+t.amt,0);
       const providers=[...new Set(outstandingR.map(t=>t.p))].join(', ');
       items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{26A0}\u{FE0F}</span><div><div class="wi-label">Outstanding NDIS — '+providers+'</div><div class="wi-value" style="color:#ef4444;">'+money(outTotalR)+' ('+outstandingR.length+' invoice'+(outstandingR.length!==1?'s':'')+')</div></div></div>');
+    }
+
+    // Sarah medical — overdue or upcoming within 30 days
+    const sarahOverdue=SARAH_MED.filter(m=>m.nextDue&&daysUntil(m.nextDue)<0);
+    const sarahUpcoming=SARAH_MED.filter(m=>m.nextDue&&daysUntil(m.nextDue)>=0&&daysUntil(m.nextDue)<=30);
+    if(sarahOverdue.length){
+      items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{1F6A8}</span><div><div class="wi-label">Sarah Medical — Overdue</div><div class="wi-value" style="color:#ef4444;">'+sarahOverdue.map(m=>m.icon+' '+m.title).join(', ')+'</div></div></div>');
+    }
+    if(sarahUpcoming.length){
+      items.push('<div class="weekly-item" style="border-color:#fef3c7;background:#fffbeb;"><span class="wi-icon">\u{1F9D1}\u200D\u2695\uFE0F</span><div><div class="wi-label">Sarah Medical — Upcoming</div><div class="wi-value" style="color:#f59e0b;">'+sarahUpcoming.map(m=>m.icon+' '+m.title+' ('+daysUntil(m.nextDue)+'d)').join(', ')+'</div></div></div>');
     }
 
     // Fiona tasks pending
@@ -3649,6 +3670,7 @@
   phProjects();
   phDates();
   phTodos();
+  phRenderSarahMed();
 
   // ── Fiona Tasks ──
   // Load on startup for dashboard reminders
@@ -4155,6 +4177,66 @@
       if(tab==='all')s.style.display='block';
       else s.style.display=s.id==='kids-'+tab?'block':'none';
     });
+  };
+
+  // ── Sarah Medical Checklist ──
+  function phRenderSarahMed(){
+    if(!SARAH_MED.length){$('#sarah-med-checklist').innerHTML='<div style="font-size:12px;color:#94a3b8;">No items yet. Add via Supabase.</div>';return;}
+    const today=new Date();
+    let html='';
+    SARAH_MED.forEach(function(m){
+      const nextDate=m.nextDue?new Date(m.nextDue):null;
+      const lastDate=m.lastDone?new Date(m.lastDone):null;
+      const days=nextDate?Math.round((nextDate-today)/(1000*60*60*24)):999;
+      const isOverdue=days<0;
+      const isUpcoming=days>=0&&days<=30;
+      const isDone=lastDate&&nextDate&&lastDate>=new Date(nextDate.getTime()-30*24*60*60*1000);
+
+      let statusColor='#94a3b8';let statusText='';
+      if(isOverdue){statusColor='#ef4444';statusText='Overdue by '+Math.abs(days)+' days';}
+      else if(isUpcoming){statusColor='#f59e0b';statusText='Due in '+days+' day'+(days!==1?'s':'');}
+      else if(nextDate){statusText='Due '+nextDate.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
+
+      html+='<div style="display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid #e2e8f0;cursor:pointer;" onclick="phMarkSarahMed('+m.id+')">';
+      html+='<div style="width:22px;height:22px;border:2px solid '+(isDone?'#0d9488':isOverdue?'#ef4444':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:12px;font-weight:700;margin-top:1px;">'+(isDone?'\u2713':'')+'</div>';
+      html+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;'+(isDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+m.icon+' '+m.title+'</div>';
+      html+='<div style="font-size:11px;color:#94a3b8;">'+m.frequency+(m.months?' — '+m.months:'')+'</div>';
+      if(statusText)html+='<div style="font-size:11px;font-weight:600;color:'+statusColor+';">'+statusText+'</div>';
+      if(m.lastDone)html+='<div style="font-size:10px;color:#94a3b8;">Last done: '+new Date(m.lastDone).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+      html+='</div></div>';
+    });
+    $('#sarah-med-checklist').innerHTML=html;
+  }
+
+  window.phMarkSarahMed=async function(id){
+    const m=SARAH_MED.find(x=>x.id===id);if(!m)return;
+    const today=new Date().toISOString().split('T')[0];
+
+    // Calculate next due based on frequency
+    const now=new Date();
+    let nextDue=null;
+    if(m.frequency.includes('6 month')||m.frequency.includes('twice yearly')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+6,now.getDate()).toISOString().split('T')[0];
+    } else if(m.frequency.includes('annual')||m.frequency.includes('yearly')){
+      nextDue=new Date(now.getFullYear()+1,now.getMonth(),now.getDate()).toISOString().split('T')[0];
+    } else if(m.frequency.includes('quarterly')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+3,now.getDate()).toISOString().split('T')[0];
+    } else if(m.frequency.includes('monthly')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+1,now.getDate()).toISOString().split('T')[0];
+    }
+
+    if(!confirm('Mark "'+m.title+'" as done today?\n\nNext due: '+(nextDue||'unknown')))return;
+
+    try{
+      const update={last_done:today};
+      if(nextDue)update.next_due=nextDue;
+      const {error}=await sb.from('sarah_medical_checklist').update(update).eq('id',id);
+      if(error)throw error;
+      const idx=SARAH_MED.findIndex(x=>x.id===id);
+      if(idx>=0){SARAH_MED[idx].lastDone=today;if(nextDue)SARAH_MED[idx].nextDue=nextDue;}
+      phRenderSarahMed();
+      phToast(m.title+' marked done','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
   };
 
   window.phAddFiona=async function(){

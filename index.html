@@ -473,7 +473,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.16</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.17</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -499,7 +499,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.16</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.17</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1046,7 +1046,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.16</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.17</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1939,14 +1939,15 @@
       items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{26A0}\u{FE0F}</span><div><div class="wi-label">Outstanding NDIS — '+providers+'</div><div class="wi-value" style="color:#ef4444;">'+money(outTotalR)+' ('+outstandingR.length+' invoice'+(outstandingR.length!==1?'s':'')+')</div></div></div>');
     }
 
-    // Sarah medical — overdue or upcoming within 30 days
-    const sarahOverdue=SARAH_MED.filter(m=>m.nextDue&&daysUntil(m.nextDue)<0);
-    const sarahUpcoming=SARAH_MED.filter(m=>m.nextDue&&daysUntil(m.nextDue)>=0&&daysUntil(m.nextDue)<=30);
+    // Sarah medical — overdue or upcoming within 30 days (from Dates)
+    const sarahMedDates=DATES.filter(d=>d.cat&&d.cat.includes('Sarah Medical')&&d.start);
+    const sarahOverdue=sarahMedDates.filter(d=>daysUntil(d.start)<0);
+    const sarahUpcoming=sarahMedDates.filter(d=>daysUntil(d.start)>=0&&daysUntil(d.start)<=30);
     if(sarahOverdue.length){
-      items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{1F6A8}</span><div><div class="wi-label">Sarah Medical — Overdue</div><div class="wi-value" style="color:#ef4444;">'+sarahOverdue.map(m=>m.icon+' '+m.title).join(', ')+'</div></div></div>');
+      items.push('<div class="weekly-item" style="border-color:#fecaca;background:#fef2f2;"><span class="wi-icon">\u{1F6A8}</span><div><div class="wi-label">Sarah Medical — Overdue</div><div class="wi-value" style="color:#ef4444;">'+sarahOverdue.map(d=>d.title).join(', ')+'</div></div></div>');
     }
     if(sarahUpcoming.length){
-      items.push('<div class="weekly-item" style="border-color:#fef3c7;background:#fffbeb;"><span class="wi-icon">\u{1F9D1}\u200D\u2695\uFE0F</span><div><div class="wi-label">Sarah Medical — Upcoming</div><div class="wi-value" style="color:#f59e0b;">'+sarahUpcoming.map(m=>m.icon+' '+m.title+' ('+daysUntil(m.nextDue)+'d)').join(', ')+'</div></div></div>');
+      items.push('<div class="weekly-item" style="border-color:#fef3c7;background:#fffbeb;"><span class="wi-icon">\u{1F9D1}\u200D\u2695\uFE0F</span><div><div class="wi-label">Sarah Medical — Upcoming</div><div class="wi-value" style="color:#f59e0b;">'+sarahUpcoming.map(d=>d.title+' ('+daysUntil(d.start)+'d)').join(', ')+'</div></div></div>');
     }
 
     // Fiona tasks pending
@@ -4519,41 +4520,47 @@
     });
   };
 
-  // ── Sarah Medical — Dashboard Tracker ──
+  // ── Sarah Medical — Dashboard Tracker (sourced from Dates) ──
   function phRenderDashSarahMed(){
-    if(!SARAH_MED.length){$('#ph-dash-sarah-med').innerHTML='<div style="font-size:12px;color:#94a3b8;">No items yet.</div>';return;}
+    const medDates=DATES.filter(d=>d.cat&&d.cat.includes('Sarah Medical')).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+    if(!medDates.length){$('#ph-dash-sarah-med').innerHTML='<div style="font-size:12px;color:#94a3b8;">No Sarah Medical dates yet. Add them in the Dates section with category "Sarah Medical".</div>';return;}
     const today=new Date();
     let html='';
-    SARAH_MED.forEach(function(m){
-      const nextDate=m.nextDue?new Date(m.nextDue):null;
+    medDates.forEach(function(d){
+      const nextDate=d.start?new Date(d.start):null;
       const days=nextDate?Math.round((nextDate-today)/(1000*60*60*24)):999;
       const isOverdue=days<0;
       const isUpcoming=days>=0&&days<=30;
-      const lastDate=m.lastDone?new Date(m.lastDone):null;
+
+      // Check history for recent completion
+      const history=SARAH_MED_HISTORY.filter(h=>h.itemId===d.id);
+      const lastDone=history.length?history[0].date:null;
+      const lastDate=lastDone?new Date(lastDone):null;
       const isDone=lastDate&&nextDate&&lastDate>=new Date(nextDate.getTime()-30*24*60*60*1000);
 
-      let statusColor='#94a3b8';let badge='';
-      if(isOverdue){statusColor='#ef4444';badge='<span style="background:#fef2f2;color:#ef4444;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">Overdue '+Math.abs(days)+'d</span>';}
-      else if(isUpcoming){statusColor='#f59e0b';badge='<span style="background:#fffbeb;color:#f59e0b;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">Due in '+days+'d</span>';}
+      let badge='';
+      let statusColor='#94a3b8';
+      if(isOverdue&&!isDone){statusColor='#ef4444';badge='<span style="background:#fef2f2;color:#ef4444;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">Overdue '+Math.abs(days)+'d</span>';}
+      else if(isUpcoming&&!isDone){statusColor='#f59e0b';badge='<span style="background:#fffbeb;color:#f59e0b;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">Due in '+days+'d</span>';}
       else if(isDone){badge='<span style="background:#f0fdf4;color:#16a34a;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">Done</span>';}
 
-      const history=SARAH_MED_HISTORY.filter(h=>h.itemId===m.id);
-
-      html+='<div style="background:white;border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid '+(isOverdue?'#ef4444':isUpcoming?'#f59e0b':isDone?'#16a34a':'#cbd5e1')+'">';
+      html+='<div style="background:white;border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid '+(isOverdue&&!isDone?'#ef4444':isUpcoming&&!isDone?'#f59e0b':isDone?'#16a34a':'#cbd5e1')+'">';
       html+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">';
-      html+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+m.icon+' '+m.title+'</div>';
-      html+='<div style="font-size:11px;color:#94a3b8;">'+m.frequency+(m.months?' — '+m.months:'')+'</div>';
-      if(m.nextDue)html+='<div style="font-size:11px;color:'+statusColor+';">Next: '+new Date(m.nextDue).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+      html+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+d.title+'</div>';
+      if(d.desc)html+='<div style="font-size:11px;color:#64748b;">'+d.desc+'</div>';
+      if(d.recurring)html+='<div style="font-size:11px;color:#94a3b8;">'+d.recurring+(d.notes?' — '+d.notes:'')+'</div>';
+      if(d.start)html+='<div style="font-size:11px;color:'+statusColor+';">Next: '+new Date(d.start).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+      if(lastDone)html+='<div style="font-size:10px;color:#94a3b8;">Last done: '+new Date(lastDone).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
       html+='</div>';
       html+='<div style="display:flex;flex-direction:column;align-items:end;gap:4px;">'+badge;
-      html+='<button class="add-btn" style="font-size:10px;padding:4px 10px;" onclick="phMarkSarahMed('+m.id+')">Mark Done</button>';
+      html+='<button class="add-btn" style="font-size:10px;padding:4px 10px;" onclick="phMarkSarahMedDate('+d.id+')">Mark Done</button>';
       html+='</div></div>';
 
       // History
       if(history.length){
         html+='<div style="margin-top:8px;">';
-        html+='<div style="font-size:10px;color:#94a3b8;cursor:pointer;font-weight:600;" onclick="var el=document.getElementById(\'smh-'+m.id+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';">History ('+history.length+') \u25BC</div>';
-        html+='<div id="smh-'+m.id+'" style="display:none;margin-top:4px;">';
+        html+='<div style="font-size:10px;color:#94a3b8;cursor:pointer;font-weight:600;" onclick="var el=document.getElementById(\'smh-'+d.id+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';">History ('+history.length+') \u25BC</div>';
+        html+='<div id="smh-'+d.id+'" style="display:none;margin-top:4px;">';
         history.slice(0,10).forEach(function(h){
           html+='<div style="font-size:11px;color:#64748b;padding:3px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;">';
           html+='<span>'+new Date(h.date).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</span>';
@@ -4570,74 +4577,80 @@
     $('#ph-dash-sarah-med').innerHTML=html;
   }
 
-  // ── Sarah Medical Checklist (Kids section) ──
+  // Mark done from dashboard — updates date_start to next due and records history
+  window.phMarkSarahMedDate=async function(id){
+    const d=DATES.find(x=>x.id===id);if(!d)return;
+    const today=new Date().toISOString().split('T')[0];
+    const now=new Date();
+
+    // Calculate next due based on recurring
+    let nextDue=null;
+    const rec=(d.recurring||'').toLowerCase();
+    if(rec.includes('6-month')||rec.includes('6 month')||rec.includes('twice')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+6,1).toISOString().split('T')[0];
+    } else if(rec.includes('annual')||rec.includes('yearly')){
+      nextDue=new Date(now.getFullYear()+1,now.getMonth(),1).toISOString().split('T')[0];
+    } else if(rec.includes('quarter')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+3,1).toISOString().split('T')[0];
+    } else if(rec.includes('month')){
+      nextDue=new Date(now.getFullYear(),now.getMonth()+1,1).toISOString().split('T')[0];
+    }
+
+    const notes=prompt('Mark "'+d.title+'" as done today?\n\nNext due: '+(nextDue||'unknown')+'\n\nAdd notes (optional):','');
+    if(notes===null)return;
+
+    try{
+      // Update date_start to next occurrence
+      if(nextDue){
+        const {error}=await sb.from('important_dates').update({date_start:nextDue}).eq('id',id);
+        if(error)throw error;
+        const idx=DATES.findIndex(x=>x.id===id);
+        if(idx>=0)DATES[idx].start=nextDue;
+      }
+
+      // Record in history
+      const histRow={checklist_item_id:id,completed_date:today,notes:notes||null,provider:d.desc||null};
+      const {data:histData,error:histErr}=await sb.from('sarah_medical_history').insert(histRow).select();
+      if(histErr)console.warn('History save failed:',histErr.message);
+      else if(histData&&histData[0])SARAH_MED_HISTORY.unshift({id:histData[0].id,itemId:id,date:today,notes:notes||'',provider:d.desc||''});
+
+      phRenderDashSarahMed();
+      phToast(d.title+' marked done','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
+  };
+
+  // ── Sarah Medical Checklist (Kids section — sourced from Dates) ──
   function phRenderSarahMed(){
-    if(!SARAH_MED.length){$('#sarah-med-checklist').innerHTML='<div style="font-size:12px;color:#94a3b8;">No items yet. Add via Supabase.</div>';return;}
+    const medDates=DATES.filter(d=>d.cat&&d.cat.includes('Sarah Medical')).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+    if(!medDates.length){$('#sarah-med-checklist').innerHTML='<div style="font-size:12px;color:#94a3b8;">No items yet. Add dates with category "Sarah Medical".</div>';return;}
     const today=new Date();
     let html='';
-    SARAH_MED.forEach(function(m){
-      const nextDate=m.nextDue?new Date(m.nextDue):null;
-      const lastDate=m.lastDone?new Date(m.lastDone):null;
+    medDates.forEach(function(d){
+      const nextDate=d.start?new Date(d.start):null;
       const days=nextDate?Math.round((nextDate-today)/(1000*60*60*24)):999;
       const isOverdue=days<0;
       const isUpcoming=days>=0&&days<=30;
+      const history=SARAH_MED_HISTORY.filter(h=>h.itemId===d.id);
+      const lastDone=history.length?history[0].date:null;
+      const lastDate=lastDone?new Date(lastDone):null;
       const isDone=lastDate&&nextDate&&lastDate>=new Date(nextDate.getTime()-30*24*60*60*1000);
 
       let statusColor='#94a3b8';let statusText='';
-      if(isOverdue){statusColor='#ef4444';statusText='Overdue by '+Math.abs(days)+' days';}
-      else if(isUpcoming){statusColor='#f59e0b';statusText='Due in '+days+' day'+(days!==1?'s':'');}
+      if(isOverdue&&!isDone){statusColor='#ef4444';statusText='Overdue by '+Math.abs(days)+' days';}
+      else if(isUpcoming&&!isDone){statusColor='#f59e0b';statusText='Due in '+days+' day'+(days!==1?'s':'');}
       else if(nextDate){statusText='Due '+nextDate.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});}
 
-      html+='<div style="display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid #e2e8f0;cursor:pointer;" onclick="phMarkSarahMed('+m.id+')">';
-      html+='<div style="width:22px;height:22px;border:2px solid '+(isDone?'#0d9488':isOverdue?'#ef4444':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:12px;font-weight:700;margin-top:1px;">'+(isDone?'\u2713':'')+'</div>';
-      html+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;'+(isDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+m.icon+' '+m.title+'</div>';
-      html+='<div style="font-size:11px;color:#94a3b8;">'+m.frequency+(m.months?' — '+m.months:'')+'</div>';
+      html+='<div style="display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid #e2e8f0;cursor:pointer;" onclick="phMarkSarahMedDate('+d.id+')">';
+      html+='<div style="width:22px;height:22px;border:2px solid '+(isDone?'#0d9488':isOverdue&&!isDone?'#ef4444':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:12px;font-weight:700;margin-top:1px;">'+(isDone?'\u2713':'')+'</div>';
+      html+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;'+(isDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+d.title+'</div>';
+      if(d.desc)html+='<div style="font-size:11px;color:#64748b;">'+d.desc+'</div>';
+      if(d.recurring)html+='<div style="font-size:11px;color:#94a3b8;">'+d.recurring+'</div>';
       if(statusText)html+='<div style="font-size:11px;font-weight:600;color:'+statusColor+';">'+statusText+'</div>';
-      if(m.lastDone)html+='<div style="font-size:10px;color:#94a3b8;">Last done: '+new Date(m.lastDone).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+      if(lastDone)html+='<div style="font-size:10px;color:#94a3b8;">Last done: '+new Date(lastDone).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
       html+='</div></div>';
     });
     $('#sarah-med-checklist').innerHTML=html;
   }
-
-  window.phMarkSarahMed=async function(id){
-    const m=SARAH_MED.find(x=>x.id===id);if(!m)return;
-    const today=new Date().toISOString().split('T')[0];
-
-    // Calculate next due based on frequency
-    const now=new Date();
-    let nextDue=null;
-    if(m.frequency.includes('6 month')||m.frequency.includes('twice yearly')){
-      nextDue=new Date(now.getFullYear(),now.getMonth()+6,now.getDate()).toISOString().split('T')[0];
-    } else if(m.frequency.includes('annual')||m.frequency.includes('yearly')){
-      nextDue=new Date(now.getFullYear()+1,now.getMonth(),now.getDate()).toISOString().split('T')[0];
-    } else if(m.frequency.includes('quarterly')){
-      nextDue=new Date(now.getFullYear(),now.getMonth()+3,now.getDate()).toISOString().split('T')[0];
-    } else if(m.frequency.includes('monthly')){
-      nextDue=new Date(now.getFullYear(),now.getMonth()+1,now.getDate()).toISOString().split('T')[0];
-    }
-
-    const notes=prompt('Mark "'+m.title+'" as done today?\n\nAdd notes (optional, e.g. provider name):','');
-    if(notes===null)return;
-
-    try{
-      const update={last_done:today};
-      if(nextDue)update.next_due=nextDue;
-      const {error}=await sb.from('sarah_medical_checklist').update(update).eq('id',id);
-      if(error)throw error;
-
-      // Record in history
-      const histRow={checklist_item_id:id,completed_date:today,notes:notes||null,provider:null};
-      const {data:histData,error:histErr}=await sb.from('sarah_medical_history').insert(histRow).select();
-      if(histErr)console.warn('History save failed:',histErr.message);
-      else if(histData&&histData[0])SARAH_MED_HISTORY.unshift({id:histData[0].id,itemId:id,date:today,notes:notes||'',provider:''});
-
-      const idx=SARAH_MED.findIndex(x=>x.id===id);
-      if(idx>=0){SARAH_MED[idx].lastDone=today;if(nextDue)SARAH_MED[idx].nextDue=nextDue;}
-      phRenderSarahMed();
-      phRenderDashSarahMed();
-      phToast(m.title+' marked done','success');
-    }catch(e){phToast('Error: '+e.message,'error');}
-  };
 
   window.phAddFiona=async function(){
     const text=$('#fi-text').value.trim();

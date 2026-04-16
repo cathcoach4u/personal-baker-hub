@@ -473,7 +473,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.18</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.19</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -499,7 +499,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.18</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.19</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1046,7 +1046,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.18</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.19</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2237,12 +2237,17 @@
       if(datesLine.length)t+='<div style="font-size:11px;margin-top:6px;">'+datesLine.join(' &bull; ')+'</div>';
       if(isYearBased&&p.name)t+='<div style="font-size:11px;color:#94a3b8;">Insured: '+p.name+'</div>';
       if(p.product)t+='<div style="font-size:10px;color:#94a3b8;">'+p.product+'</div>';
-      // Contact quick-access
+      // Contact quick-access & Mark Paid
       if(mc){
-        t+='<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;font-size:11px;" onclick="event.stopPropagation()">';
+        t+='<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;font-size:11px;align-items:center;" onclick="event.stopPropagation()">';
         if(mc.phone)t+='<a href="tel:'+mc.phone.replace(/\\s/g,'')+'" style="color:#0d9488;text-decoration:none;background:#f0fdf4;padding:2px 8px;border-radius:5px;">\u{1F4DE} '+mc.phone+'</a>';
         if(mc.email)t+='<a href="mailto:'+mc.email+'" style="color:#0d9488;text-decoration:none;background:#f0fdf4;padding:2px 8px;border-radius:5px;">\u{2709} Email</a>';
         t+='<a href="#" onclick="event.preventDefault();phGoToContact('+mc.id+')" style="color:#3b82f6;text-decoration:none;background:#eff6ff;padding:2px 8px;border-radius:5px;">Contact</a>';
+        if(p.due)t+='<button class="add-btn" style="font-size:10px;padding:3px 10px;background:#f59e0b;" onclick="event.stopPropagation();phMarkPolicyPaid('+p.id+')">Mark Paid</button>';
+        t+='</div>';
+      } else if(p.due){
+        t+='<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;font-size:11px;" onclick="event.stopPropagation()">';
+        t+='<button class="add-btn" style="font-size:10px;padding:3px 10px;background:#f59e0b;" onclick="event.stopPropagation();phMarkPolicyPaid('+p.id+')">Mark Paid</button>';
         t+='</div>';
       }
       t+='</div>';
@@ -2932,6 +2937,28 @@
     }catch(e){phToast('Error: '+e.message,'error');}
   };
 
+  // ─── MARK POLICY PAID ───
+  window.phMarkPolicyPaid=async function(id){
+    const p=INS.find(x=>x.id===id);if(!p||!p.due)return;
+    const dueDate=new Date(p.due);
+    var nextDue;
+    var freq=(p.freq||'').toLowerCase();
+    if(freq.includes('annual')){nextDue=new Date(dueDate.getFullYear()+1,dueDate.getMonth(),dueDate.getDate());}
+    else if(freq.includes('quarter')){nextDue=new Date(dueDate.getFullYear(),dueDate.getMonth()+3,dueDate.getDate());}
+    else{nextDue=new Date(dueDate.getFullYear(),dueDate.getMonth()+1,dueDate.getDate());}
+    var nextStr=nextDue.toISOString().split('T')[0];
+    var paidStr=p.due;
+    if(!confirm('Mark '+p.ins+' — '+p.cover+' as paid?\n\nPaid to: '+dueDate.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'\nNext due: '+nextDue.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})))return;
+    try{
+      const {error}=await sb.from('insurance_policies').update({due_date:nextStr,paid_to_date:paidStr}).eq('id',id);
+      if(error)throw error;
+      const idx=INS.findIndex(x=>x.id===id);
+      if(idx>=0){INS[idx].due=nextStr;INS[idx].paid=paidStr;}
+      phIns();
+      phToast('Payment recorded — next due '+nextDue.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}),'success');
+    }catch(e){phToast('Error: '+e.message,'error');}
+  };
+
   // ─── HOME LOANS VIEW ───
   window.phLoansView=function(){
     if(!HOME_LOANS.length){$('#loans-cards').innerHTML='<div class="todo-empty">No home loans yet</div>';return;}
@@ -3151,7 +3178,59 @@
     let fl=BILLS;
     if(billsCatFilter!=='All')fl=fl.filter(b=>b.category===billsCatFilter);
 
-    if(!fl.length){$('#ph-bills-list').innerHTML='<div class="todo-empty">No bills yet</div>';return;}
+    // ── FINANCE OVERVIEW SUMMARY ──
+    var finHtml='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;margin-bottom:16px;">';
+    finHtml+='<div style="font-size:14px;font-weight:700;margin-bottom:12px;">Finance Overview</div>';
+
+    // Insurance premiums
+    var insMonthly=0,insAnnual=0;
+    INS.forEach(function(p){
+      if(!p.prem)return;
+      var f=(p.freq||'').toLowerCase();
+      if(f.includes('month'))insMonthly+=p.prem;
+      else if(f.includes('annual'))insAnnual+=p.prem;
+      else if(f.includes('quarter'))insMonthly+=p.prem/3;
+    });
+
+    // Bills
+    var billsMonthly=0,billsAnnual=0;
+    BILLS.forEach(function(b){
+      var f=(b.freq||'').toLowerCase();
+      if(f.includes('month'))billsMonthly+=b.amount;
+      else if(f.includes('annual'))billsAnnual+=b.amount;
+      else if(f.includes('quarter'))billsMonthly+=b.amount/3;
+    });
+
+    // Loans
+    var loansMonthly=HOME_LOANS.reduce(function(s,l){return s+l.repayment;},0);
+    var totalMonthly=insMonthly+billsMonthly+loansMonthly;
+    var totalAnnual=insAnnual+(insMonthly*12)+(billsAnnual)+(billsMonthly*12)+(loansMonthly*12);
+
+    finHtml+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">';
+    finHtml+='<div style="background:white;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Insurance Premiums</div><div style="font-weight:700;">'+money(insMonthly)+'/mo</div>'+(insAnnual?'<div style="font-size:10px;color:#94a3b8;">+'+money(insAnnual)+'/yr</div>':'')+'</div>';
+    finHtml+='<div style="background:white;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Bills</div><div style="font-weight:700;">'+money(billsMonthly)+'/mo</div>'+(billsAnnual?'<div style="font-size:10px;color:#94a3b8;">+'+money(billsAnnual)+'/yr</div>':'')+'</div>';
+    finHtml+='<div style="background:white;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Loan Repayments</div><div style="font-weight:700;">'+money(loansMonthly)+'/mo</div></div>';
+    finHtml+='<div style="background:white;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Total Monthly</div><div style="font-weight:700;color:#ef4444;font-size:15px;">'+money(totalMonthly)+'</div><div style="font-size:10px;color:#94a3b8;">'+money(totalAnnual)+'/yr</div></div>';
+    finHtml+='</div>';
+
+    // Upcoming/overdue payments across all policies
+    var dueSoon=INS.filter(function(p){return p.due&&daysUntil(p.due)<=30;}).sort(function(a,b){return (a.due||'').localeCompare(b.due||'');});
+    if(dueSoon.length){
+      finHtml+='<div style="margin-top:12px;font-size:12px;font-weight:700;color:#64748b;margin-bottom:6px;">Upcoming & Overdue Payments</div>';
+      dueSoon.forEach(function(p){
+        var days=daysUntil(p.due);
+        var color=days<0?'#ef4444':days<=7?'#f59e0b':'#64748b';
+        var label=days<0?'Overdue '+Math.abs(days)+'d':days===0?'Due today':'Due in '+days+'d';
+        finHtml+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #e2e8f0;font-size:12px;">';
+        finHtml+='<div><span style="font-weight:600;">'+p.ins+'</span> <span style="color:#94a3b8;">'+p.cover+'</span></div>';
+        finHtml+='<div style="text-align:right;"><span style="font-weight:600;">'+money(p.prem||0)+'</span> <span style="color:'+color+';font-weight:700;font-size:10px;">'+label+'</span></div>';
+        finHtml+='</div>';
+      });
+    }
+    finHtml+='</div>';
+
+    // Bills list
+    if(!fl.length){$('#ph-bills-list').innerHTML=finHtml+'<div class="todo-empty">No bills yet</div>';return;}
 
     // Group by category
     const groups={};
@@ -3174,17 +3253,17 @@
       html+='</div>';
     }
 
-    // Summary
+    // Bills summary
     const monthlyTotal=BILLS.filter(b=>b.freq==='Monthly').reduce((s,b)=>s+b.amount,0);
     const quarterlyTotal=BILLS.filter(b=>b.freq==='Quarterly').reduce((s,b)=>s+b.amount,0);
     const annualTotal=BILLS.filter(b=>b.freq==='Annually').reduce((s,b)=>s+b.amount,0);
-    let summary='<div style="background:#f1f5f9;border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;"><strong>Total Bills:</strong> ';
+    let summary='<div style="background:#f1f5f9;border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;"><strong>Bills Total:</strong> ';
     if(monthlyTotal)summary+=money(monthlyTotal)+'/mo ';
     if(quarterlyTotal)summary+=money(quarterlyTotal)+'/qtr ';
     if(annualTotal)summary+=money(annualTotal)+'/yr';
     summary+='</div>';
 
-    $('#ph-bills-list').innerHTML=summary+html;
+    $('#ph-bills-list').innerHTML=finHtml+summary+html;
   }
 
   window.phToggleBillForm=function(){

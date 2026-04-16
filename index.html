@@ -473,7 +473,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.5</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:11px;color:rgba(255,255,255,0.7);"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.6</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -499,7 +499,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.5</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.6</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -573,6 +573,7 @@
         <button class="todo-filter-btn" onclick="phFinTab('superannuation',this)">Super</button>
         <button class="todo-filter-btn" onclick="phFinTab('investments',this)">Investments</button>
         <button class="todo-filter-btn" onclick="phFinTab('bills',this)">Bills</button>
+        <button class="todo-filter-btn" onclick="phFinTab('loans',this)">Loans</button>
         <a href="https://netorgft4053847.sharepoint.com/:f:/s/bakerpersonal/IgAoE_DcZLXkT6a4V48krWURARMNXnvtfmD2h_hPZGL_rnw?e=OUGsHL" target="_blank" style="padding:6px 12px;background:#0d9488;color:white;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;font-family:inherit;margin-left:auto;">Finance Files</a>
       </div>
 
@@ -681,6 +682,11 @@
         </div>
         <div id="ph-bills-cat-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
         <div id="ph-bills-list"></div>
+      </div>
+
+      <!-- Loans view -->
+      <div id="fin-view-loans" style="display:none;">
+        <div id="loans-cards"></div>
       </div>
 
     </div>
@@ -1008,7 +1014,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.5</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.6</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1436,6 +1442,7 @@
   let HCF_CLAIMS = [];
   let MH_SESSIONS = [];
   let SARAH_MED = [];
+  let HOME_LOANS = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
 
@@ -1486,7 +1493,7 @@
   // --- Load data with auto-retry ---
   async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes, sarahMedRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes, sarahMedRes, loansRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1502,7 +1509,8 @@
       sb.from('checklist_items').select('*').order('sort_order'),
       sb.from('health_claims').select('*').order('service_date', { ascending: false }),
       sb.from('mental_health_sessions').select('*').order('session_date', { ascending: false }),
-      sb.from('sarah_medical_checklist').select('*').order('next_due')
+      sb.from('sarah_medical_checklist').select('*').order('next_due'),
+      sb.from('home_loans').select('*').order('name')
     ]);
 
     const errors=[];
@@ -1511,8 +1519,9 @@
     if(hcfRes.error)console.warn('health_claims not loaded (table may not exist yet):',hcfRes.error.message);
     if(mhRes.error)console.warn('mental_health_sessions not loaded (table may not exist yet):',mhRes.error.message);
     if(sarahMedRes.error)console.warn('sarah_medical_checklist not loaded (table may not exist yet):',sarahMedRes.error.message);
+    if(loansRes.error)console.warn('home_loans not loaded (table may not exist yet):',loansRes.error.message);
 
-    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes};
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes};
   }
 
   let res;
@@ -1531,7 +1540,7 @@
   }
 
   try {
-    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes}=res;
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1599,6 +1608,24 @@
       nextDue: r.next_due || '',
       lastDone: r.last_done || '',
       notes: r.notes || ''
+    }));
+
+    HOME_LOANS = (loansRes.data || []).map(r => ({
+      id: r.id,
+      name: r.name || '',
+      account: r.account_number || '',
+      lender: r.lender || '',
+      balance: parseFloat(r.balance) || 0,
+      rate: parseFloat(r.interest_rate) || 0,
+      rateType: r.rate_type || 'Variable',
+      repayment: parseFloat(r.repayment) || 0,
+      repayFreq: r.repayment_frequency || 'Monthly',
+      repayType: r.repayment_type || '',
+      offsetCount: parseInt(r.offset_accounts) || 0,
+      property: r.property_address || '',
+      startDate: r.loan_start_date || '',
+      notes: r.notes || '',
+      lastUpdated: r.last_updated || ''
     }));
 
     CONTACTS = (contactsRes.data || []).map(r => ({
@@ -2589,7 +2616,7 @@
     btn.classList.add('active');
     currentFinTab=tab;
     // Hide all views
-    ['insurance','health','super','investments','bills'].forEach(v=>{$('#fin-view-'+v).style.display='none';});
+    ['insurance','health','super','investments','bills','loans'].forEach(v=>{$('#fin-view-'+v).style.display='none';});
     if(tab==='health'){
       $('#fin-view-health').style.display='block';
       phHcfClaims();
@@ -2602,6 +2629,9 @@
     } else if(tab==='bills'){
       $('#fin-view-bills').style.display='block';
       phBills();
+    } else if(tab==='loans'){
+      $('#fin-view-loans').style.display='block';
+      phLoansView();
     } else {
       $('#fin-view-insurance').style.display='block';
       insCatFilter=finPillToCat[tab]||'Personal Insurance';
@@ -2846,6 +2876,104 @@
       if(idx>=0){INS[idx].super=newVal;INS[idx].paid=today;}
       if(type==='super')phSuperView();else phInvestView();
       phToast('Balance updated','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
+  };
+
+  // ─── HOME LOANS VIEW ───
+  window.phLoansView=function(){
+    if(!HOME_LOANS.length){$('#loans-cards').innerHTML='<div class="todo-empty">No home loans yet</div>';return;}
+
+    const totalOwing=HOME_LOANS.reduce((s,l)=>s+l.balance,0);
+    const totalRepay=HOME_LOANS.reduce((s,l)=>s+l.repayment,0);
+
+    let html='<div style="background:#fef2f2;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+    html+='<div><div style="font-size:11px;color:#64748b;">Total Owing</div><div style="font-size:22px;font-weight:700;color:#ef4444;">'+money(totalOwing)+'</div></div>';
+    html+='<div style="text-align:right;"><div style="font-size:11px;color:#64748b;">Total Repayments</div><div style="font-size:18px;font-weight:700;color:#1e293b;">'+money(totalRepay)+'/mo</div></div>';
+    html+='</div>';
+
+    HOME_LOANS.forEach(function(l){
+      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">';
+      html+='<div><div style="font-size:17px;font-weight:700;color:#1e293b;">'+l.name+'</div>';
+      if(l.lender)html+='<div style="font-size:13px;color:#64748b;margin-top:2px;">'+l.lender+'</div>';
+      if(l.account)html+='<div style="font-size:12px;color:#94a3b8;margin-top:2px;">Account: '+l.account+'</div>';
+      if(l.property)html+='<div style="font-size:12px;color:#94a3b8;">'+l.property+'</div>';
+      html+='</div>';
+      html+='<div style="text-align:right;">';
+      html+='<div style="font-size:11px;color:#64748b;">Balance</div>';
+      html+='<div style="font-size:22px;font-weight:700;color:#ef4444;">'+money(l.balance)+'</div>';
+      html+='</div></div>';
+
+      // Details grid
+      html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;font-size:12px;">';
+      html+='<div style="background:#f8fafc;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Interest Rate</div><div style="font-weight:700;color:#1e293b;font-size:15px;">'+l.rate+'% <span style="font-size:10px;color:#94a3b8;">p.a.</span></div><div style="font-size:10px;color:#94a3b8;">'+l.rateType+'</div></div>';
+      html+='<div style="background:#f8fafc;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Repayment</div><div style="font-weight:700;color:#1e293b;font-size:15px;">'+money(l.repayment)+'</div><div style="font-size:10px;color:#94a3b8;">'+l.repayFreq+'</div></div>';
+      if(l.repayType)html+='<div style="background:#f8fafc;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Type</div><div style="font-weight:600;">'+l.repayType+'</div></div>';
+      if(l.offsetCount)html+='<div style="background:#f8fafc;padding:10px;border-radius:8px;"><div style="color:#64748b;font-size:10px;">Offset Accounts</div><div style="font-weight:600;">'+l.offsetCount+' linked</div></div>';
+      html+='</div>';
+
+      if(l.lastUpdated)html+='<div style="font-size:10px;color:#94a3b8;margin-top:8px;">Last updated: '+new Date(l.lastUpdated).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+      if(l.notes)html+='<div style="font-size:11px;color:#94a3b8;margin-top:4px;">'+l.notes+'</div>';
+
+      html+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;" onclick="phUpdateLoanBalance('+l.id+')">Update Balance</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#f59e0b;" onclick="phUpdateLoanRate('+l.id+')">Update Rate</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#64748b;" onclick="phUpdateLoanRepayment('+l.id+')">Update Repayment</button>';
+      html+='</div>';
+      html+='</div>';
+    });
+
+    $('#loans-cards').innerHTML=html;
+  };
+
+  window.phUpdateLoanBalance=async function(id){
+    const l=HOME_LOANS.find(x=>x.id===id);if(!l)return;
+    const input=prompt('Enter current balance (positive number):',''+l.balance);
+    if(input===null)return;
+    const val=parseFloat(input);
+    if(isNaN(val)){phToast('Invalid amount','error');return;}
+    try{
+      const today=new Date().toISOString().split('T')[0];
+      const {error}=await sb.from('home_loans').update({balance:val,last_updated:today}).eq('id',id);
+      if(error)throw error;
+      const idx=HOME_LOANS.findIndex(x=>x.id===id);
+      if(idx>=0){HOME_LOANS[idx].balance=val;HOME_LOANS[idx].lastUpdated=today;}
+      phLoansView();
+      phToast('Balance updated','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
+  };
+
+  window.phUpdateLoanRate=async function(id){
+    const l=HOME_LOANS.find(x=>x.id===id);if(!l)return;
+    const input=prompt('Enter new interest rate (e.g. 5.84):',''+l.rate);
+    if(input===null)return;
+    const val=parseFloat(input);
+    if(isNaN(val)){phToast('Invalid rate','error');return;}
+    try{
+      const today=new Date().toISOString().split('T')[0];
+      const {error}=await sb.from('home_loans').update({interest_rate:val,last_updated:today}).eq('id',id);
+      if(error)throw error;
+      const idx=HOME_LOANS.findIndex(x=>x.id===id);
+      if(idx>=0){HOME_LOANS[idx].rate=val;HOME_LOANS[idx].lastUpdated=today;}
+      phLoansView();
+      phToast('Rate updated to '+val+'%','success');
+    }catch(e){phToast('Error: '+e.message,'error');}
+  };
+
+  window.phUpdateLoanRepayment=async function(id){
+    const l=HOME_LOANS.find(x=>x.id===id);if(!l)return;
+    const input=prompt('Enter new monthly repayment:',''+l.repayment);
+    if(input===null)return;
+    const val=parseFloat(input);
+    if(isNaN(val)){phToast('Invalid amount','error');return;}
+    try{
+      const today=new Date().toISOString().split('T')[0];
+      const {error}=await sb.from('home_loans').update({repayment:val,last_updated:today}).eq('id',id);
+      if(error)throw error;
+      const idx=HOME_LOANS.findIndex(x=>x.id===id);
+      if(idx>=0){HOME_LOANS[idx].repayment=val;HOME_LOANS[idx].lastUpdated=today;}
+      phLoansView();
+      phToast('Repayment updated','success');
     }catch(e){phToast('Error: '+e.message,'error');}
   };
 

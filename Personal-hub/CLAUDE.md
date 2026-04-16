@@ -128,9 +128,9 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Receipt upload**: Files stored in Supabase Storage bucket `ndis-invoices`
 
 ## Finance & Insurance
-- **Two tabs**: "Insurance & Super" and "Bills" (tab switch at top)
+- **Tabs**: Personal, Household, Car, Health, Super, Investments, Bills, Loans (filter pills at top)
 - **Finance Files**: OneDrive link at top
-- **Category pills**: All, Personal Insurance, Household, Car, Investments, Superannuation
+- **Category pills**: Personal Insurance, Household, Car, Health, Superannuation, Investments, Bills, Loans
 - **Grouped by person**: Cathrine Baker, Andrew Baker, Russell Baker etc.
 - **Sub-grouped by payment source**: "Paid Personally" (credit card) vs "Paid via Super" (Macquarie Super, MLC Masterkey) — collapsible
 - **Form includes**: Person, Category, Insurer/Provider, Policy No, Cover Type, Premium, Frequency, Payment Method
@@ -140,6 +140,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
   - ClearView = formerly Zurich (Andrew's Income Protection 51825896)
   - Policies paid via Macquarie Super get 15% super rebate
 - **Bills tab**: Recurring bills tracker (Utilities, Internet & Phone, Streaming, Council, Car, Other) with category pills, totals, add/edit/delete
+- **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
 
 ## Contacts
 - **Grouped by category** (not by person) with collapsible sections
@@ -256,6 +257,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | checklist_items | Weekly dashboard checklist items (label, icon, week A/B/Both) | auto bigint |
 | weekly_checklist | Weekly checklist done state (JSON per week) | text (week key) |
 | bills | Recurring bills tracker | auto bigint |
+| home_loans | Home loan balances, rates and repayments | auto bigint |
 | health_claims | HCF health insurance claims with receipt uploads | auto bigint |
 | shopping_items | AisleMate shopping list | auto UUID |
 | master_items | AisleMate master item catalogue (142 items) | auto UUID |
@@ -288,6 +290,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 | .claude/settings.json | Hook registration |
 | Personal-hub/CLAUDE.md | This file — project memory for future sessions |
 | supabase-*.sql | SQL setup scripts (reference, not auto-run) |
+| supabase-home-loans.sql | Home loans table setup |
 
 ## Design System
 - **Top bar / sidebar / drawer**: Teal `#0d9488`
@@ -317,8 +320,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.8. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (v5.8 → v5.8 → v5.8 etc). **Major structural shifts** bump the major version (v4.x → v5.8). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.8`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v5.9. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (v5.9 → v5.9 → v5.9 etc). **Major structural shifts** bump the major version (v4.x → v5.9). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.9`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

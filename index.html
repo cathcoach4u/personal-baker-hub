@@ -3800,7 +3800,7 @@
     const allBtns=$$('#personalHub .nav-item');
     allBtns.forEach(b=>{if(b.textContent.trim()===btn.textContent.trim())b.classList.add('active');});
     if(name==='ndis')phNDIS();
-    if(name==='insurance'){phFinTab(currentFinTab,$$('#fin-pills .todo-filter-btn').find(b=>b.classList.contains('active'))||$$('#fin-pills .todo-filter-btn')[0]);}
+    if(name==='insurance'){phFinTab(currentFinTab,Array.from($$('#fin-pills .todo-filter-btn')).find(b=>b.classList.contains('active'))||$$('#fin-pills .todo-filter-btn')[0]);}
     if(name==='contacts')phContacts();
     if(name==='projects')phProjects();
     if(name==='dates')phDates();

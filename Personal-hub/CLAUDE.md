@@ -100,7 +100,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
   - Phone numbers: Fiona +61 403 772 056, Paula +61 450 042 221
   - "Wrong week? Swap" toggle (persists in localStorage)
 - **Weekly Checklist**: Tappable items stored in Supabase `checklist_items` table (editable from Habits section). State saved to `weekly_checklist` table. Auto-resets each Monday.
-- **Important Reminders**: Bulky waste countdown, outstanding NDIS, Fiona tasks pending
+- **Important Reminders**: Bulky waste countdown, outstanding NDIS, Sarah medical overdue/upcoming, Fiona tasks pending
+- **Sarah Medical Tracker**: Always-visible card sourced from Dates with category "Sarah Medical". Shows colour-coded status (red=overdue, amber=upcoming, green=done). "Mark Done" advances date_start to next occurrence and records in `sarah_medical_history`. Expandable history per item. Clickable titles navigate to the date in Dates section. Dates section is the single source of truth.
 - **NDIS Funding**: Compact fund cards with budget/spent/remaining
 - **Links**: "Edit checklist" (goes to Habits), "Bin calendar" (PDF), "Wrong week? Swap"
 
@@ -128,24 +129,28 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Receipt upload**: Files stored in Supabase Storage bucket `ndis-invoices`
 
 ## Finance & Insurance
-- **Tabs**: Personal, Household, Car, Health, Super, Investments, Bills, Loans (filter pills at top)
+- **Tabs**: Bills, Personal, Household, Car, Health, Super, Investments, Loans (Bills is first/default)
 - **Finance Files**: OneDrive link at top
-- **Category pills**: Personal Insurance, Household, Car, Health, Superannuation, Investments, Bills, Loans
+- **Category pills**: Bills (default), Personal Insurance, Household, Car, Health, Superannuation, Investments, Loans
 - **Grouped by person**: Cathrine Baker, Andrew Baker, Russell Baker etc.
 - **Sub-grouped by payment source**: "Paid Personally" (credit card) vs "Paid via Super" (Macquarie Super, MLC Masterkey) — collapsible
-- **Form includes**: Person, Category, Insurer/Provider, Policy No, Cover Type, Premium, Frequency, Payment Method
+- **Form includes**: Person, Category, Insurer/Provider, Policy No, Cover Type, Premium, Frequency, Payment Method, Next Due, Paid To, Advanced (Product Type, State, Start/Expiry/Review dates)
+- **Due date tracking**: Cards show colour-coded due dates (red=overdue, amber=within 30 days). "Mark Paid" button advances due date to next period.
 - **Key insurance facts**:
   - Acenda = provider for several policies, Customer Number: 7150590, portal: https://my.acenda.com.au/documents
   - AIA = underlying insurer for Acenda policies, Adviser: Joanne Brassett 0282682900
   - ClearView = formerly Zurich (Andrew's Income Protection 51825896)
+  - Budget Direct = Andrew's car insurance (White Commodore), policy 111952900
   - Policies paid via Macquarie Super get 15% super rebate
-- **Bills tab**: Recurring bills tracker (Utilities, Internet & Phone, Streaming, Council, Car, Other) with category pills, totals, add/edit/delete
-- **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
+- **Bills tab**: Finance Overview at top (insurance premiums, bills, loan repayments totals with monthly/annual breakdown, upcoming/overdue payments list). Below that: recurring bills tracker with category pills, totals, add/edit/delete
+- **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons with date picker for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
+- **Super/Investments tabs**: Balance cards with date picker for update tracking. Contact button links to matching contact.
+- **Contact button**: Insurance cards have a Contact button that navigates to the matching contact card in Contacts section (resets filters, expands groups, highlights with blue outline)
 
 ## Contacts
 - **Grouped by category** (not by person) with collapsible sections
 - **Category filter pills** at top (Medical, Insurance, NDIS, Home & Services, etc.)
-- **Categories**: Medical, Vet, Massage, Pharmacy, NDIS, Insurance, Home & Services, Recreation, Food & Lifestyle, Government (+ any custom categories added by user)
+- **Categories**: Medical, Vet, Massage, Pharmacy, NDIS, Insurance & Super, Home & Services, Recreation, Food & Lifestyle, Government (+ any custom categories added by user)
 - **Dynamic categories**: Dropdown built from existing data + defaults. "Add new category" option lets user type any name — it persists with the contact and appears in future dropdowns/pills. No separate table needed.
 - **Copy button**: Clipboard icon on each contact card
 - **Export CSV**: Downloads filtered contacts
@@ -166,7 +171,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## Dates (Important Dates)
 - **Month timeline**: Apr 2026 to Mar 2027, collapsible months
 - **Week grouping**: Within each month, grouped by week (collapsible)
-- **Categories**: Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, House, Other
+- **Categories**: Council, Family, Cath, Andrew, Sarah, Russell, Public Holidays, Financial, House, Sarah Medical, Other
 - **Baker AI**: Must ask which category before adding a date
 - **Timezone fix**: daysDiff/daysUntil compare midnight-to-midnight to avoid AEST/UTC off-by-one errors
 
@@ -245,9 +250,10 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | ndis_transactions | Transaction history + receipt paths | auto bigint |
 | ndis_providers | Provider defaults (name, NDIS#, fund) | auto bigint |
 | insurance_policies | Insurance, super & investment policies (has `category` column) | auto bigint |
-| contacts | Family contacts with categories (includes Insurance category) | auto bigint |
+| contacts | Family contacts with categories (includes Insurance & Super category) | auto bigint |
 | house_projects | House projects with zones in notes field | auto bigint |
-| important_dates | Important dates & events (has House category) | auto bigint |
+| important_dates | Important dates & events (has House, Sarah Medical categories) | auto bigint |
+| sarah_medical_history | Completion history for Sarah medical items | auto bigint |
 | todos | To-do list | auto bigint |
 | animals | Pet records (name, type, breed, dob, microchip, vet, insurance) | auto bigint |
 | animal_medical_records | Vaccinations, treatments, weight checks, tick treatments | auto bigint |

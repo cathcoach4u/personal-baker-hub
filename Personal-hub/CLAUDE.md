@@ -100,8 +100,9 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
   - Phone numbers: Fiona +61 403 772 056, Paula +61 450 042 221
   - "Wrong week? Swap" toggle (persists in localStorage)
 - **Weekly Checklist**: Tappable items stored in Supabase `checklist_items` table (editable from Habits section). State saved to `weekly_checklist` table. Auto-resets each Monday.
-- **Important Reminders**: Bulky waste countdown, outstanding NDIS, Sarah medical overdue/upcoming, Fiona tasks pending
+- **Important Reminders**: Bulky waste countdown, outstanding NDIS, Fiona tasks pending
 - **Sarah Medical Tracker**: Always-visible card sourced from Dates with category "Sarah Medical". Shows colour-coded status (red=overdue, amber=upcoming, green=done). "Mark Done" advances date_start to next occurrence and records in `sarah_medical_history`. Expandable history per item. Clickable titles navigate to the date in Dates section. Dates section is the single source of truth.
+- **Medicare Safety Net Summary**: Progress bar showing out-of-pocket costs towards general threshold ($2,699.10). Shows amount, percentage, and message like "Spend $X more to reach the threshold". Tapping navigates to Finance > Health. Stored in localStorage.
 - **NDIS Funding**: Compact fund cards with budget/spent/remaining
 - **Links**: "Edit checklist" (goes to Habits), "Bin calendar" (PDF), "Wrong week? Swap"
 
@@ -135,14 +136,16 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Grouped by person**: Cathrine Baker, Andrew Baker, Russell Baker etc.
 - **Sub-grouped by payment source**: "Paid Personally" (credit card) vs "Paid via Super" (Macquarie Super, MLC Masterkey) — collapsible
 - **Form includes**: Person, Category, Insurer/Provider, Policy No, Cover Type, Premium, Frequency, Payment Method, Next Due, Paid To, Advanced (Product Type, State, Start/Expiry/Review dates)
-- **Due date tracking**: Cards show colour-coded due dates (red=overdue, amber=within 30 days). "Mark Paid" button advances due date to next period.
+- **Due date tracking**: Cards show colour-coded due dates (red=overdue, amber=within 30 days). "Mark Paid" button advances due date to next period. Auto-advance on page load: any overdue due_date is moved forward to the next future occurrence based on frequency.
+- **Policy reminders in Dates**: Annual policy payments appear in Dates 1 month before due, monthly policies 1 week before. Auto-generated from insurance_policies data, shown with amber left border under Financial category. No manual entries needed.
 - **Key insurance facts**:
   - Acenda = provider for several policies, Customer Number: 7150590, portal: https://my.acenda.com.au/documents
   - AIA = underlying insurer for Acenda policies, Adviser: Joanne Brassett 0282682900
   - ClearView = formerly Zurich (Andrew's Income Protection 51825896)
   - Budget Direct = Andrew's car insurance (White Commodore), policy 111952900
   - Policies paid via Macquarie Super get 15% super rebate
-- **Bills tab**: Finance Overview at top (insurance premiums, bills, loan repayments totals with monthly/annual breakdown, upcoming/overdue payments list). Below that: recurring bills tracker with category pills, totals, add/edit/delete
+- **Bills tab**: Finance Overview at top (insurance premiums, bills, loan repayments totals with monthly/annual breakdown, upcoming/overdue payments list with exact dates). Below that: recurring bills tracker with category pills, totals, add/edit/delete
+- **Health tab**: Medicare Safety Net tracker at top (threshold + out-of-pocket side by side, progress bar, remaining amount, last updated). Stored in localStorage. HCF Health claims with receipt upload below.
 - **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons with date picker for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
 - **Super/Investments tabs**: Balance cards with date picker for update tracking. Contact button links to matching contact.
 - **Contact button**: Insurance cards have a Contact button that navigates to the matching contact card in Contacts section (resets filters, expands groups, highlights with blue outline)
@@ -184,7 +187,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Filter pills**: All, Gypsy, Ellie, Rosie (built dynamically from data)
 - **Pets**: Gypsy (Tonkinese cat), Ellie (Tonkinese kitten), Rosie (Maltese Cross dog)
 - **Shared vet**: Belrose Veterinary Hospital, 02 9452 3155, info@belrosevet.com.au, 70 Pringle Avenue Belrose NSW 2085
-- **Quick stats on cards**: Latest weight, tick treatment due date (auto-calculated 3 months after last, colour coded)
+- **Quick stats on cards**: Latest weight, tick treatment due date (auto-calculated 3 months after last, colour coded), age calculated from DOB (e.g. "3yr 6mo old")
 - **Medical records grouped by type**: Weight Check (blue), Tick & Flea Treatment (red), Vaccination (green), Worming (purple), Vet Visit (yellow), Treatment (grey)
 - **Add medical records**: Form with type, date, description, cost, vet, notes. Click any record to edit/delete.
 - **Animal File**: OneDrive link
@@ -326,8 +329,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.19. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (v5.19 → v5.19 → v5.19 etc). **Major structural shifts** bump the major version (v4.x → v5.19). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.19`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v5.28. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (v5.28 → v5.28 → v5.28 etc). **Major structural shifts** bump the major version (v4.x → v5.28). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.28`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

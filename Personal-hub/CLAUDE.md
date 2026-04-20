@@ -321,7 +321,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v2`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.28`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 

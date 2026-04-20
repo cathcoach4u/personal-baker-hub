@@ -473,7 +473,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.29</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.30</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -499,7 +499,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.29</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.30</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1054,7 +1054,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.29</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.30</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1067,7 +1067,7 @@
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x26A1;</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (20 tables), file storage (NDIS receipts), Edge Functions (AI proxy). You own all data.</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (22+ tables), file storage (NDIS receipts, HCF claims), Edge Functions (AI proxy). You own all data.</div></div>
             <div style="font-size:11px;font-weight:700;color:#16a34a;">Free tier</div>
           </div>
           <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:8px;">AI Services (3 separate services, all replaceable)</div>
@@ -1094,17 +1094,17 @@
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Features</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
-          <li><strong>Dashboard</strong> — Week A/B checklist (editable from Habits), bin calendar link, important reminders, NDIS funding overview</li>
+          <li><strong>Dashboard</strong> — Week A/B checklist (editable from Habits), bin calendar, important reminders, Sarah Medical Tracker with history, Medicare Safety Net progress, NDIS funding overview</li>
           <li><strong>To-Do</strong> — Task management with categories, due dates, overdue highlighting</li>
           <li><strong>Fiona Tasks</strong> — Cleaner task list with print view, auto-refresh, quick-add via URL</li>
           <li><strong>NDIS</strong> — Transaction tracking with provider dropdown, receipt uploads, mobile card view, CSV export, receipt status indicator</li>
-          <li><strong>Finance & Insurance</strong> — Policies grouped by person, split by Paid Personally vs Paid via Super. Bills tracker for recurring household bills. Investments and superannuation. Home loans with balance, rate and repayment tracking.</li>
-          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories (add new from the form). Categories: Medical, Vet, Massage, Pharmacy, NDIS, Insurance, and more.</li>
+          <li><strong>Finance & Insurance</strong> — Bills (Finance Overview with totals), insurance policies with due date tracking and Mark Paid, super and investment balance tracking, home loans with balance/rate/repayment updates, HCF health claims with Medicare Safety Net tracker, car insurance. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates.</li>
+          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Insurance cards link to matching contacts.</li>
           <li><strong>House Projects</strong> — Zone-based (Left Shed, Garage, Front Fence, etc.), assignee (Andrew/Cath), checklist with complete toggle, print view, expand/collapse all, hide completed</li>
-          <li><strong>Dates</strong> — Important dates with month/week timeline, category filters including House</li>
+          <li><strong>Dates</strong> — Important dates with month/week timeline, category filters including Sarah Medical. Policy payment reminders auto-generated from insurance data.</li>
           <li><strong>Habits & Rhythms</strong> — Weekly/fortnightly/monthly/6-monthly/annual habit tracking with progress bars. Weekly checklist management for dashboard items.</li>
-          <li><strong>Animals</strong> — Pet profiles (Gypsy, Ellie, Rosie) with medical records, tick treatment tracking, weight history, vet details, filter by animal</li>
-          <li><strong>Kids</strong> — Sarah & Russell profiles with OneDrive files, medical protocols, uni schedule, activities</li>
+          <li><strong>Animals</strong> — Pet profiles (Gypsy, Ellie, Rosie) with age calculated from DOB, medical records, tick treatment tracking, weight history, vet details</li>
+          <li><strong>Kids</strong> — Sarah & Russell profiles with OneDrive files, medical protocols (Sarah's MS & Epilepsy), uni schedule, activities. Medical checklist sourced from Dates.</li>
           <li><strong>AisleMate</strong> — Shopping list with 142+ master items, receipt scanning (Claude Sonnet), comma-separated multi-add, weekly clear, family assignments</li>
           <li><strong>Baker AI</strong> — AI chat powered by Claude, can add dates, todos, contacts, shopping items, Fiona tasks, and manage NDIS status</li>
         </ul>
@@ -1120,7 +1120,8 @@
           <li><strong>home_loans</strong> — Home loan balances, rates and repayments</li>
           <li><strong>contacts</strong> — Family contacts with dynamic categories</li>
           <li><strong>house_projects</strong> — House projects with zones and assignees</li>
-          <li><strong>important_dates</strong> — Important dates & events</li>
+          <li><strong>important_dates</strong> — Important dates & events (includes Sarah Medical category)</li>
+          <li><strong>sarah_medical_history</strong> — Completion history for Sarah medical items</li>
           <li><strong>todos</strong> — To-do task list</li>
           <li><strong>fiona_tasks</strong> — Fiona cleaner task list</li>
           <li><strong>animals</strong> — Pet records (name, breed, DOB, vet, insurance)</li>

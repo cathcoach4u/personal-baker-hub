@@ -42,7 +42,7 @@
 
 ### Infrastructure (owned by Baker family)
 - **Hosting**: GitHub Pages at `cathcoach4u.github.io/personal-baker-hub/` — Free
-- **Database**: Supabase (project ID: `ziwycymhaqghdiznyhhw`) — Free tier (20 tables, file storage, Edge Functions)
+- **Database**: Supabase (project ID: `ziwycymhaqghdiznyhhw`) — Free tier (22+ tables, file storage, Edge Functions)
 - **Code**: Vanilla HTML/CSS/JS, Supabase JS CDN, no frameworks, no build tools
 - **PWA**: Web app manifests + service workers for home screen install
 - **Config**: `config.js` (Supabase URL + anon key)
@@ -62,8 +62,8 @@
 
 ## What is Baker Hub
 Baker Hub is the Baker family's personal dashboard — a single-page web app that manages everything for the household:
-- **Finance**: NDIS funding, insurance policies, superannuation, investments, recurring bills
-- **Health**: Sarah's MS & epilepsy protocol, animal medical records, vet tracking, tick treatments
+- **Finance**: NDIS funding, insurance policies (with due date tracking and auto-advance), superannuation, investments, recurring bills, home loans, Medicare Safety Net tracker
+- **Health**: Sarah's MS & epilepsy protocol (medical tracker on dashboard sourced from Dates), animal medical records, vet tracking, tick treatments, HCF health claims
 - **Household**: House projects by zone with assignee, weekly bin schedule, cleaner/Fiona tasks
 - **Family**: Kids profiles (Sarah & Russell) with files and schedules, contacts directory, important dates
 - **Shopping**: AisleMate shopping list with master items, receipt scanning, and Baker AI integration
@@ -197,7 +197,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Filter pills**: All, Sarah, Russell
 - **Sarah Baker**: Phone +61 405 814 750, OneDrive files link, MS & Epilepsy Protocol page link, key medical info, university timetable (2026)
 - **Russell Baker**: Phone +61 413 787 552, OneDrive files link, NSBL Basketball info
-- **Sarah Protocol**: Standalone page `sarah-protocol.html` with annual cycle, regular requirements, specialist contacts, planning reminders. Back button returns to Kids page.
+- **Sarah Medical Checklist**: Shows in Kids section, sourced from Dates with category "Sarah Medical" (same data as Dashboard tracker). Clickable to mark done.
+- **Sarah Protocol**: Standalone page `sarah-protocol.html` with annual cycle (JC Virus: Mar & Sep, MRI: Jun & Dec, Neurologist: Jun telehealth & Dec face-to-face, Full Blood Test: Mar), regular requirements, specialist contacts, planning reminders. Back button returns to Kids page.
 
 ## AisleMate (Shopping)
 - **In Baker Hub**: Full AisleMate section with weekly shop, master list (142 items), family, receipts, spending, history, meal plan, QR code
@@ -321,7 +322,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.29`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.30`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -329,8 +330,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.29. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (v5.29 → v5.29 → v5.29 etc). **Major structural shifts** bump the major version (v4.x → v5.29). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.29`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v5.30. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.30 → v5.30 → v5.31). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.30`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

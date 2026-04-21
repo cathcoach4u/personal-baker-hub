@@ -474,7 +474,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.34</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.35</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -501,7 +501,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.34</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.35</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1063,7 +1063,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.34</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.35</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1493,6 +1493,7 @@
   let CHECKLIST_ITEMS = [];
   let HCF_CLAIMS = [];
   let MH_SESSIONS = [];
+  let SAFETY_NET = {threshold: 2699.10, costs: []};
   let SARAH_MED = [];
   let HOME_LOANS = [];
   let SARAH_MED_HISTORY = [];
@@ -1565,7 +1566,7 @@
   // --- Load data with auto-retry ---
   async function loadData(){
     const currentMonth=new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
-    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes, sarahMedRes, loansRes, sarahHistRes] = await Promise.all([
+    const [fundsRes, ndisRes, insRes, contactsRes, projectsRes, datesRes, providersRes, todosRes, animalsRes, medicalRes, monthlyRes, habitsRes, checklistRes, hcfRes, mhRes, sarahMedRes, loansRes, sarahHistRes, safetyNetRes] = await Promise.all([
       sb.from('ndis_funds').select('*'),
       sb.from('ndis_transactions').select('*').order('date', { ascending: false }),
       sb.from('insurance_policies').select('*'),
@@ -1583,7 +1584,8 @@
       sb.from('mental_health_sessions').select('*').order('session_date', { ascending: false }),
       sb.from('sarah_medical_checklist').select('*').order('next_due'),
       sb.from('home_loans').select('*'),
-      sb.from('sarah_medical_history').select('*').order('completed_date', { ascending: false })
+      sb.from('sarah_medical_history').select('*').order('completed_date', { ascending: false }),
+      sb.from('medicare_safety_net').select('*').eq('id',1).maybeSingle()
     ]);
 
     const errors=[];
@@ -1594,8 +1596,9 @@
     if(sarahMedRes.error)console.warn('sarah_medical_checklist not loaded (table may not exist yet):',sarahMedRes.error.message);
     if(loansRes.error)console.warn('home_loans not loaded (table may not exist yet):',loansRes.error.message);
     if(sarahHistRes.error)console.warn('sarah_medical_history not loaded (table may not exist yet):',sarahHistRes.error.message);
+    if(safetyNetRes.error)console.warn('medicare_safety_net not loaded (table may not exist yet):',safetyNetRes.error.message);
 
-    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes,sarahHistRes};
+    return {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes,sarahHistRes,safetyNetRes};
   }
 
   let res;
@@ -1614,7 +1617,7 @@
   }
 
   try {
-    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes,sarahHistRes}=res;
+    const {fundsRes,ndisRes,insRes,contactsRes,projectsRes,datesRes,providersRes,todosRes,animalsRes,medicalRes,monthlyRes,habitsRes,checklistRes,hcfRes,mhRes,sarahMedRes,loansRes,sarahHistRes,safetyNetRes}=res;
 
     (fundsRes.data || []).forEach(r => { FUNDS[r.fund_name] = parseFloat(r.budget_amount); });
 
@@ -1812,6 +1815,29 @@
       phone: r.phone || '',
       sortOrder: r.sort_order || 0
     }));
+
+    // Medicare Safety Net — Supabase first, with one-time localStorage migration
+    if(safetyNetRes && !safetyNetRes.error && safetyNetRes.data){
+      SAFETY_NET.threshold = Number(safetyNetRes.data.threshold) || 2699.10;
+      SAFETY_NET.costs = Array.isArray(safetyNetRes.data.costs) ? safetyNetRes.data.costs : [];
+      try{
+        const lsRaw = localStorage.getItem('medicareSafetyNet');
+        if(lsRaw){
+          const lsData = JSON.parse(lsRaw);
+          if(SAFETY_NET.costs.length === 0 && lsData.costs && lsData.costs.length){
+            SAFETY_NET.costs = lsData.costs;
+            if(lsData.threshold) SAFETY_NET.threshold = Number(lsData.threshold) || SAFETY_NET.threshold;
+            sb.from('medicare_safety_net').upsert({id:1, threshold:SAFETY_NET.threshold, costs:SAFETY_NET.costs, updated_at:new Date().toISOString()}).then(({error})=>{if(error)console.warn('safety net migration failed:',error.message);else console.log('safety net migrated from localStorage');});
+          }
+        }
+      }catch(e){console.warn('safety net localStorage check failed:',e);}
+    } else {
+      try{
+        const lsData = JSON.parse(localStorage.getItem('medicareSafetyNet') || '{}');
+        if(lsData.threshold) SAFETY_NET.threshold = Number(lsData.threshold) || SAFETY_NET.threshold;
+        if(Array.isArray(lsData.costs)) SAFETY_NET.costs = lsData.costs;
+      }catch(e){}
+    }
 
   } catch (err) {
     $('#ph-loading').style.display = 'none';
@@ -2719,14 +2745,22 @@
   };
 
   // ─── MEDICARE SAFETY NET ───
+  // Source of truth: Supabase table medicare_safety_net (singleton row id=1).
+  // localStorage is kept as a cache so the dashboard tile can paint instantly.
   function getSafetyNetData(){
-    var data=JSON.parse(localStorage.getItem('medicareSafetyNet')||'{}');
-    if(!data.threshold)data.threshold=2699.10;
-    if(!data.costs)data.costs=[];
-    return data;
+    return SAFETY_NET;
   }
-  function saveSafetyNetData(data){
-    localStorage.setItem('medicareSafetyNet',JSON.stringify(data));
+  async function saveSafetyNetData(data){
+    SAFETY_NET.threshold = Number(data.threshold) || 2699.10;
+    SAFETY_NET.costs = Array.isArray(data.costs) ? data.costs : [];
+    localStorage.setItem('medicareSafetyNet', JSON.stringify(SAFETY_NET));
+    const {error} = await sb.from('medicare_safety_net').upsert({
+      id: 1,
+      threshold: SAFETY_NET.threshold,
+      costs: SAFETY_NET.costs,
+      updated_at: new Date().toISOString()
+    });
+    if(error){phToast('Save failed: '+error.message,'error');console.error('safety net save:',error);}
   }
 
   function phRenderSafetyNet(){
@@ -2778,7 +2812,7 @@
     el.innerHTML=html;
   }
 
-  window.phAddSafetyNetCost=function(){
+  window.phAddSafetyNetCost=async function(){
     var desc=prompt('Description (e.g. GP visit, Physio, Blood test):');
     if(desc===null||!desc.trim())return;
     var amount=prompt('Out of pocket cost ($):');
@@ -2790,29 +2824,29 @@
 
     var data=getSafetyNetData();
     data.costs.push({desc:desc.trim(),amount:val,date:date});
-    saveSafetyNetData(data);
+    await saveSafetyNetData(data);
     phRenderSafetyNet();
     phToast('Cost added — '+money(val),'success');
   };
 
-  window.phDeleteSafetyNetCost=function(index){
+  window.phDeleteSafetyNetCost=async function(index){
     if(!confirm('Delete this cost entry?'))return;
     var data=getSafetyNetData();
     data.costs.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
     data.costs.splice(index,1);
-    saveSafetyNetData(data);
+    await saveSafetyNetData(data);
     phRenderSafetyNet();
     phToast('Cost removed','success');
   };
 
-  window.phEditSafetyNet=function(){
+  window.phEditSafetyNet=async function(){
     var data=getSafetyNetData();
     var threshold=prompt('Medicare Safety Net threshold ($):',''+data.threshold);
     if(threshold===null)return;
     var t=parseFloat(threshold);
     if(isNaN(t)){phToast('Invalid amount','error');return;}
     data.threshold=t;
-    saveSafetyNetData(data);
+    await saveSafetyNetData(data);
     phRenderSafetyNet();
     phToast('Threshold updated','success');
   };

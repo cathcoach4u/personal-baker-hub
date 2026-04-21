@@ -474,7 +474,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.32</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.33</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -488,6 +488,7 @@
       <button class="nav-item" onclick="phNavDrawer('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
       <button class="nav-item" onclick="phNavDrawer('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
       <button class="nav-item" onclick="phNavDrawer('insurance',this)"><span class="icon">&#x1F6E1;</span> Finance</button>
+      <button class="nav-item" onclick="phNavDrawer('medical',this)"><span class="icon">&#x2695;&#xFE0F;</span> Medical</button>
       <button class="nav-item" onclick="phNavDrawer('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
       <button class="nav-item" onclick="phNavDrawer('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
       <button class="nav-item" onclick="phNavDrawer('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
@@ -500,12 +501,13 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.32</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.33</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
     <button class="nav-item" onclick="phNav('ndis',this)"><span class="icon">&#x1F4B0;</span> NDIS</button>
     <button class="nav-item" onclick="phNav('insurance',this)"><span class="icon">&#x1F6E1;</span> Finance</button>
+    <button class="nav-item" onclick="phNav('medical',this)"><span class="icon">&#x2695;&#xFE0F;</span> Medical</button>
     <button class="nav-item" onclick="phNav('contacts',this)"><span class="icon">&#x1F4D6;</span> Contacts</button>
     <button class="nav-item" onclick="phNav('projects',this)"><span class="icon">&#x1F3E0;</span> House</button>
     <button class="nav-item" onclick="phNav('dates',this)"><span class="icon">&#x1F4C5;</span> Dates</button>
@@ -534,7 +536,7 @@
         </div>
         <div id="ph-dash-sarah-med"></div>
       </div>
-      <div id="ph-dash-safety-net" style="margin-bottom:20px;cursor:pointer;" onclick="var allBtns=[...document.querySelectorAll('#personalHub .nav-item')];var finBtn=allBtns.find(function(b){return b.textContent.trim().includes('Finance');});phNav('insurance',finBtn);phFinTab('health',document.querySelector('#fin-pills .todo-filter-btn:nth-child(5)'));"></div>
+      <div id="ph-dash-safety-net" style="margin-bottom:20px;cursor:pointer;" onclick="var allBtns=[...document.querySelectorAll('#personalHub .nav-item')];var medBtn=allBtns.find(function(b){return b.textContent.trim().includes('Medical');});phNav('medical',medBtn);"></div>
       <div style="font-size:13px;font-weight:600;color:#94a3b8;letter-spacing:0.5px;margin-bottom:10px;">NDIS Funding</div>
       <div class="kpi-row" id="ph-kpis"></div>
     </div>
@@ -633,16 +635,6 @@
 
       <!-- Health (HCF) view -->
       <div id="fin-view-health" style="display:none;">
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:18px;margin-bottom:16px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <div style="font-size:15px;font-weight:700;">Medicare Safety Net</div>
-            <div style="display:flex;gap:6px;">
-              <button class="add-btn" style="font-size:10px;padding:4px 12px;" onclick="phAddSafetyNetCost()">+ Add Cost</button>
-              <button class="add-btn" style="font-size:10px;padding:4px 12px;background:#64748b;" onclick="phEditSafetyNet()">Threshold</button>
-            </div>
-          </div>
-          <div id="safety-net-display"></div>
-        </div>
         <div id="hcf-policy-card" style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;"></div>
         <div class="filter-bar" style="margin-bottom:12px;">
           <button class="add-btn" onclick="phToggleHcfForm()">+ Upload Receipt</button>
@@ -733,6 +725,19 @@
         <div id="loans-cards"></div>
       </div>
 
+    </div>
+    <div class="screen" id="ph-medical">
+      <h2>Medical</h2>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:18px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:15px;font-weight:700;">Medicare Safety Net</div>
+          <div style="display:flex;gap:6px;">
+            <button class="add-btn" style="font-size:10px;padding:4px 12px;" onclick="phAddSafetyNetCost()">+ Add Cost</button>
+            <button class="add-btn" style="font-size:10px;padding:4px 12px;background:#64748b;" onclick="phEditSafetyNet()">Threshold</button>
+          </div>
+        </div>
+        <div id="safety-net-display"></div>
+      </div>
     </div>
     <div class="screen" id="ph-contacts">
       <h2>Baker Contacts</h2>
@@ -1058,7 +1063,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.32</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.33</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -1102,7 +1107,8 @@
           <li><strong>To-Do</strong> — Task management with categories, due dates, overdue highlighting</li>
           <li><strong>Fiona Tasks</strong> — Cleaner task list with print view, auto-refresh, quick-add via URL</li>
           <li><strong>NDIS</strong> — Transaction tracking with provider dropdown, receipt uploads, mobile card view, CSV export, receipt status indicator</li>
-          <li><strong>Finance & Insurance</strong> — Bills (Finance Overview with totals), insurance policies with due date tracking and Mark Paid, super and investment balance tracking, home loans with balance/rate/repayment updates, HCF health claims with Medicare Safety Net tracker, car insurance. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates.</li>
+          <li><strong>Finance & Insurance</strong> — Bills (Finance Overview with totals), insurance policies with due date tracking and Mark Paid, super and investment balance tracking, home loans with balance/rate/repayment updates, HCF health claims with receipt uploads, car insurance. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates.</li>
+          <li><strong>Medical</strong> — Medicare Safety Net tracker with threshold, out-of-pocket costs, and progress towards rebate threshold. Add/delete individual costs with auto-calculation.</li>
           <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Insurance cards link to matching contacts.</li>
           <li><strong>House Projects</strong> — Zone-based (Left Shed, Garage, Front Fence, etc.), assignee (Andrew/Cath), checklist with complete toggle, print view, expand/collapse all, hide completed</li>
           <li><strong>Dates</strong> — Important dates with month/week timeline, category filters including Sarah Medical. Policy payment reminders auto-generated from insurance data.</li>
@@ -2705,7 +2711,6 @@
     ['insurance','health','super','investments','bills','loans'].forEach(v=>{$('#fin-view-'+v).style.display='none';});
     if(tab==='health'){
       $('#fin-view-health').style.display='block';
-      phRenderSafetyNet();
       phHcfClaims();
     } else if(tab==='superannuation'){
       $('#fin-view-super').style.display='block';
@@ -4170,6 +4175,7 @@
     allBtns.forEach(b=>{if(b.textContent.trim()===btn.textContent.trim())b.classList.add('active');});
     if(name==='ndis')phNDIS();
     if(name==='insurance'){phFinTab(currentFinTab,Array.from($$('#fin-pills .todo-filter-btn')).find(b=>b.classList.contains('active'))||$$('#fin-pills .todo-filter-btn')[0]);}
+    if(name==='medical')phRenderSafetyNet();
     if(name==='contacts')phContacts();
     if(name==='projects')phProjects();
     if(name==='dates')phDates();

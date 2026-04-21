@@ -474,7 +474,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.33</span></div>
+    <div style="text-align:right;line-height:1.3;"><div id="ph-topbar-date" style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;"></div><span style="font-size:10px;font-weight:700;color:white;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:5px;">v5.34</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -501,7 +501,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.33</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.34</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1063,7 +1063,7 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.33</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.34</div></div>
         <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
@@ -2006,21 +2006,8 @@
 
     $('#ph-kpis').innerHTML=h;
 
-    // Dashboard Safety Net summary
-    var snData=getSafetyNetData();
-    var snThreshold=snData.threshold;
-    var snSpent=snData.costs.reduce(function(s,c){return s+c.amount;},0);
-    var snRemaining=Math.max(0,snThreshold-snSpent);
-    var snPct=Math.min(100,Math.round((snSpent/snThreshold)*100));
-    var snColor=snPct>=100?'#16a34a':snPct>=75?'#f59e0b':'#0d9488';
-    var snMsg=snPct>=100?'Threshold reached — higher rebates apply':'Spend '+money(snRemaining)+' more to reach the Safety Net threshold';
-    var snHtml='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">';
-    snHtml+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-size:13px;font-weight:700;">Medicare Safety Net</div><span style="font-size:10px;color:#3b82f6;font-weight:600;">View &rarr;</span></div>';
-    snHtml+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;"><span style="color:#64748b;">'+money(snSpent)+' of '+money(snThreshold)+'</span><span style="font-weight:700;color:'+snColor+';">'+snPct+'%</span></div>';
-    snHtml+='<div style="background:#e2e8f0;border-radius:6px;height:10px;overflow:hidden;margin-bottom:8px;"><div style="background:'+snColor+';height:100%;width:'+snPct+'%;border-radius:6px;"></div></div>';
-    snHtml+='<div style="font-size:11px;color:'+(snPct>=100?'#16a34a':'#64748b')+';">'+snMsg+'</div>';
-    snHtml+='</div>';
-    $('#ph-dash-safety-net').innerHTML=snHtml;
+    // Dashboard Safety Net summary (Remaining only)
+    phRenderDashSafetyNet();
 
   }
 
@@ -2776,6 +2763,19 @@
     }
 
     $('#safety-net-display').innerHTML=html;
+    phRenderDashSafetyNet();
+  }
+
+  function phRenderDashSafetyNet(){
+    var el=document.getElementById('ph-dash-safety-net');
+    if(!el)return;
+    var data=getSafetyNetData();
+    var remaining=Math.max(0,data.threshold-data.costs.reduce(function(s,c){return s+c.amount;},0));
+    var html='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">';
+    html+='<div style="font-size:13px;font-weight:700;">Medicare Safety Net Remaining</div>';
+    html+='<div style="font-size:18px;font-weight:700;color:#0d9488;">'+money(remaining)+'</div>';
+    html+='</div>';
+    el.innerHTML=html;
   }
 
   window.phAddSafetyNetCost=function(){

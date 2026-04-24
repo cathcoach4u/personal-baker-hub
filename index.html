@@ -4248,7 +4248,7 @@
     html+='<pre style="font-size:11px;background:white;padding:10px;border-radius:6px;border:1px solid #e2e8f0;white-space:pre-wrap;word-break:break-word;margin-top:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">'+escHtml(prompt)+'</pre>';
     html+='</details></div>';
 
-    html+='<div style="background:#fff7ed;border-left:3px solid #f59e0b;padding:12px;border-radius:8px;margin-bottom:10px;">';
+    html+='<div style="background:#fff7ed;border-left:3px solid #f59e0b;padding:12px;border-radius:8px;">';
     html+='<div style="font-size:13px;font-weight:700;color:#1e293b;">AisleMate Receipt Scanner</div>';
     html+='<div style="font-size:11px;color:#64748b;margin-top:2px;">Reads photos/PDFs of Australian receipts in the shopping section.</div>';
     html+='<div style="font-size:12px;margin-top:8px;"><strong>Model:</strong> <code style="background:white;padding:1px 6px;border-radius:4px;">'+escHtml(receiptModel)+'</code></div>';
@@ -4256,11 +4256,6 @@
     html+='<details style="margin-top:8px;"><summary style="font-size:12px;cursor:pointer;color:#f59e0b;font-weight:600;">Show system prompt</summary>';
     html+='<pre style="font-size:11px;background:white;padding:10px;border-radius:6px;border:1px solid #e2e8f0;white-space:pre-wrap;word-break:break-word;margin-top:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">'+escHtml(receiptPrompt)+'</pre>';
     html+='</details></div>';
-
-    html+='<div style="background:#f8fafc;border-left:3px solid #94a3b8;padding:12px;border-radius:8px;">';
-    html+='<div style="font-size:13px;font-weight:700;color:#1e293b;">Cath AI Chat</div>';
-    html+='<div style="font-size:11px;color:#64748b;margin-top:2px;">Lives in the separate Cath Hub repo — see its own About page for model and prompt details.</div>';
-    html+='</div>';
 
     if(error)html='<div style="color:#ef4444;font-size:12px;">Could not load ai_settings: '+escHtml(error.message)+'</div>'+html;
     el.innerHTML=html;

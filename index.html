@@ -474,7 +474,7 @@
   <div class="mobile-topbar">
     <button class="menu-toggle" onclick="phToggleDrawer()">&#x2630;</button>
     <h1>Baker Hub</h1>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.39</span></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.40</span></div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
   <div class="mobile-drawer" id="ph-drawer">
@@ -501,7 +501,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.39</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.40</span></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1063,10 +1063,10 @@
     <div class="screen" id="ph-about">
       <h2>About Baker Hub</h2>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;">cathcoach4u/personal-baker-hub</div><div style="font-size:12px;font-weight:700;color:#0d9488;background:#f0fdf4;padding:4px 10px;border-radius:6px;">v5.39</div></div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Personal family finance, health & household management app</div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Technology Stack</div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:10px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">cathcoach4u/personal-baker-hub</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:20px;">Personal family finance, health & household management app</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1e293b;">Technology Stack</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:16px;">Vanilla HTML / CSS / JavaScript — no frameworks, no build tools. PWA-enabled for home screen install.</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:4px;">Infrastructure (you own everything)</div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
@@ -1101,7 +1101,7 @@
         </div>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Features</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Features</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
           <li><strong>Dashboard</strong> — Week A/B checklist (editable from Habits), bin calendar, important reminders, Sarah Medical Tracker with history, Medicare Safety Net progress, NDIS funding overview</li>
           <li><strong>To-Do</strong> — Task management with categories, due dates, overdue highlighting</li>
@@ -1120,7 +1120,7 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Supabase Tables</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Supabase Tables</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
           <li><strong>ndis_funds</strong> — Funding bucket budgets</li>
           <li><strong>ndis_transactions</strong> — NDIS transaction history with receipt uploads</li>
@@ -1147,7 +1147,7 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Persistent Memory</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Persistent Memory</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Claude Code does not remember between sessions. All memory is stored in these locations:</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="background:#f8fafc;padding:12px;border-radius:8px;border-left:3px solid #0d9488;">
@@ -1173,11 +1173,11 @@
         <div style="font-size:11px;color:#94a3b8;margin-top:12px;padding:10px;background:#fef9c3;border-radius:6px;">Note: Claude Code is the AI coder and does not own the code or data. If you stop using Claude, everything keeps running. Only the Baker AI chat feature requires the Claude API.</div>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">AI Agents</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">AI Agents</div>
         <div id="ph-about-agents" style="font-size:12px;color:#64748b;">Loading…</div>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Key Links</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Key Links</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
           <li><a href="https://cathcoach4u.github.io/personal-businessapps/" target="_blank" style="color:#0d9488;">Apps Hub</a> — Central launch page for all apps</li>
           <li><a href="https://github.com/cathcoach4u/personal-baker-hub" target="_blank" style="color:#0d9488;">GitHub Repository</a> — Source code</li>
@@ -1186,7 +1186,7 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Using Claude Code efficiently</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Using Claude Code efficiently</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Tips to make sessions faster and cheaper.</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="padding:12px;background:#f8fafc;border-radius:8px;">

@@ -11,7 +11,6 @@
 - **Don't add emojis** unless the user asks
 
 ## Which Model to Use
-- **Opus** — Complex builds, big refactors, audits, multi-step tasks, understanding the full app. Best for Baker Hub work.
 - **Sonnet** — Good balance for feature building, bug fixes, moderate complexity.
 - **Haiku** — Quick simple changes (rename a label, change a colour, swap a word). Cheapest and fastest.
 

@@ -333,7 +333,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.56`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.57`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -341,8 +341,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.56. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.54 → v5.56 → v5.56). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.56`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v5.57. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.54 → v5.57 → v5.57). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.57`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

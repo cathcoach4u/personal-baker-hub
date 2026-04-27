@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.60</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.61</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -506,7 +506,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.60</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.61</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -3715,7 +3715,8 @@
     const assignSelect='<select onclick="event.stopPropagation()" onchange="phQuickAssign('+p.id+',this.value)" style="font-size:11px;font-weight:600;background:'+assignBg+';color:'+assignColor+';border:1px solid '+assignColor+'33;border-radius:99px;padding:2px 8px;cursor:pointer;font-family:inherit;appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;">'+assignOpts+'</select>';
     const costVal=p.est_cost!=null?p.est_cost:'';
     const hasCost=p.est_cost!=null;
-    const costInput='<div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;background:'+(hasCost?'#f0fdf4':'#f8fafc')+';border:1px solid '+(hasCost?'#bbf7d0':'#e2e8f0')+';border-radius:99px;padding:1px 6px;"><span style="font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#94a3b8')+';">$</span><input type="number" step="0.01" min="0" value="'+costVal+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" onclick="event.stopPropagation()" style="width:55px;font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#64748b')+';border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>';
+    // Cost is only shown/editable on parent projects — items don't carry costs
+    const costInput=isParent?'<div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;background:'+(hasCost?'#f0fdf4':'#f8fafc')+';border:1px solid '+(hasCost?'#bbf7d0':'#e2e8f0')+';border-radius:99px;padding:1px 6px;"><span style="font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#94a3b8')+';">$</span><input type="number" step="0.01" min="0" value="'+costVal+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" onclick="event.stopPropagation()" style="width:55px;font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#64748b')+';border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>':'';
     return '<div class="proj-card" style="cursor:pointer;position:relative;'+(isDone?'opacity:0.5;':'')+(isParent?'background:#fafaff;':'')+'"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div style="width:24px;height:24px;border:2px solid '+(isDone?'#0d9488':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:13px;font-weight:700;cursor:pointer;" onclick="phToggleComplete('+p.id+',event)">'+(isDone?'\u2713':'')+'</div><div onclick="phEditProj('+p.id+')" style="flex:1;min-width:120px;"><div class="pc-title" style="'+(isDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+childMark+'<span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+parentMark+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'</div>'+costInput+assignSelect+'<button onclick="event.stopPropagation();phDeleteProj('+p.id+')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div></div>';
   }
 
@@ -3773,7 +3774,7 @@
         if(p.due)body+='<span style="font-size:10px;color:#475569;background:#f1f5f9;padding:2px 8px;border-radius:99px;">Due '+p.due+'</span>';
         body+='<span style="font-size:10px;color:#7c3aed;background:#faf5ff;padding:2px 8px;border-radius:99px;font-weight:600;">'+kids.length+' sub-task'+(kids.length===1?'':'s')+'</span>';
         body+='</div></div>';
-        body+='<div style="text-align:right;"><div style="font-size:18px;font-weight:700;color:#0d9488;">'+fmt(p.est_cost||0)+'</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">bill total</div></div>';
+        body+='<div onclick="event.stopPropagation()" style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><div style="display:flex;align-items:center;gap:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:4px 10px;"><span style="font-size:16px;font-weight:700;color:#0d9488;">$</span><input type="number" step="0.01" min="0" value="'+(p.est_cost!=null?p.est_cost:'')+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" style="width:90px;font-size:18px;font-weight:700;color:#0d9488;border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div><div style="font-size:10px;color:#94a3b8;">bill total — tap to edit</div></div>';
         body+='</div>';
         body+='<div style="margin-top:10px;background:#f1f5f9;border-radius:99px;height:6px;overflow:hidden;"><div style="background:#7c3aed;height:100%;width:'+pct+'%;"></div></div>';
         body+='<div style="font-size:11px;color:#64748b;margin-top:4px;">'+kidsDone+' of '+kids.length+' sub-tasks done ('+pct+'%)</div>';
@@ -3782,7 +3783,7 @@
           const cDone=c.status==='Complete';
           body+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;cursor:pointer;" onclick="phEditProj('+c.id+')">';
           body+='<div style="flex:1;min-width:0;"><span style="color:#94a3b8;margin-right:6px;">↳</span><span style="font-size:13px;color:#1e293b;'+(cDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+c.title+'</span></div>';
-          body+='<span style="font-size:12px;color:'+(cDone?'#0d9488':'#64748b')+';font-weight:600;">'+(cDone?'✓ done':fmt(c.est_cost||0))+'</span>';
+          body+='<span style="font-size:11px;color:'+(cDone?'#0d9488':'#94a3b8')+';font-weight:600;">'+(cDone?'✓ done':p.assigned||'')+'</span>';
           body+='</div>';
         });
         body+='</div>';

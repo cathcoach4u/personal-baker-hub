@@ -98,6 +98,7 @@
     <span class="progress-label">Progress</span>
     <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
     <span class="progress-count" id="prog-count">0 / 0</span>
+    <button onclick="copyShoppingList()" aria-label="Copy list" style="background:none;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:#0d9488;cursor:pointer;white-space:nowrap;font-family:inherit;">Copy List</button>
     <button onclick="clearAllItems()" aria-label="Clear list" style="background:none;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:#ef4444;cursor:pointer;white-space:nowrap;font-family:inherit;">Clear All</button>
   </div>
 
@@ -310,6 +311,68 @@
     if(error){shopToast('Could not clear list: '+error.message,'error');return;}
     shopToast('Shopping list cleared!','success');
     loadItems();
+  };
+
+  // ─── COPY LIST ───
+  window.copyShoppingList = async function() {
+    var { data: items, error } = await sb.from('shopping_items').select('*').order('created_at');
+    if(error){shopToast('Could not load list: '+error.message,'error');return;}
+    items = items || [];
+    if(!items.length){shopToast('Shopping list is empty','error');return;}
+
+    var unchecked = items.filter(function(i){return !i.checked;});
+    var checked = items.filter(function(i){return i.checked;});
+    var today = new Date().toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    var text = 'Shopping List — '+today+'\n';
+    text += '='.repeat(32)+'\n\n';
+
+    if(unchecked.length){
+      var cats = {};
+      unchecked.forEach(function(item){
+        var cat = item.category || 'Other';
+        if(!cats[cat])cats[cat]=[];
+        cats[cat].push(item);
+      });
+      CAT_ORDER.forEach(function(cat){
+        if(cats[cat] && cats[cat].length){
+          text += (CAT_ICONS[cat]||'')+' '+cat+'\n';
+          cats[cat].forEach(function(item){
+            var qty = item.qty && item.qty>1 ? ' ('+item.qty+')' : '';
+            text += '  □ '+item.name+qty+'\n';
+          });
+          text += '\n';
+        }
+      });
+      Object.keys(cats).forEach(function(cat){
+        if(CAT_ORDER.indexOf(cat)===-1 && cats[cat].length){
+          text += (CAT_ICONS[cat]||'\u{1F4E6}')+' '+cat+'\n';
+          cats[cat].forEach(function(item){
+            var qty = item.qty && item.qty>1 ? ' ('+item.qty+')' : '';
+            text += '  □ '+item.name+qty+'\n';
+          });
+          text += '\n';
+        }
+      });
+    }
+
+    if(checked.length){
+      text += '--- Done ---\n';
+      checked.forEach(function(item){
+        var qty = item.qty && item.qty>1 ? ' ('+item.qty+')' : '';
+        text += '  ✓ '+item.name+qty+'\n';
+      });
+    }
+
+    text += '\nTotal: '+unchecked.length+' to buy, '+checked.length+' done';
+
+    var done = function(){shopToast('Shopping list copied!','success');};
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){shopToast('Copy failed','error');}document.body.removeChild(ta);
+      });
+    } else {
+      var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){shopToast('Copy failed','error');}document.body.removeChild(ta);
+    }
   };
 
   // ─── MONDAY AUTO-CLEAR PROMPT ───

@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.64</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.65</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -506,7 +506,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.64</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.65</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -814,7 +814,7 @@
           <div class="form-group"><label>Due Date</label><input type="date" id="pf-due"></div>
           <div class="form-group" id="pf-cost-group" style="display:none;"><label>Approx. Cost ($)<span style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px;">project bill total</span></label><input type="number" id="pf-cost" placeholder="e.g. 1810" step="0.01" min="0"></div>
           <div class="form-group"><label>Zone</label><select id="pf-zone"><option value="">No Zone</option><option>Left Shed</option><option>Left Fence</option><option>Garage</option><option>Front Fence</option><option>Front Garden Bed</option><option>Right Fence</option><option>Right Shed</option><option>Back Deck</option><option>House</option><option>Pool Deck</option><option>Side of House</option><option>Car</option></select></div>
-          <div class="form-group full"><label>Parent project (group under)</label><select id="pf-parent" onchange="phUpdateCostFieldVisibility()"><option value="">— None (standalone) —</option></select><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Pick a parent project when this is a sub-task of a tradesperson visit. Cost lives on the parent project, not the sub-task.</div></div>
+          <div class="form-group full"><label>Parent project (group under)</label><select id="pf-parent" onchange="phUpdateCostFieldVisibility()"><option value="">— None (standalone) —</option></select><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Only real projects (with at least one item attached) appear here. To create a new project, use + New Project from the Projects tab.</div></div>
           <div class="form-group full" id="pf-items-group" style="display:none;"><label>Items in this project<span style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px;">tick existing items to add as sub-tasks</span></label><div id="pf-items-picker" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px;max-height:240px;overflow-y:auto;background:#fafafa;"></div></div>
           <div class="form-group full"><label>Description</label><input type="text" id="pf-desc" placeholder="Optional details"></div>
           <div class="form-group full"><label>Notes</label><input type="text" id="pf-notes" placeholder="Optional"></div>
@@ -3935,7 +3935,12 @@
       }
       collect(excludeId);
     }
-    const candidates=PROJECTS.filter(p=>!descendants.has(p.id)).slice().sort((a,b)=>a.title.localeCompare(b.title));
+    // Only actual projects (rows that already have at least one child) can be parents
+    const projectIds=new Set();
+    PROJECTS.forEach(p=>{if(p.parent_id!=null)projectIds.add(p.parent_id);});
+    const candidates=PROJECTS
+      .filter(p=>!descendants.has(p.id)&&projectIds.has(p.id))
+      .slice().sort((a,b)=>a.title.localeCompare(b.title));
     sel.innerHTML='<option value="">— None (standalone) —</option>'+
       candidates.map(p=>{
         const z=getZone(p)||'';

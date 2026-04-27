@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.75</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.76</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -507,7 +507,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.75</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.76</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -2886,6 +2886,8 @@
     // Lazy-load anything we don't already have
     if(typeof BILLS!=='undefined'&&!BILLS.length)await loadBills();
     if(!BANK_ACCOUNTS.length)await loadBankAccounts();
+    if(!TRIPS.length)await loadTrips();
+    if(!EXPENSES.length)await loadExpenses();
     const fmt=n=>'$'+Number(n||0).toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:2});
 
     // Project costs (one-off bills) — sum est_cost from is_project rows
@@ -2910,12 +2912,22 @@
     // Bank balances total
     const bankTotal=(typeof BANK_ACCOUNTS!=='undefined'?BANK_ACCOUNTS:[]).reduce((s,b)=>s+(Number(b.balance||0)),0);
 
+    // Travel — only count active/upcoming trips (not Complete)
+    const activeTrips=(typeof TRIPS!=='undefined'?TRIPS:[]).filter(t=>t.status!=='Complete');
+    const travelBudgetTotal=activeTrips.reduce((s,t)=>s+(Number(t.budget)||0),0);
+    const travelSpentTotal=activeTrips.reduce((s,t)=>{
+      const spent=(typeof EXPENSES!=='undefined'?EXPENSES:[]).filter(e=>e.trip_id===t.id).reduce((ss,e)=>ss+(Number(e.amount)||0),0);
+      return s+spent;
+    },0);
+    const travelRemaining=travelBudgetTotal-travelSpentTotal;
+
     let html='';
     // Top-line cards
     html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px;">';
     html+='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#1e40af;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Bank balances</div><div style="font-size:20px;font-weight:700;color:#1e40af;margin-top:4px;">'+fmt(bankTotal)+'</div></div>';
     html+='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#b91c1c;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Monthly outgoing</div><div style="font-size:20px;font-weight:700;color:#b91c1c;margin-top:4px;">'+fmt(monthlyBills+monthlyLoans)+'</div><div style="font-size:11px;color:#b91c1c;margin-top:2px;">bills + loans</div></div>';
     html+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#9a3412;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Project costs (open)</div><div style="font-size:20px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(projectCostsTotal)+'</div><div style="font-size:11px;color:#9a3412;margin-top:2px;">'+openProjects.length+' active project'+(openProjects.length===1?'':'s')+'</div></div>';
+    html+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Travel commitments</div><div style="font-size:20px;font-weight:700;color:#7c3aed;margin-top:4px;">'+fmt(travelRemaining)+'</div><div style="font-size:11px;color:#7c3aed;margin-top:2px;">'+activeTrips.length+' trip'+(activeTrips.length===1?'':'s')+' • '+fmt(travelSpentTotal)+' spent</div></div>';
     html+='</div>';
 
     // Project costs detail
@@ -2929,6 +2941,34 @@
       html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;font-weight:700;"><span style="font-size:14px;color:#1e293b;">Total</span><span style="font-size:16px;color:#0d9488;">'+fmt(projectCostsTotal)+'</span></div>';
     } else {
       html+='<div style="font-size:12px;color:#94a3b8;">No active projects with a bill total set.</div>';
+    }
+    html+='</div>';
+
+    // Travel commitments detail
+    html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:12px;">';
+    html+='<div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;">Travel Plans</div>';
+    if(activeTrips.length){
+      activeTrips.forEach(t=>{
+        const tripExp=(typeof EXPENSES!=='undefined'?EXPENSES:[]).filter(e=>e.trip_id===t.id);
+        const spent=tripExp.reduce((s,e)=>s+e.amount,0);
+        const rem=t.budget-spent;
+        const pct=t.budget>0?Math.min(100,Math.round((spent/t.budget)*100)):0;
+        const overB=spent>t.budget&&t.budget>0;
+        const escT=(t.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const escD=(t.destination||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        html+='<div style="padding:10px 0;border-bottom:1px solid #f1f5f9;">';
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+        html+='<div style="flex:1;min-width:180px;"><div style="font-size:13px;font-weight:600;color:#1e293b;">'+escT+'</div>';
+        if(escD)html+='<div style="font-size:11px;color:#94a3b8;">'+escD+'</div>';
+        html+='</div>';
+        html+='<div style="text-align:right;"><div style="font-size:11px;color:#64748b;">'+fmt(spent)+' of '+fmt(t.budget)+'</div><div style="font-size:14px;font-weight:700;color:'+(overB?'#b91c1c':'#7c3aed')+';">'+fmt(rem)+' '+(overB?'over':'left')+'</div></div>';
+        html+='</div>';
+        html+='<div style="margin-top:6px;background:#f1f5f9;border-radius:99px;height:6px;overflow:hidden;"><div style="background:'+(overB?'#b91c1c':'#7c3aed')+';height:100%;width:'+pct+'%;"></div></div>';
+        html+='</div>';
+      });
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;font-weight:700;"><span style="font-size:14px;color:#1e293b;">Remaining travel budget</span><span style="font-size:16px;color:#7c3aed;">'+fmt(travelRemaining)+'</span></div>';
+    } else {
+      html+='<div style="font-size:12px;color:#94a3b8;">No active trips.</div>';
     }
     html+='</div>';
 

@@ -3767,18 +3767,12 @@
       open.sort((a,b)=>(b.est_cost||0)-(a.est_cost||0)).forEach(p=>{listHtml+=renderRowWithKids(p);});
       listHtml+='</div>';
     }
-    if(done.length){
-      listHtml+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-bottom:12px;">';
-      listHtml+='<div style="font-size:13px;font-weight:700;color:#0d9488;margin-bottom:10px;">\u2713 Completed \u2014 '+fmt(totalDone)+'</div>';
-      done.sort((a,b)=>(b.est_cost||0)-(a.est_cost||0)).forEach(p=>{listHtml+=renderRowWithKids(p);});
-      listHtml+='</div>';
-    }
     if(noCost.length){
       listHtml+='<details style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:12px;"><summary style="font-size:13px;font-weight:700;color:#64748b;cursor:pointer;">No estimate yet ('+noCost.length+')</summary><div style="margin-top:10px;">';
       noCost.forEach(p=>{listHtml+=renderRowWithKids(p);});
       listHtml+='</div></details>';
     }
-    if(!open.length&&!done.length&&!noCost.length){
+    if(!open.length&&!noCost.length){
       listHtml='<div class="empty-msg">No house projects yet.</div>';
     }
 

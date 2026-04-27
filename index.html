@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.65</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.66</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -506,7 +506,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.65</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.66</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -789,21 +789,6 @@
         <button class="hp-view-tab" id="hp-tab-costs" onclick="phHpTab('costs')">Costs</button>
         <button class="hp-view-tab" id="hp-tab-projects" onclick="phHpTab('projects')">Projects</button>
       </div>
-      <div id="hp-view-items">
-      <div id="ph-zone-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
-      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
-        <select id="ph-pf" onchange="phProjects()"><option value="">All Statuses</option><option>Not Started</option><option>In Progress</option><option>Complete</option></select>
-        <select id="ph-pp" onchange="phProjects()"><option value="">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
-        <select id="ph-pa" onchange="phProjects()"><option value="">All People</option><option>Andrew</option><option>Cath</option><option>Tim</option><option>Handyman</option></select>
-        <input type="text" id="ph-ps" placeholder="Search..." oninput="phProjects()">
-        <button class="add-btn" onclick="phToggleProjForm()">+ Add</button>
-      </div>
-      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox" id="ph-hide-done" onchange="phProjects()" style="accent-color:#0d9488;"> Hide completed</label>
-        <button class="add-btn" onclick="phExpandAllZones()" style="background:#64748b;font-size:11px;padding:6px 12px;">Expand all</button>
-        <button class="add-btn" onclick="phCollapseAllZones()" style="background:#64748b;font-size:11px;padding:6px 12px;">Collapse all</button>
-        <button class="add-btn" onclick="phPrintProjects()" style="background:#64748b;font-size:11px;padding:6px 12px;">Print</button>
-      </div>
       <div class="add-form" id="ph-proj-form">
         <h3 id="pf-title">New House Project</h3>
         <div class="form-grid">
@@ -825,6 +810,21 @@
           <button class="add-btn" id="pf-del-btn" onclick="phDeleteProjFromForm()" style="background:#ef4444;display:none;margin-left:auto;">Delete</button>
         </div>
         <div class="form-msg" id="pf-msg"></div>
+      </div>
+      <div id="hp-view-items">
+      <div id="ph-zone-pills" class="filter-bar" style="margin-bottom:8px;flex-wrap:wrap;"></div>
+      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;">
+        <select id="ph-pf" onchange="phProjects()"><option value="">All Statuses</option><option>Not Started</option><option>In Progress</option><option>Complete</option></select>
+        <select id="ph-pp" onchange="phProjects()"><option value="">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
+        <select id="ph-pa" onchange="phProjects()"><option value="">All People</option><option>Andrew</option><option>Cath</option><option>Tim</option><option>Handyman</option></select>
+        <input type="text" id="ph-ps" placeholder="Search..." oninput="phProjects()">
+        <button class="add-btn" onclick="phToggleProjForm()">+ Add</button>
+      </div>
+      <div class="filter-bar" style="flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox" id="ph-hide-done" onchange="phProjects()" style="accent-color:#0d9488;"> Hide completed</label>
+        <button class="add-btn" onclick="phExpandAllZones()" style="background:#64748b;font-size:11px;padding:6px 12px;">Expand all</button>
+        <button class="add-btn" onclick="phCollapseAllZones()" style="background:#64748b;font-size:11px;padding:6px 12px;">Collapse all</button>
+        <button class="add-btn" onclick="phPrintProjects()" style="background:#64748b;font-size:11px;padding:6px 12px;">Print</button>
       </div>
       <div class="cat-count" id="ph-pc"></div>
       <div id="ph-pg"></div>
@@ -3722,13 +3722,10 @@
   }
 
   window.phNewProjectFromProjectsView=function(){
-    phHpTab('items');
-    setTimeout(()=>{
-      const form=$('#ph-proj-form');
-      if(!form.classList.contains('open')){phToggleProjForm();}
-      form.scrollIntoView({behavior:'smooth',block:'start'});
-      $('#pf-title-input').focus();
-    },50);
+    const form=$('#ph-proj-form');
+    if(!form.classList.contains('open')){phToggleProjForm();}
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>{$('#pf-title-input').focus();},50);
   };
 
   window.phHpTab=function(name){

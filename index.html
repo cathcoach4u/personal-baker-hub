@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.74</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.75</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -500,13 +500,14 @@
       <button class="nav-item" onclick="phNavDrawer('habits',this)"><span class="icon">&#x1F4AA;</span> Habits</button>
       <button class="nav-item" onclick="phNavDrawer('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
       <button class="nav-item" onclick="phNavDrawer('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
+      <button class="nav-item" onclick="phNavDrawer('travel',this)"><span class="icon">&#x2708;&#xFE0F;</span> Travel</button>
       <button class="nav-item" onclick="phNavDrawer('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
       <button class="nav-item" onclick="phNavDrawer('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     </div>
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.74</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.75</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -519,6 +520,7 @@
     <button class="nav-item" onclick="phNav('habits',this)"><span class="icon">&#x1F4AA;</span> Habits</button>
     <button class="nav-item" onclick="phNav('animals',this)"><span class="icon">&#x1F437;</span> Animals</button>
     <button class="nav-item" onclick="phNav('kids',this)"><span class="icon">&#x1F46A;</span> Kids</button>
+    <button class="nav-item" onclick="phNav('travel',this)"><span class="icon">&#x2708;&#xFE0F;</span> Travel</button>
     <button class="nav-item" onclick="phNav('aislemate',this)"><span class="icon">&#x1F6D2;</span> AisleMate</button>
     <button class="nav-item" onclick="phNav('about',this)"><span class="icon">&#x2139;&#xFE0F;</span> About</button>
     <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
@@ -1336,6 +1338,51 @@
       </div>
     </div>
 
+    <!-- ═══ TRAVEL ═══ -->
+    <div class="screen" id="ph-travel">
+      <h2>&#x2708;&#xFE0F; Travel</h2>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button class="add-btn" onclick="phToggleTripForm()">+ New Trip</button>
+      </div>
+      <div class="add-form" id="trip-form">
+        <h3 id="tf-title">New Trip</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Trip Name</label><input type="text" id="tf-name" placeholder="e.g. Japan Holiday"></div>
+          <div class="form-group"><label>Destination</label><input type="text" id="tf-dest" placeholder="e.g. Tokyo, Kyoto"></div>
+          <div class="form-group"><label>Start Date</label><input type="date" id="tf-start"></div>
+          <div class="form-group"><label>End Date</label><input type="date" id="tf-end"></div>
+          <div class="form-group"><label>Budget ($)</label><input type="number" id="tf-budget" placeholder="20000" step="0.01" min="0"></div>
+          <div class="form-group"><label>Status</label><select id="tf-status"><option>Planning</option><option>Booked</option><option>Active</option><option>Complete</option></select></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="tf-notes" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="tf-save" onclick="phSaveTrip()">Save Trip</button>
+          <button class="add-btn" style="background:#94a3b8;" onclick="phCancelTrip()">Cancel</button>
+          <button class="add-btn" style="background:#ef4444;display:none;" id="tf-del" onclick="phDeleteTrip()">Delete</button>
+        </div>
+        <div class="form-msg" id="tf-msg"></div>
+      </div>
+      <div class="add-form" id="expense-form">
+        <h3 id="ef-title">New Expense</h3>
+        <input type="hidden" id="ef-trip-id">
+        <div class="form-grid">
+          <div class="form-group"><label>Description</label><input type="text" id="ef-desc" placeholder="e.g. Qantas flights"></div>
+          <div class="form-group"><label>Category</label><select id="ef-cat"><option>Flights</option><option>Accommodation</option><option>Food</option><option>Transport</option><option>Activities</option><option>Shopping</option><option>Other</option></select></div>
+          <div class="form-group"><label>Amount ($)</label><input type="number" id="ef-amount" placeholder="0.00" step="0.01"></div>
+          <div class="form-group"><label>Date</label><input type="date" id="ef-date"></div>
+          <div class="form-group"><label>Status</label><select id="ef-paid"><option value="false">Pending</option><option value="true">Paid</option></select></div>
+          <div class="form-group full"><label>Notes</label><input type="text" id="ef-notes" placeholder="Optional"></div>
+        </div>
+        <div class="form-actions">
+          <button class="add-btn" id="ef-save" onclick="phSaveExpense()">Save Expense</button>
+          <button class="add-btn" style="background:#94a3b8;" onclick="phCancelExpense()">Cancel</button>
+          <button class="add-btn" style="background:#ef4444;display:none;" id="ef-del" onclick="phDeleteExpense()">Delete</button>
+        </div>
+        <div class="form-msg" id="ef-msg"></div>
+      </div>
+      <div id="trips-list"></div>
+    </div>
+
     <!-- ═══ AISLEMATE ═══ -->
     <div class="screen" id="ph-aislemate">
       <h2>&#x1F6D2; AisleMate</h2>
@@ -1567,6 +1614,10 @@
   let SARAH_MED = [];
   let HOME_LOANS = [];
   let BANK_ACCOUNTS = [];
+  let TRIPS = [];
+  let EXPENSES = [];
+  let editingTripId = null;
+  let editingExpenseId = null;
   let SARAH_MED_HISTORY = [];
 
   const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
@@ -3351,6 +3402,174 @@
     $('#bank-form').classList.remove('open');
   };
 
+  // ─── TRAVEL ───
+  async function loadTrips(){
+    const {data,error}=await sb.from('travel_trips').select('*').order('start_date',{ascending:true});
+    if(error){console.warn('Trips load failed:',error.message);TRIPS=[];return;}
+    TRIPS=(data||[]).map(r=>({id:r.id,name:r.name,destination:r.destination||'',start:r.start_date||'',end:r.end_date||'',budget:Number(r.budget||0),currency:r.currency||'AUD',status:r.status||'Planning',notes:r.notes||''}));
+  }
+  async function loadExpenses(){
+    const {data,error}=await sb.from('travel_expenses').select('*').order('expense_date',{ascending:false});
+    if(error){console.warn('Expenses load failed:',error.message);EXPENSES=[];return;}
+    EXPENSES=(data||[]).map(r=>({id:r.id,trip_id:r.trip_id,desc:r.description||'',category:r.category||'Other',amount:Number(r.amount||0),date:r.expense_date||'',paid:r.paid===true,notes:r.notes||''}));
+  }
+  window.phRenderTravel=async function(){
+    if(!TRIPS.length)await loadTrips();
+    if(!EXPENSES.length)await loadExpenses();
+    const fmt=n=>'$'+Number(n||0).toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:2});
+    const wrap=$('#trips-list');
+    if(!TRIPS.length){wrap.innerHTML='<div class="todo-empty">No trips yet. Tap + New Trip to plan one.</div>';return;}
+    let html='';
+    TRIPS.forEach(t=>{
+      const tripExp=EXPENSES.filter(e=>e.trip_id===t.id);
+      const spent=tripExp.reduce((s,e)=>s+e.amount,0);
+      const remaining=t.budget-spent;
+      const pct=t.budget>0?Math.min(100,Math.round((spent/t.budget)*100)):0;
+      const overBudget=spent>t.budget&&t.budget>0;
+      const escN=(t.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const escD=(t.destination||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:18px;margin-bottom:14px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;cursor:pointer;" onclick="phEditTrip('+t.id+')">';
+      html+='<div style="flex:1;min-width:200px;"><div style="font-size:18px;font-weight:700;color:#1e293b;">'+escN+'</div>';
+      if(escD)html+='<div style="font-size:13px;color:#64748b;margin-top:2px;">'+escD+'</div>';
+      html+='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">';
+      if(t.start||t.end)html+='<span style="font-size:11px;color:#475569;background:#f1f5f9;padding:3px 10px;border-radius:99px;">'+(t.start||'?')+' → '+(t.end||'?')+'</span>';
+      const statusColors={Planning:['#7c3aed','#faf5ff'],Booked:['#1e40af','#eff6ff'],Active:['#0d9488','#f0fdf4'],Complete:['#64748b','#f1f5f9']};
+      const sc=statusColors[t.status]||['#475569','#f1f5f9'];
+      html+='<span style="font-size:11px;color:'+sc[0]+';background:'+sc[1]+';padding:3px 10px;border-radius:99px;font-weight:600;">'+t.status+'</span>';
+      html+='</div></div></div>';
+      html+='<div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+      html+='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:#1e40af;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Budget</div><div style="font-size:16px;font-weight:700;color:#1e40af;margin-top:2px;">'+fmt(t.budget)+'</div></div>';
+      html+='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:#b91c1c;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Spent</div><div style="font-size:16px;font-weight:700;color:#b91c1c;margin-top:2px;">'+fmt(spent)+'</div></div>';
+      const remColor=overBudget?'#b91c1c':(remaining<t.budget*0.2?'#9a3412':'#0d9488');
+      const remBg=overBudget?'#fef2f2':(remaining<t.budget*0.2?'#fff7ed':'#f0fdf4');
+      const remBd=overBudget?'#fecaca':(remaining<t.budget*0.2?'#fed7aa':'#bbf7d0');
+      html+='<div style="background:'+remBg+';border:1px solid '+remBd+';border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:'+remColor+';font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Remaining</div><div style="font-size:16px;font-weight:700;color:'+remColor+';margin-top:2px;">'+fmt(remaining)+'</div></div>';
+      html+='</div>';
+      html+='<div style="margin-top:10px;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div style="background:'+(overBudget?'#b91c1c':'#0d9488')+';height:100%;width:'+pct+'%;transition:width 0.3s;"></div></div>';
+      html+='<div style="font-size:11px;color:#64748b;margin-top:4px;">'+pct+'% of budget used'+(overBudget?' — over by '+fmt(Math.abs(remaining)):'')+'</div>';
+      // Expense list
+      html+='<div style="margin-top:14px;border-top:1px solid #f1f5f9;padding-top:10px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="font-size:12px;font-weight:700;color:#475569;">Expenses ('+tripExp.length+')</div><button class="add-btn" onclick="phToggleExpenseForm('+t.id+')" style="font-size:11px;padding:5px 12px;">+ Add Expense</button></div>';
+      if(!tripExp.length){
+        html+='<div style="font-size:12px;color:#94a3b8;padding:6px 0;">No expenses yet.</div>';
+      } else {
+        const catEmoji={Flights:'✈️',Accommodation:'\u{1F3E8}',Food:'\u{1F374}',Transport:'\u{1F686}',Activities:'\u{1F3AF}',Shopping:'\u{1F6CD}️',Other:'\u{1F4DD}'};
+        tripExp.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(e=>{
+          const escE=(e.desc||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          html+='<div onclick="phEditExpense('+e.id+')" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f8fafc;cursor:pointer;">';
+          html+='<div style="flex:1;min-width:0;"><div style="font-size:13px;color:#1e293b;">'+(catEmoji[e.category]||'')+' '+escE+'</div>';
+          html+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+(e.date||'')+' • '+e.category+(e.paid?' • <span style="color:#0d9488;font-weight:600;">paid</span>':' • <span style="color:#9a3412;font-weight:600;">pending</span>')+'</div></div>';
+          html+='<div style="font-size:14px;font-weight:700;color:#1e293b;">'+fmt(e.amount)+'</div>';
+          html+='</div>';
+        });
+      }
+      html+='</div></div>';
+    });
+    wrap.innerHTML=html;
+  };
+  // Trip form
+  window.phToggleTripForm=function(){
+    const f=$('#trip-form');
+    if(f.classList.contains('open')){f.classList.remove('open');return;}
+    editingTripId=null;
+    $('#tf-title').textContent='New Trip';
+    $('#tf-save').textContent='Save Trip';
+    $('#tf-name').value='';$('#tf-dest').value='';$('#tf-start').value='';$('#tf-end').value='';$('#tf-budget').value='';$('#tf-status').value='Planning';$('#tf-notes').value='';
+    $('#tf-del').style.display='none';
+    $('#tf-msg').className='form-msg';$('#tf-msg').textContent='';
+    f.classList.add('open');
+  };
+  window.phCancelTrip=function(){$('#trip-form').classList.remove('open');};
+  window.phEditTrip=function(id){
+    const t=TRIPS.find(x=>x.id===id);if(!t)return;
+    editingTripId=id;
+    $('#tf-title').textContent='Edit — '+t.name;
+    $('#tf-save').textContent='Update Trip';
+    $('#tf-name').value=t.name;$('#tf-dest').value=t.destination;$('#tf-start').value=t.start;$('#tf-end').value=t.end;$('#tf-budget').value=t.budget;$('#tf-status').value=t.status;$('#tf-notes').value=t.notes;
+    $('#tf-del').style.display='inline-block';
+    $('#tf-msg').className='form-msg';$('#tf-msg').textContent='';
+    $('#trip-form').classList.add('open');
+    $('#trip-form').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  window.phSaveTrip=async function(){
+    const name=$('#tf-name').value.trim();
+    if(!name){$('#tf-msg').className='form-msg error';$('#tf-msg').textContent='Please enter a trip name.';return;}
+    const row={name:name,destination:$('#tf-dest').value.trim()||null,start_date:$('#tf-start').value||null,end_date:$('#tf-end').value||null,budget:Number($('#tf-budget').value||0),status:$('#tf-status').value,notes:$('#tf-notes').value.trim()||null};
+    try {
+      if(editingTripId){
+        const {error}=await sb.from('travel_trips').update(row).eq('id',editingTripId);
+        if(error)throw error;
+      } else {
+        const {error}=await sb.from('travel_trips').insert(row);
+        if(error)throw error;
+      }
+      await loadTrips();
+      phRenderTravel();
+      $('#trip-form').classList.remove('open');
+    } catch(e){$('#tf-msg').className='form-msg error';$('#tf-msg').textContent='Error: '+e.message;}
+  };
+  window.phDeleteTrip=async function(){
+    if(!editingTripId||!confirm('Delete this trip and ALL its expenses?'))return;
+    const {error}=await sb.from('travel_trips').delete().eq('id',editingTripId);
+    if(error){alert('Delete failed: '+error.message);return;}
+    await loadTrips();await loadExpenses();
+    phRenderTravel();
+    $('#trip-form').classList.remove('open');
+  };
+  // Expense form
+  window.phToggleExpenseForm=function(tripId){
+    const f=$('#expense-form');
+    editingExpenseId=null;
+    $('#ef-trip-id').value=tripId||'';
+    $('#ef-title').textContent='New Expense';
+    $('#ef-save').textContent='Save Expense';
+    $('#ef-desc').value='';$('#ef-cat').value='Flights';$('#ef-amount').value='';$('#ef-date').value=new Date().toISOString().slice(0,10);$('#ef-paid').value='false';$('#ef-notes').value='';
+    $('#ef-del').style.display='none';
+    $('#ef-msg').className='form-msg';$('#ef-msg').textContent='';
+    f.classList.add('open');
+    f.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  window.phCancelExpense=function(){$('#expense-form').classList.remove('open');};
+  window.phEditExpense=function(id){
+    const e=EXPENSES.find(x=>x.id===id);if(!e)return;
+    editingExpenseId=id;
+    $('#ef-trip-id').value=e.trip_id;
+    $('#ef-title').textContent='Edit Expense';
+    $('#ef-save').textContent='Update Expense';
+    $('#ef-desc').value=e.desc;$('#ef-cat').value=e.category;$('#ef-amount').value=e.amount;$('#ef-date').value=e.date;$('#ef-paid').value=e.paid?'true':'false';$('#ef-notes').value=e.notes;
+    $('#ef-del').style.display='inline-block';
+    $('#ef-msg').className='form-msg';$('#ef-msg').textContent='';
+    $('#expense-form').classList.add('open');
+    $('#expense-form').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  window.phSaveExpense=async function(){
+    const tripId=Number($('#ef-trip-id').value);
+    const desc=$('#ef-desc').value.trim();
+    if(!desc){$('#ef-msg').className='form-msg error';$('#ef-msg').textContent='Please enter a description.';return;}
+    const row={trip_id:tripId,description:desc,category:$('#ef-cat').value,amount:Number($('#ef-amount').value||0),expense_date:$('#ef-date').value||null,paid:$('#ef-paid').value==='true',notes:$('#ef-notes').value.trim()||null};
+    try {
+      if(editingExpenseId){
+        const {error}=await sb.from('travel_expenses').update(row).eq('id',editingExpenseId);
+        if(error)throw error;
+      } else {
+        const {error}=await sb.from('travel_expenses').insert(row);
+        if(error)throw error;
+      }
+      await loadExpenses();
+      phRenderTravel();
+      $('#expense-form').classList.remove('open');
+    } catch(e){$('#ef-msg').className='form-msg error';$('#ef-msg').textContent='Error: '+e.message;}
+  };
+  window.phDeleteExpense=async function(){
+    if(!editingExpenseId||!confirm('Delete this expense?'))return;
+    const {error}=await sb.from('travel_expenses').delete().eq('id',editingExpenseId);
+    if(error){alert('Delete failed: '+error.message);return;}
+    await loadExpenses();
+    phRenderTravel();
+    $('#expense-form').classList.remove('open');
+  };
+
   // ─── HOME LOANS VIEW ───
   window.phLoansView=function(){
     if(!HOME_LOANS.length){$('#loans-cards').innerHTML='<div class="todo-empty">No home loans yet</div>';return;}
@@ -4801,6 +5020,18 @@
     const fp=todoFilter==='All'?pending:pending.filter(t=>t.cat===todoFilter);
     const fd=todoFilter==='All'?done:done.filter(t=>t.cat===todoFilter);
 
+    // Sort: category alphabetically, then due date (earliest first, no-due last)
+    const todoSort=(a,b)=>{
+      const catCmp=(a.cat||'').localeCompare(b.cat||'');
+      if(catCmp!==0)return catCmp;
+      if(!a.due&&!b.due)return 0;
+      if(!a.due)return 1;
+      if(!b.due)return -1;
+      return a.due.localeCompare(b.due);
+    };
+    fp.sort(todoSort);
+    fd.sort(todoSort);
+
     // Pending
     if(!fp.length)$('#td-pending').innerHTML='<div class="todo-empty">No pending tasks'+(todoFilter!=='All'?' in '+todoFilter:'')+'</div>';
     else $('#td-pending').innerHTML=fp.map(t=>renderTodoItem(t)).join('');
@@ -4926,6 +5157,7 @@
     if(name==='animals')phAnimals();
     if(name==='aislemate')amGo('home');
     if(name==='fiona')phLoadFiona();
+    if(name==='travel')phRenderTravel();
     if(name==='about')phRenderAgents();
   };
 

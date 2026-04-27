@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baker-hub-v5.74';
+const CACHE_NAME = 'baker-hub-v5.75';
 const SHELL_URLS = [
   './',
   './index.html',

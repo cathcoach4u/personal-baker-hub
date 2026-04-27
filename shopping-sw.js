@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aislemate-v1';
+const CACHE_NAME = 'aislemate-v2';
 const SHELL_URLS = [
   './shopping.html',
   './config.js',

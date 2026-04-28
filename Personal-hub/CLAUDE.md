@@ -2,7 +2,7 @@
 
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
-- **Default to main** — ALWAYS commit and push directly to `main` unless the session configuration specifies a feature branch. If a session-config branch is active, develop there and create a PR targeting main. Do NOT create PRs unless explicitly asked or on a feature branch. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
+- **Default to main** — ALWAYS commit and push directly to `main` unless the session configuration specifies a feature branch. If a session-config branch is active, develop there, create a PR targeting main, and then **always ask the user: "Ready to merge to main?"** — then action it immediately when they say yes. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
 - **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.82 → v5.83). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU

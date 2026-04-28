@@ -61,12 +61,14 @@
 
 ## What is Baker Hub
 Baker Hub is the Baker family's personal dashboard — a single-page web app that manages everything for the household:
-- **Finance**: NDIS funding, insurance policies (with due date tracking and auto-advance), superannuation, investments, recurring bills, home loans, Medicare Safety Net tracker
+- **Finance**: NDIS funding, insurance policies (with due date tracking and auto-advance), superannuation, investments, recurring bills, home loans, bank accounts, Medicare Safety Net tracker
+- **Budget & Cashflow**: 6-month projection with bank balances, bills, loan repayments, project costs, travel commitments. Accounting & Planning Agent integration.
+- **Travel**: Trip planning with budget tracking and expense logging. Integrated into cashflow projection.
 - **Health**: Sarah's MS & epilepsy protocol (medical tracker on dashboard sourced from Dates), animal medical records, vet tracking, tick treatments, HCF health claims
-- **Household**: House projects by zone with assignee, weekly bin schedule, cleaner/Fiona tasks
+- **Household**: House projects (with is_project flag separating projects from items), zone-based collapsible view, weekly bin schedule, cleaner/Fiona tasks
 - **Family**: Kids profiles (Sarah & Russell) with files and schedules, contacts directory, important dates
 - **Shopping**: AisleMate shopping list with master items, receipt scanning, and Baker AI integration
-- **AI Assistant**: Baker AI chat can add todos, dates, contacts, shopping items, and manage tasks
+- **AI Assistant**: Baker AI chat can add todos, dates, contacts, shopping items, and manage tasks. Includes Accounting & Planning Agent context (finance, bills, loans, bank balances).
 
 The app is owned by the Baker family. Claude Code built it but does not own the code. All data lives in Supabase. The app runs on GitHub Pages with no backend server — just static HTML/CSS/JS connecting directly to Supabase.
 
@@ -130,9 +132,9 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Receipt upload**: Files stored in Supabase Storage bucket `ndis-invoices`
 
 ## Finance & Insurance
-- **Tabs**: Bills, Personal, Household, Car, Health, Super, Investments, Loans (Bills is first/default)
+- **Top-level view tabs**: Finance | Budget & Cashflow (two dark-slate tabs at the top of the Finance screen)
+- **Finance pills** (inside Finance tab): Bills (default), Personal Insurance, Household, Car, Health, Superannuation, Investments, Loans, Bank Accounts
 - **Finance Files**: OneDrive link at top
-- **Category pills**: Bills (default), Personal Insurance, Household, Car, Health, Superannuation, Investments, Loans
 - **Grouped by person**: Cathrine Baker, Andrew Baker, Russell Baker etc.
 - **Sub-grouped by payment source**: "Paid Personally" (credit card) vs "Paid via Super" (Macquarie Super, MLC Masterkey) — collapsible
 - **Form includes**: Person, Category, Insurer/Provider, Policy No, Cover Type, Premium, Frequency, Payment Method, Next Due, Paid To, Advanced (Product Type, State, Start/Expiry/Review dates)
@@ -147,8 +149,40 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Bills tab**: Finance Overview at top (insurance premiums, bills, loan repayments totals with monthly/annual breakdown, upcoming/overdue payments list with exact dates). Below that: recurring bills tracker with category pills, totals, add/edit/delete
 - **Health tab**: HCF Health claims with receipt upload. HCF policy card with membership details and brochure links. (Medicare Safety Net moved to dedicated Medical section in v5.37.)
 - **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons with date picker for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
+- **Bank Accounts pill**: Tracks bank accounts and credit cards. Table: `bank_accounts` (name, balance, account_type: savings/cheque/credit/offset, bank_name, account_number, updated_at). Weekly snapshots stored in `bank_balance_history` (account_id, balance, snapshot_date). Add/update balance with date.
 - **Super/Investments tabs**: Balance cards with date picker for update tracking. Contact button links to matching contact.
 - **Contact button**: Insurance cards have a Contact button that navigates to the matching contact card in Contacts section (resets filters, expands groups, highlights with blue outline)
+
+## Budget & Cashflow Tab
+- **Accessed via**: Second tab in Finance screen (dark-slate tab "Budget & Cashflow"), rendered by `phRenderBudget()` (async)
+- **Stat cards** (top row, auto-fit grid):
+  - Bank balances (blue) — total of all `bank_accounts` balances
+  - Monthly bills (red) — recurring bills normalised to monthly (weekly×52/12, quarterly÷3, annual÷12)
+  - Loan repayments (red-rose) — total `home_loans.repayment` monthly
+  - Project costs / open (orange) — sum of open parent projects with cost
+  - Travel commitments (purple) — remaining travel budget across active trips
+- **Accounting & Planning Agent callout**: Gradient banner (teal→purple) with "Chat with Baker AI" button
+- **6-month cashflow projection**: Table of 6 months (Month 1–6). Each row shows net flow (income not tracked yet, shows outflows). Tapping a row expands the breakdown:
+  - Recurring bills (separate from loans — each listed individually)
+  - Loan repayments (separate from bills)
+  - Project costs (allocated to month 1 only)
+  - Travel (allocated to the month the trip starts, or month 1 if no start_date)
+- **Project costs breakdown**: Grid of open projects with cost and zone
+- **Travel plans breakdown**: Cards per active trip with budget, spent, remaining, progress bar
+- **Monthly cashflow detail**: Bottom section showing Recurring bills / Loan repayments / Monthly total
+- **Variables**: `BILLS` (array), `HOME_LOANS` (array), `BANK_ACCOUNTS` (array), `TRIPS`, `EXPENSES`, `PROJECTS`
+- **`monthlyBills`**: Sum of bills with frequency normalisation (weekly→×52/12, quarterly→÷3, annually→÷12)
+- **`monthlyLoans`**: Sum of `HOME_LOANS[].repayment`
+- **Cost deduplication**: `countsTowardsTotal()` excludes child items when parent has a cost to prevent double-counting
+
+## Travel
+- **Section**: `id="ph-travel"` — top-level navigation item in sidebar
+- **Trips**: Table `travel_trips` (id, name, destination, start_date, end_date, budget, notes, status: planning/booked/completed)
+- **Expenses**: Table `travel_expenses` (id, trip_id, description, amount, category, date, notes)
+- **Trip card**: Shows budget, amount spent (sum of expenses), remaining, progress bar
+- **Add expense**: Form on trip card — description, amount, category, date
+- **Rendered by**: `phRenderTravel()`
+- **Budget & Cashflow integration**: Active trips (status planning/booked) contribute to travel commitments stat card. Trip allocated to month in 6-month projection based on `start_date` (month 0 if no date).
 
 ## Medical
 - Dedicated top-level section (added v5.37) — sibling of Finance in the nav
@@ -170,16 +204,20 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **For Person**: Multi-select checkboxes (Family, Cath, Andrew, Sarah, Russell)
 
 ## House Projects
+- **Three tabs**: Items to be Completed | Projects (dark-slate tabs)
+- **`is_project` boolean column**: `house_projects.is_project` — `true` = project (parent), `false`/null = item (child/task)
+- **Items tab** (`is_project = false`): Checklist of individual tasks. Zone filter pills. Collapsible zone cards with done count. Shows only active (non-completed) items. "Hide completed" toggle.
+- **Projects tab** (`is_project = true`): Project cards grouped by zone. Each project is collapsible (collapsed by default). Collapse/Expand all buttons. Add item button on each project opens form to add a child item linked to that project. Sub-tasks shown inside project (active only — completed filtered out). Cost field only shown when creating a project (not an item).
+- **`phExpandedProjects` Set**: Stored in `localStorage('ph-expanded-projects')`. Tracks which project IDs the user has manually expanded. Empty by default = all collapsed.
+- **Cost model**: Cost lives only on parent projects (`is_project=true`). Child items have no cost. Cost field hidden in form when parent project is selected. `countsTowardsTotal()` excludes children when parent has cost to prevent double-counting.
 - **Zone filter pills**: Left Shed, Left Fence, Garage, Front Fence, Front Garden Bed, Right Fence, Right Shed, Back Deck, House, Pool Deck, Side of House
-- **Collapsible zones**: Each zone is a collapsible card with done count
-- **Assigned To**: Andrew or Cath (column `assigned_to` in `house_projects` table). Existing projects default to Andrew (from Andy's original list). New projects can be assigned to either.
-- **Checklist format**: Tap checkbox to toggle Complete — item shows strikethrough and fades. "Hide completed" toggle removes them from view.
-- **Expand all / Collapse all**: Buttons to open or close all zone groups at once
+- **Assigned To**: Andrew or Cath (`assigned_to` column). Existing items default to Andrew.
+- **Expand all / Collapse all**: Buttons in Projects tab to open or close all project cards
 - **Print**: Opens printable checklist grouped by zone with checkboxes and assignee names
 - **Zone dropdown in form**: Pick zone when adding/editing (stored in `notes` as "Zone: Left Shed")
-- Zones stored in `notes` field as "Zone: Left Shed" etc.
 - Status: Not Started, In Progress, Complete
 - Priority: Low, Medium, High, Urgent
+- **Budget & Cashflow**: Open projects with cost feed into the 6-month projection (month 1 allocation)
 
 ## Dates (Important Dates)
 - **Month timeline**: Apr 2026 to Mar 2027, collapsible months
@@ -253,8 +291,13 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## About Page
 - **Built With**: GitHub Pages (hosting), Supabase (database), Claude Code (AI coder — does not own the code), Claude (AI provider for Baker AI chat)
 - **Stack**: Vanilla HTML/CSS/JS, Supabase, GitHub Pages, Claude Code, PWA manifest
-- **Features**: All 13 sections listed
-- **Supabase Tables**: All tables listed
+- **Features**: All sections listed
+- **Supabase Tables**: All tables listed (26+ as of v5.82)
+- **AI Agents section**: Lists all active agents with description and cost. As of v5.82:
+  - Baker AI — family assistant (claude-haiku-4-5 via Supabase Edge Function)
+  - Receipt Scanner — AisleMate receipt OCR (claude-sonnet-4-5)
+  - Accounting & Planning Agent — finance/budget analysis (claude-haiku-4-5, accessible via Budget & Cashflow tab)
+  - Claude Code — development agent (not in-app)
 
 ## Supabase Tables
 
@@ -284,6 +327,10 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | receipts | AisleMate receipts | auto UUID |
 | receipt_items | AisleMate receipt line items | auto UUID |
 | medicare_safety_net | Medicare Safety Net threshold + costs (singleton row id=1, costs as jsonb) | bigint (always 1) |
+| bank_accounts | Bank accounts and credit cards (name, balance, account_type, bank_name, account_number, updated_at) | auto bigint |
+| bank_balance_history | Weekly balance snapshots per account (account_id, balance, snapshot_date) | auto bigint |
+| travel_trips | Travel trips (name, destination, start_date, end_date, budget, notes, status: planning/booked/completed) | auto bigint |
+| travel_expenses | Travel expenses per trip (trip_id, description, amount, category, date, notes) | auto bigint |
 
 All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHECK true).
 
@@ -333,7 +380,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.81`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.82`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -341,8 +388,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.81. Shown in mobile top bar (top-right badge), sidebar header (top-right badge), About page badge, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.54 → v5.81 → v5.81). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 5 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) About page badge in `index.html`, (4) `sw.js` cache name (`baker-hub-vX.Y`), (5) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.81`). Bump after significant changes or users see old cached pages.
+- **Version number** — currently v5.82. Shown in mobile top bar (top-right badge) and sidebar header (top-right badge) in `index.html`, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.81 → v5.82). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 4 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) this line in CLAUDE.md.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.82`). Bump after significant changes or users see old cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

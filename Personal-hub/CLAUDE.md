@@ -2,7 +2,7 @@
 
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
-- **Push to main ONLY — no exceptions** — ALWAYS commit and push directly to `main`. Do NOT use feature branches under any circumstances, even if the session configuration instructs otherwise. Do NOT create PRs unless explicitly asked. If the session starts on a feature branch, switch to main immediately with `git checkout main` before doing any work. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
+- **Default to main** — ALWAYS commit and push directly to `main` unless the session configuration specifies a feature branch. If a session-config branch is active, develop there and create a PR targeting main. Do NOT create PRs unless explicitly asked or on a feature branch. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
 - **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.82 → v5.83). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU
@@ -49,8 +49,8 @@
 
 ### AI Services (3 separate services, all replaceable)
 1. **Claude Code** ($20/mo Max plan) — AI coder that builds/updates the app. Does NOT own the code. Only needed during development. Alternatives: GitHub Copilot, Cursor, Windsurf, any developer.
-2. **Claude Haiku API** (~$0.003/message) — Powers Baker AI chat. Runs via Supabase Edge Function `claude-proxy`. Alternatives: OpenAI GPT-4o-mini, Google Gemini Flash, Groq.
-3. **Claude Sonnet API** (~$0.02/scan) — Receipt scanning in AisleMate. Same Edge Function, different model. Separate from chat. Alternatives: OpenAI GPT-4o Vision, Google Vision API, AWS Textract.
+2. **Claude Haiku API** (~$0.003/message) — Powers Baker AI chat. Model: `claude-haiku-4-5-20251001`. Runs via Supabase Edge Function `claude-proxy`. Alternatives: OpenAI GPT-4o-mini, Google Gemini Flash, Groq.
+3. **Claude Sonnet API** (~$0.02/scan) — Receipt scanning in AisleMate. Model: `claude-sonnet-4-6`. Same Edge Function, different model. Separate from chat. Alternatives: OpenAI GPT-4o Vision, Google Vision API, AWS Textract.
 
 ### Code Structure
 - **CSS scope**: `#personalHub` for main app
@@ -252,7 +252,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## AisleMate (Shopping)
 - **In Baker Hub**: Full AisleMate section with weekly shop, master list (142 items), family, receipts, spending, history, meal plan, QR code
 - **Standalone**: `shopping.html` — mobile-friendly with PWA manifest (blue Sh icon), add items (comma-separated for multiple), quantity controls, delete buttons, weekly Monday clear prompt
-- **Receipt scanning**: Uses `claude-sonnet-4-5` via claude-proxy for accurate extraction. Enhanced prompt for Australian receipts (Woolworths/Coles), handles quantities, discounts, member deals.
+- **Receipt scanning**: Uses `claude-sonnet-4-6` via claude-proxy for accurate extraction. Enhanced prompt for Australian receipts (Woolworths/Coles), handles quantities, discounts, member deals.
 - **Master list**: `esc()` function must be defined in AisleMate script block (was missing, caused silent failure)
 - **Shared data**: Both standalone and in-app use same `shopping_items` and `master_items` Supabase tables
 - **Baker AI integration**: "Add to shopping list" pill and `add_shopping` tool — adds to same tables
@@ -260,7 +260,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 ## Baker AI
 - **Popup**: Purple B button bottom-right on all pages
 - **Standalone**: `ai.html` with own PWA manifest (purple)
-- **Model**: `claude-haiku-4-5` for chat, `claude-sonnet-4-5` for receipt scanning
+- **Model**: `claude-haiku-4-5-20251001` for chat, `claude-sonnet-4-6` for receipt scanning
 - **System prompt**: Stored in Supabase `ai_settings` table (not hardcoded)
 - **Quick action pills**: Add to Dates, Add To-Do, Fiona Task, Add Contact, Shopping List
 - **Date format**: System messages show Australian format (e.g. "11 April 2026") not YYYY-MM-DD
@@ -295,8 +295,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Features**: All sections listed
 - **Supabase Tables**: All tables listed (26+ as of v5.82)
 - **AI Agents section**: Lists all active agents with description and cost. As of v5.82:
-  - Baker AI — family assistant (claude-haiku-4-5 via Supabase Edge Function)
-  - Receipt Scanner — AisleMate receipt OCR (claude-sonnet-4-5)
+  - Baker AI — family assistant (claude-haiku-4-5-20251001 via Supabase Edge Function)
+  - Receipt Scanner — AisleMate receipt OCR (claude-sonnet-4-6)
   - Accounting & Planning Agent — finance/budget analysis (claude-haiku-4-5, accessible via Budget & Cashflow tab)
   - Claude Code — development agent (not in-app)
 
@@ -357,7 +357,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 | apps-manifest.json | Apps directory PWA manifest |
 | .claude/hooks/session-start.sh | Session start hook — installs htmlhint for linting |
 | .claude/settings.json | Hook registration |
-| Personal-hub/CLAUDE.md | This file — project memory for future sessions |
+| CLAUDE.md | Root project memory file — auto-loaded by Claude Code (imports Personal-hub/CLAUDE.md) |
+| Personal-hub/CLAUDE.md | Full project memory — edit this file to update context |
 | supabase-*.sql | SQL setup scripts (reference, not auto-run) |
 | supabase-home-loans.sql | Home loans table setup |
 
@@ -400,6 +401,14 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - `shopping.html` and `ai.html`: Redirect to `index.html` if no session.
 - RLS policies are still `allow_all` — do NOT change until intentionally locking down
 - User account is the same one used for Cath Hub (same Supabase project `ziwycymhaqghdiznyhhw`)
+
+## Start of Session Checklist
+Before writing any code, orient quickly:
+1. Check current version: `grep "baker-hub-v" sw.js`
+2. Check recent commits: `git log --oneline -5`
+3. Confirm active branch matches the session config (default: `main`)
+4. Ask the user: "What are we working on today?" if the task isn't already clear
+5. Note the 3 script blocks in `index.html` — edit the right one
 
 ## End of Session Checklist
 Before ending a session, ensure:

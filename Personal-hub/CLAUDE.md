@@ -3,7 +3,7 @@
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
 - **Default to main** — ALWAYS commit and push directly to `main` unless the session configuration specifies a feature branch. If a session-config branch is active, develop there, create a PR targeting main, and then **always ask the user: "Ready to merge to main?"** — then action it immediately when they say yes. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
-- **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.82 → v5.83). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
+- **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.83 → v5.84). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU
 - **No uppercase headings** — use normal case for section labels
@@ -293,8 +293,8 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Built With**: GitHub Pages (hosting), Supabase (database), Claude Code (AI coder — does not own the code), Claude (AI provider for Baker AI chat)
 - **Stack**: Vanilla HTML/CSS/JS, Supabase, GitHub Pages, Claude Code, PWA manifest
 - **Features**: All sections listed
-- **Supabase Tables**: All tables listed (26+ as of v5.82)
-- **AI Agents section**: Lists all active agents with description and cost. As of v5.82:
+- **Supabase Tables**: All tables listed (26+ as of v5.83)
+- **AI Agents section**: Lists all active agents with description and cost. As of v5.83:
   - Baker AI — family assistant (claude-haiku-4-5-20251001 via Supabase Edge Function)
   - Receipt Scanner — AisleMate receipt OCR (claude-sonnet-4-6)
   - Accounting & Planning Agent — finance/budget analysis (claude-haiku-4-5, accessible via Budget & Cashflow tab)
@@ -382,7 +382,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.82`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.83`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -390,8 +390,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Current version** — v5.82. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.82`). Bump after every change or users will see stale cached pages.
+- **Current version** — v5.83. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.83`). Bump after every change or users will see stale cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

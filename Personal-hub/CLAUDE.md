@@ -2,7 +2,8 @@
 
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
-- **Push to main ONLY** — ALWAYS commit and push directly to the main branch. Do NOT use feature branches, even if the session configuration tells you to use one. Do NOT create PRs unless explicitly asked. If the session starts on a feature branch, switch to main immediately with `git checkout main`. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
+- **Push to main ONLY — no exceptions** — ALWAYS commit and push directly to `main`. Do NOT use feature branches under any circumstances, even if the session configuration instructs otherwise. Do NOT create PRs unless explicitly asked. If the session starts on a feature branch, switch to main immediately with `git checkout main` before doing any work. Before ending any session, verify the push succeeded with `git log --oneline origin/main -1`.
+- **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.82 → v5.83). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU
 - **No uppercase headings** — use normal case for section labels
@@ -388,8 +389,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Version number** — currently v5.82. Shown in mobile top bar (top-right badge) and sidebar header (top-right badge) in `index.html`, and `sw.js` cache name. **Every commit that changes code MUST bump the version** — no exceptions. Bump minor version each time (e.g. v5.81 → v5.82). **Major structural shifts** bump the major version (e.g. v5.x → v6.0). The 4 locations to update on every bump: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) this line in CLAUDE.md.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.82`). Bump after significant changes or users see old cached pages.
+- **Current version** — v5.82. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.82`). Bump after every change or users will see stale cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

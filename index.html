@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.91</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.92</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -507,7 +507,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.91</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.92</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -1139,7 +1139,7 @@
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x26A1;</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (22+ tables), file storage (NDIS receipts, HCF claims), Edge Functions (AI proxy). You own all data.</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (28 tables), file storage (NDIS receipts, HCF claims), Edge Functions (AI proxy). You own all data.</div></div>
             <div style="font-size:11px;font-weight:700;color:#16a34a;">Free tier</div>
           </div>
           <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:8px;text-transform:uppercase;letter-spacing:0.5px;">AI Services (independent & replaceable)</div>
@@ -1168,10 +1168,10 @@
           <li><strong>To-Do</strong> — Task management with categories, due dates, overdue highlighting</li>
           <li><strong>Fiona Tasks</strong> — Cleaner task list with print view, auto-refresh, quick-add via URL</li>
           <li><strong>NDIS</strong> — Transaction tracking with provider dropdown, receipt uploads, mobile card view, CSV export, receipt status indicator</li>
-          <li><strong>Finance & Insurance</strong> — Bills (Finance Overview with totals), insurance policies with due date tracking and Mark Paid, super and investment balance tracking, home loans with balance/rate/repayment updates, HCF health claims with receipt uploads, car insurance. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates.</li>
+          <li><strong>Finance & Insurance</strong> — Bills split into Outstanding and Completed/Paid. Insurance policies with due date tracking, Mark Paid, and linked contact lookup. Super and investment balance tracking. Home loans with balance/rate/repayment updates. HCF health claims with receipt uploads. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates. Budget &amp; Cashflow 6-month projection with bank balances, bills, loans, projects, and travel.</li>
           <li><strong>Medical</strong> — Medicare Safety Net tracker with threshold, out-of-pocket costs, and progress towards rebate threshold. Add/delete individual costs with auto-calculation.</li>
-          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Insurance cards link to matching contacts.</li>
-          <li><strong>House Projects</strong> — Zone-based (Left Shed, Garage, Front Fence, etc.), assignee (Andrew/Cath), checklist with complete toggle, print view, expand/collapse all, hide completed</li>
+          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Open button on links auto-adds https:// prefix. Insurance cards link to matching contacts.</li>
+          <li><strong>House Projects</strong> — Zone-based with dual cost tracking: item-level costs (rollup) or fixed project cost. House Tasks pinned at top with auto-rollup. Move items between projects inline. Complete project prompts to move active sub-tasks. Assignee (Andrew/Cath), print view, expand/collapse all.</li>
           <li><strong>Dates</strong> — Important dates with month/week timeline, category filters including Sarah Medical. Policy payment reminders auto-generated from insurance data.</li>
           <li><strong>Habits & Rhythms</strong> — Weekly/fortnightly/monthly/6-monthly/annual habit tracking with progress bars. Weekly checklist management for dashboard items.</li>
           <li><strong>Animals</strong> — Pet profiles (Gypsy, Ellie, Rosie) with age calculated from DOB, medical records, tick treatment tracking, weight history, vet details</li>
@@ -1181,26 +1181,32 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Supabase Tables</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Supabase Tables (28)</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
           <li><strong>ndis_funds</strong> — Funding bucket budgets</li>
           <li><strong>ndis_transactions</strong> — NDIS transaction history with receipt uploads</li>
           <li><strong>ndis_providers</strong> — Provider defaults (name, NDIS#, fund)</li>
-          <li><strong>insurance_policies</strong> — Insurance, superannuation & investment policies</li>
+          <li><strong>insurance_policies</strong> — Insurance, superannuation &amp; investment policies (contact_id links to contacts)</li>
           <li><strong>bills</strong> — Recurring household bills</li>
           <li><strong>home_loans</strong> — Home loan balances, rates and repayments</li>
+          <li><strong>health_claims</strong> — HCF health insurance claims with receipt uploads</li>
+          <li><strong>medicare_safety_net</strong> — Medicare Safety Net threshold + out-of-pocket costs (singleton row)</li>
+          <li><strong>bank_accounts</strong> — Bank accounts and credit cards with balance tracking</li>
+          <li><strong>bank_balance_history</strong> — Weekly balance snapshots per account</li>
+          <li><strong>travel_trips</strong> — Travel trip planning with budget and status</li>
+          <li><strong>travel_expenses</strong> — Expense tracking per trip</li>
           <li><strong>contacts</strong> — Family contacts with dynamic categories</li>
-          <li><strong>house_projects</strong> — House projects with zones and assignees</li>
-          <li><strong>important_dates</strong> — Important dates & events (includes Sarah Medical category)</li>
+          <li><strong>house_projects</strong> — House projects and items with zones, assignees, and costs</li>
+          <li><strong>important_dates</strong> — Important dates &amp; events (includes Sarah Medical category)</li>
           <li><strong>sarah_medical_history</strong> — Completion history for Sarah medical items</li>
           <li><strong>todos</strong> — To-do task list</li>
           <li><strong>fiona_tasks</strong> — Fiona cleaner task list</li>
           <li><strong>animals</strong> — Pet records (name, breed, DOB, vet, insurance)</li>
           <li><strong>animal_medical_records</strong> — Vaccinations, treatments, weight checks</li>
-          <li><strong>habits</strong> — Habits & rhythms with frequency tracking</li>
+          <li><strong>habits</strong> — Habits &amp; rhythms with frequency tracking</li>
           <li><strong>checklist_items</strong> — Weekly dashboard checklist items</li>
           <li><strong>weekly_checklist</strong> — Checklist done state per week</li>
-          <li><strong>ai_settings</strong> — Baker AI system prompt & model config</li>
+          <li><strong>ai_settings</strong> — Baker AI system prompt &amp; model config</li>
           <li><strong>shopping_items</strong> — AisleMate weekly shopping list</li>
           <li><strong>master_items</strong> — AisleMate master item catalogue</li>
           <li><strong>receipts</strong> — AisleMate scanned receipts</li>

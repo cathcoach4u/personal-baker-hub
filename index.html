@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.90</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.91</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -507,7 +507,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.90</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.91</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -4400,16 +4400,17 @@
     PROJECTS.forEach(p=>{if(p.parent_id!=null){if(!kidsMap[p.parent_id])kidsMap[p.parent_id]=[];kidsMap[p.parent_id].push(p);}});
     const parents=PROJECTS.filter(p=>p.is_project===true);
 
-    let totalParentCost=0,totalChildCost=0,totalChildren=0,doneChildren=0;
+    let totalChildren=0,doneChildren=0;
+    const effCost=p=>{const isHT=p.title==='House Tasks';const hasFixed=!isHT&&p.est_cost!=null&&Number(p.est_cost)>0;if(hasFixed)return Number(p.est_cost);return(kidsMap[p.id]||[]).reduce((s,c)=>s+(Number(c.est_cost)||0),0);};
     parents.forEach(p=>{
-      totalParentCost+=Number(p.est_cost)||0;
       const kids=kidsMap[p.id]||[];
       totalChildren+=kids.length;
-      kids.forEach(c=>{
-        totalChildCost+=Number(c.est_cost)||0;
-        if(c.status==='Complete')doneChildren++;
-      });
+      kids.forEach(c=>{if(c.status==='Complete')doneChildren++;});
     });
+    const activeParents=parents.filter(p=>p.status!=='Complete');
+    const doneParents=parents.filter(p=>p.status==='Complete');
+    const totalOutstanding=activeParents.reduce((s,p)=>s+effCost(p),0);
+    const totalPaid=doneParents.reduce((s,p)=>s+effCost(p),0);
 
     let summary='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">';
     summary+='<div style="display:flex;gap:4px;">';
@@ -4421,9 +4422,10 @@
     summary+='<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;">';
     summary+='<div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Project Summary</div>';
     summary+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">';
-    summary+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;">Active projects</div><div style="font-size:18px;font-weight:700;color:#7c3aed;margin-top:4px;">'+parents.length+'</div></div>';
+    summary+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;">Active projects</div><div style="font-size:18px;font-weight:700;color:#7c3aed;margin-top:4px;">'+activeParents.length+'</div></div>';
     summary+='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#1e40af;font-weight:600;">Sub-tasks</div><div style="font-size:18px;font-weight:700;color:#1e40af;margin-top:4px;">'+doneChildren+' / '+totalChildren+'</div><div style="font-size:11px;color:#1e40af;margin-top:2px;">done</div></div>';
-    summary+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#9a3412;font-weight:600;">Bills total</div><div style="font-size:18px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(totalParentCost)+'</div></div>';
+    summary+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#9a3412;font-weight:600;">Outstanding</div><div style="font-size:18px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(totalOutstanding)+'</div></div>';
+    summary+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#0d9488;font-weight:600;">Completed / Paid</div><div style="font-size:18px;font-weight:700;color:#0d9488;margin-top:4px;">'+fmt(totalPaid)+'</div><div style="font-size:11px;color:#0d9488;margin-top:2px;">'+doneParents.length+' project'+(doneParents.length===1?'':'s')+'</div></div>';
     summary+='</div></div>';
 
     let body='';

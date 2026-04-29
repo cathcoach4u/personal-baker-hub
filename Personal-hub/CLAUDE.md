@@ -152,6 +152,12 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 - **Loans tab**: Home loans with balance, interest rate, repayment tracking. Cards show lender, account, property, offset accounts, rate type. Quick-update buttons with date picker for balance, rate and repayment. Loan Files OneDrive link at top. Table: `home_loans`
 - **Bank Accounts pill**: Tracks bank accounts and credit cards. Table: `bank_accounts` (name, balance, account_type: savings/cheque/credit/offset, bank_name, account_number, updated_at). Weekly snapshots stored in `bank_balance_history` (account_id, balance, snapshot_date). Add/update balance with date.
 - **Super/Investments tabs**: Balance cards with date picker for update tracking. Contact button links to matching contact.
+- **Super tab extras**:
+  - **ASFA Retirement Standard tracker**: Shows total super vs $730k target (comfortable home-owning couple). Progress bar, gap amount, status message. Moneysmart link. Rendered dynamically in `phSuperView()`.
+  - **Contribution caps (FY)**: Per-person card (Cath & Andrew) showing concessional and non-concessional contributions for current FY. Progress bars against caps ($30k concessional, $110k non-concessional). Edit/Enter buttons.
+  - **FY planned targets**: Each person can set a total planned contribution for the year. "Still to contribute" calculated as planned minus already paid. Feeds into Budget & Cashflow cashflow projection.
+  - **Storage**: All stored in localStorage. `super_contribs_{fyStart}` (amounts paid in, per person). `super_planned_{fyStart}` (planned FY target, per person). Keys auto-scope to financial year (fyStart = year July starts, e.g. 2025 for FY 2025-26). Defaults: Cath concessional $5,360.83, non-concessional $0; Andrew concessional TBC; Cath planned $20k, Andrew planned $10k.
+  - **Functions**: `phSuperView()` renders all. `phUpdateSuperContrib(name, type)` edits paid amounts. `phUpdateSuperPlanned(name)` edits FY target.
 - **Contact button**: Insurance cards have a Contact button that navigates to the matching contact card in Contacts section (resets filters, expands groups, highlights with blue outline)
 - **Linked contact on policies**: `contact_id` column on `insurance_policies` allows an explicit contact link. Form includes a "Linked Contact" dropdown (`#if-contact`). Explicit `contact_id` lookup takes priority over fuzzy insurer name match when navigating to a contact.
 - **Bills tab totals**: Finance Overview shows two separate cards — **Outstanding** (orange, unpaid bills total) and **Completed / Paid** (green, paid bills total) — split for clarity
@@ -164,12 +170,14 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
   - Loan repayments (red-rose) — total `home_loans.repayment` monthly
   - Project costs / open (orange) — sum of open parent projects with cost
   - Travel commitments (purple) — remaining travel budget across active trips
+  - Super contributions (green) — remaining planned super contributions this FY (from `super_planned_{FY}` localStorage, only shown if > 0)
 - **Accounting & Planning Agent callout**: Gradient banner (teal→purple) with "Chat with Baker AI" button
 - **6-month cashflow projection**: Table of 6 months (Month 1–6). Each row shows net flow (income not tracked yet, shows outflows). Tapping a row expands the breakdown:
   - Recurring bills (separate from loans — each listed individually)
   - Loan repayments (separate from bills)
   - Project costs (allocated to month 1 only)
   - Travel (allocated to the month the trip starts, or month 1 if no start_date)
+  - Super contributions remaining (allocated to month 1, named per person)
 - **Project costs breakdown**: Grid of open projects with cost and zone
 - **Travel plans breakdown**: Cards per active trip with budget, spent, remaining, progress bar
 - **Monthly cashflow detail**: Bottom section showing Recurring bills / Loan repayments / Monthly total
@@ -392,7 +400,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.96`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v5.97`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -400,8 +408,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Current version** — v5.96. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v5.96`). Bump after every change or users will see stale cached pages.
+- **Current version** — v5.97. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v5.97`). Bump after every change or users will see stale cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

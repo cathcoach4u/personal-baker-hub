@@ -365,7 +365,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 | config.js | Supabase credentials |
 | shopping.html | AisleMate standalone shopping page |
 | sarah-protocol.html | Sarah's MS & Epilepsy Protocol page |
-| japan-2026.html | Japan family trip planner (25 Sep – 9 Oct 2026). Auth-protected. Checklist + notes saved in localStorage. Linked from Travel section. |
+| japan-2026.html | Japan family trip planner (25 Sep – 9 Oct 2026). Open access — no login required. 3-tab app (Itinerary, Plan, Info): countdown header, route ribbon, 15 day accordion cards with city colour coding, transit cards, 27-item checklist in 5 sections, emergency contacts, floating Japan AI FAB. Checklist + notes saved in localStorage. Linked from Travel section. |
 | ndis.html | Standalone mobile NDIS page (not linked from nav) |
 | apps-directory.html | Apps directory page |
 | sw.js | Service worker for Baker Hub |
@@ -401,7 +401,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v6.7`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v6.8`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -409,8 +409,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Current version** — v6.7. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v6.7`). Bump after every change or users will see stale cached pages.
+- **Current version** — v6.8. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v6.8`). Bump after every change or users will see stale cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

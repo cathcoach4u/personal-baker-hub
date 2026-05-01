@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.99</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v6.0</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -507,7 +507,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.99</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v6.0</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -2755,7 +2755,7 @@
   function renderContactCards(items){
     return items.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'';
-      const emailLink=c.email?'<a href="mailto:'+c.email+'" style="font-size:11px;color:#0d9488;text-decoration:none;">'+c.email+'</a>':'';
+      const emailLink=c.email?'<div style="display:flex;align-items:center;gap:6px;margin-top:1px;" onclick="event.stopPropagation()"><span style="font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">'+c.email+'</span><a href="mailto:'+c.email+'" style="font-size:10px;font-weight:600;color:white;background:#0d9488;padding:2px 7px;border-radius:4px;text-decoration:none;white-space:nowrap;flex-shrink:0;">Email</a></div>':'';
       const meetLink=mkContactLinkEl(c.link);
       const link2El=mkContactLinkEl(c.link2);
       const link3El=mkContactLinkEl(c.link3);
@@ -6538,7 +6538,9 @@
     const div=document.createElement('div');
     div.className='bai-m '+role;
     let html=baiEscHtml(text);
-    // Markdown links [text](url) → <a>
+    // Markdown mailto: links → styled email button
+    html=html.replace(/\[([^\]]+)\]\((mailto:[^\s)]+)\)/g,'<a href="$2" style="display:inline-block;background:#0d9488;color:white;padding:5px 14px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:6px;font-size:13px;">✉ $1</a>');
+    // Markdown https links [text](url) → <a>
     html=html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener" style="color:#0d9488;text-decoration:underline;font-weight:600;">$1</a>');
     // Bare URLs (avoid wrapping ones already in <a>)
     html=html.replace(/(^|[^"'>])(https?:\/\/[^\s<)]+)/g,'$1<a href="$2" target="_blank" rel="noopener" style="color:#0d9488;text-decoration:underline;font-weight:600;">$2</a>');
@@ -6696,6 +6698,17 @@
       const {error:de}=await sb.from('fiona_tasks').delete().eq('id',data[0].id);
       if(de)return 'Error: '+de.message;
       return 'Deleted Fiona task: "'+data[0].task+'"';
+    }
+    if(a.type==='compose_email'){
+      if(!a.to_name)return 'Error: Missing contact name.';
+      const {data,error}=await sb.from('contacts').select('*').ilike('name','%'+a.to_name+'%').limit(1);
+      if(error)return 'Error: '+error.message;
+      if(!data||!data.length)return 'Could not find a contact matching "'+a.to_name+'". Check the name and try again.';
+      const contact=data[0];
+      if(!contact.email)return contact.name+' has no email address saved in Contacts.';
+      const subject=encodeURIComponent(a.subject||'');
+      const body=encodeURIComponent(a.body||'');
+      return 'Email ready for **'+contact.name+'** ('+contact.email+'):\n\n[Email '+contact.name+'](mailto:'+contact.email+'?subject='+subject+'&body='+body+')';
     }
     if(a.type==='add_shopping'){
       if(!a.items)return 'Error: Missing items.';

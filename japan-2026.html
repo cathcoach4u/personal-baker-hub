@@ -10,557 +10,118 @@
 <meta name="apple-mobile-web-app-title" content="Japan 2026">
 <title>Japan 2026 — Baker Family</title>
 <style>
-:root {
-  --tokyo:#1d4ed8; --tokyo-bg:#eff6ff;
-  --kyoto:#7c3aed; --kyoto-bg:#f5f3ff;
-  --hiro:#b45309; --hiro-bg:#fffbeb;
-  --osaka:#c2410c; --osaka-bg:#fff7ed;
-  --tokyo2:#0369a1; --tokyo2-bg:#f0f9ff;
-  --transit:#d97706; --transit-bg:#fef3c7;
-  --teal:#0d9488;
-  --sb: env(safe-area-inset-bottom,0px);
-  --st: env(safe-area-inset-top,0px);
-}
+:root{--tokyo:#1d4ed8;--kyoto:#7c3aed;--hiro:#b45309;--osaka:#c2410c;--tokyo2:#0369a1;--transit:#d97706;--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b;padding-bottom:calc(68px + var(--sb));}
-
-/* HEADER */
 .top-bar{background:linear-gradient(135deg,#0d9488,#0891b2);color:white;padding:12px 16px;padding-top:calc(12px + var(--st));position:sticky;top:0;z-index:100;}
 .top-bar h1{font-size:19px;font-weight:800;letter-spacing:-0.3px;}
 .top-bar .sub{font-size:12px;opacity:0.85;margin-top:2px;}
 .countdown{display:inline-block;background:rgba(255,255,255,0.22);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;margin-top:6px;}
-
-/* TAB BAR */
 .tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid #e2e8f0;display:flex;padding-bottom:var(--sb);box-shadow:0 -2px 10px rgba(0,0,0,0.07);}
-.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border:none;background:transparent;font-size:10px;font-weight:700;color:#94a3b8;cursor:pointer;text-transform:uppercase;letter-spacing:0.4px;}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;text-decoration:none;}
 .tb.on{color:var(--teal);}
 .tb .ic{font-size:19px;line-height:1;}
-.tab{display:none;padding:12px 14px;max-width:820px;margin:0 auto;}
-.tab.on{display:block;}
-
-/* STAT STRIP */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
-.stat{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:10px 6px;text-align:center;}
-.stat-v{font-size:18px;font-weight:800;color:var(--teal);}
-.stat-l{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
-
-/* ROUTE RIBBON */
-.ribbon{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.ribbon-inner{display:flex;align-items:center;min-width:max-content;}
-.stop{text-align:center;min-width:78px;}
-.dot{width:13px;height:13px;border-radius:50%;margin:0 auto 6px;}
-.stop-name{font-size:11px;font-weight:800;}
-.stop-n{font-size:10px;color:#94a3b8;margin-top:2px;}
-.line{flex:1;height:2px;background:#e2e8f0;min-width:20px;margin-bottom:19px;}
-
-/* CITY SECTION HEADINGS */
 .city-h{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;padding:6px 2px;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
 .city-h::after{content:'';flex:1;height:1px;background:#e2e8f0;}
-
-/* DAY CARDS */
-.day{background:white;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
-.dh{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;user-select:none;}
-.dnum{flex-shrink:0;width:46px;}
-.dnum .n{font-size:11px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.4px;}
-.dnum .d{font-size:14px;font-weight:800;color:#1e293b;line-height:1.1;}
-.dtitle{flex:1;}
-.dtitle .t{font-size:14px;font-weight:700;}
-.dtitle .s{font-size:12px;color:#64748b;margin-top:2px;}
-.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.arr{font-size:11px;color:#cbd5e1;transition:transform 0.2s;flex-shrink:0;}
-.dh.open .arr{transform:rotate(180deg);}
-.dbody{border-top:1px solid #f1f5f9;display:none;}
-
-/* ACTIVITY ITEMS */
-.act{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid #f8fafc;align-items:flex-start;}
-.act:last-of-type{border-bottom:none;}
-.atime{font-size:11px;color:#94a3b8;font-weight:600;white-space:nowrap;min-width:52px;padding-top:2px;}
-.abar{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0;margin-top:3px;min-height:18px;}
-.ainfo .at{font-size:14px;font-weight:600;}
-.ainfo .as{font-size:12px;color:#64748b;margin-top:3px;line-height:1.5;}
-.act.sight .abar{background:#3b82f6;}
-.act.food .abar{background:#f97316;}
-.act.stay .abar{background:#22c55e;}
-.act.tip .abar{background:#94a3b8;}
-
-/* TRANSIT CARDS */
-.tc{margin:10px 12px;border-radius:10px;border-left:5px solid var(--transit);background:var(--transit-bg);padding:11px 13px;display:flex;align-items:center;gap:12px;}
-.ti{font-size:20px;flex-shrink:0;}
-.tr{flex:1;}
-.tr .from{font-size:15px;font-weight:800;color:#92400e;}
-.tr .det{font-size:12px;color:#a16207;margin-top:3px;line-height:1.5;}
-.td{font-size:14px;font-weight:800;color:#92400e;white-space:nowrap;}
-
-/* PER-DAY NOTES */
-.dnotes{padding:10px 14px;border-top:1px dashed #f1f5f9;background:#fafafa;}
-.dnotes textarea{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;resize:none;background:white;min-height:54px;color:#1e293b;}
-.dnotes textarea:focus{outline:none;border-color:var(--teal);}
-.dnotes textarea::placeholder{color:#e2e8f0;}
-
-/* CHECKLIST */
-.ck-sec{background:white;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:10px;overflow:hidden;}
-.ck-head{padding:14px 16px;border-bottom:1px solid #f1f5f9;}
-.ck-head h3{font-size:14px;font-weight:700;margin-bottom:7px;}
-.prog-bar{height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;}
-.prog-fill{height:100%;background:var(--teal);border-radius:3px;transition:width 0.3s;width:0%;}
-.prog-txt{font-size:11px;color:#94a3b8;margin-top:4px;}
-.cki{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid #f8fafc;}
-.cki:last-child{border-bottom:none;}
-.cki input{width:20px;height:20px;accent-color:var(--teal);flex-shrink:0;margin-top:1px;cursor:pointer;}
-.cki label{font-size:14px;cursor:pointer;line-height:1.4;flex:1;}
-.cki label.done{text-decoration:line-through;color:#94a3b8;}
-
-/* INFO TAB */
-.sos{background:#7f1d1d;color:white;border-radius:14px;padding:16px;margin-bottom:12px;}
-.sos h3{font-size:12px;font-weight:700;opacity:0.75;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
-.sos-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
-.sos-row:last-child{border-bottom:none;}
-.sos-row .lbl{font-size:12px;opacity:0.8;}
-.sos-row .num{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
-
-.info-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:10px;}
-.info-card h3{font-size:14px;font-weight:700;padding-bottom:10px;border-bottom:1px solid #f1f5f9;margin-bottom:10px;}
-.row{font-size:13px;color:#475569;padding:7px 0;border-bottom:1px solid #f8fafc;line-height:1.5;}
-.row:last-child{border-bottom:none;}
-.row strong{color:#1e293b;}
-
-.trn{background:var(--transit-bg);border:1px solid #fde68a;border-left:5px solid var(--transit);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
-.trn:last-child{margin-bottom:0;}
-.trn .r{font-size:15px;font-weight:800;color:#92400e;}
-.trn .d{font-size:12px;color:#a16207;margin-top:5px;line-height:1.6;}
-.trn .tag{display:inline-block;background:#92400e;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px;}
-
-/* FLOATING BUTTONS */
-.fab{position:fixed;right:14px;bottom:calc(72px + var(--sb));width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;font-size:21px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,0.35);display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:90;}
-.fab-today{position:fixed;left:14px;bottom:calc(72px + var(--sb));background:white;border:2px solid var(--teal);color:var(--teal);border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);z-index:90;display:none;font-family:inherit;}
-
-.overall-prog{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:12px;}
-.notes-ta{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;background:#f8fafc;color:#1e293b;}
-.notes-ta:focus{outline:none;border-color:var(--teal);background:white;}
-
-@media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr);}}
+.link-card{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:13px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;color:#1e293b;}
+.link-card:active{background:#f8fafc;}
+.lc-icon{font-size:20px;flex-shrink:0;}
+.lc-info{flex:1;}
+.lc-title{font-size:14px;font-weight:700;}
+.lc-sub{font-size:12px;color:#64748b;margin-top:2px;}
+.lc-badge{font-size:12px;font-weight:700;color:var(--teal);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:2px 10px;flex-shrink:0;white-space:nowrap;}
+.lc-arr{font-size:16px;color:#cbd5e1;flex-shrink:0;}
+.fab{position:fixed;right:14px;bottom:calc(72px + var(--sb));width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;font-size:21px;border:none;box-shadow:0 4px 14px rgba(124,58,237,0.35);display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:90;}
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <h1>Japan 2026 🇯🇵</h1>
-  <div class="sub">Baker Family &nbsp;•&nbsp; 25 Sep – 9 Oct &nbsp;•&nbsp; 4 travellers</div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div><h1>Japan 2026 🇯🇵</h1><div class="sub">Baker Family &nbsp;•&nbsp; 25 Sep – 9 Oct &nbsp;•&nbsp; 4 travellers</div></div>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.10</span>
+  </div>
   <div class="countdown" id="cd">Loading…</div>
 </div>
 
-<!-- ═══ ITINERARY TAB ═══ -->
-<div id="tab-trip" class="tab on">
-  <div style="height:12px;"></div>
+<div style="padding:12px 14px;max-width:820px;margin:0 auto;">
+  <div style="height:4px;"></div>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-v">14</div><div class="stat-l">Nights</div></div>
-    <div class="stat"><div class="stat-v">5</div><div class="stat-l">Cities</div></div>
-    <div class="stat"><div class="stat-v" id="sv-ck">0/27</div><div class="stat-l">Planned</div></div>
-    <div class="stat"><div class="stat-v">$25k</div><div class="stat-l">Budget</div></div>
-  </div>
-
-  <div class="ribbon">
-    <div class="ribbon-inner">
-      <div class="stop"><div class="dot" style="background:var(--tokyo)"></div><div class="stop-name" style="color:var(--tokyo)">Tokyo</div><div class="stop-n">4 nights</div></div>
-      <div class="line"></div>
-      <div class="stop"><div class="dot" style="background:var(--kyoto)"></div><div class="stop-name" style="color:var(--kyoto)">Kyoto</div><div class="stop-n">2 nights</div></div>
-      <div class="line"></div>
-      <div class="stop"><div class="dot" style="background:var(--hiro)"></div><div class="stop-name" style="color:var(--hiro)">Hiroshima</div><div class="stop-n">2 nights</div></div>
-      <div class="line"></div>
-      <div class="stop"><div class="dot" style="background:var(--osaka)"></div><div class="stop-name" style="color:var(--osaka)">Osaka</div><div class="stop-n">4 nights</div></div>
-      <div class="line"></div>
-      <div class="stop"><div class="dot" style="background:var(--tokyo2)"></div><div class="stop-name" style="color:var(--tokyo2)">Tokyo</div><div class="stop-n">2 nights</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;">
+      <div id="ds-ck" style="font-size:22px;font-weight:800;color:var(--teal);">0 / 27</div>
+      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">Planned</div>
     </div>
+    <a href="japan-info.html#budget-tracker" style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;text-decoration:none;display:block;">
+      <div id="ds-spent" style="font-size:22px;font-weight:800;color:#1e293b;">$0 spent</div>
+      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">of $25,000 budget ›</div>
+    </a>
   </div>
 
-  <!-- TOKYO -->
-  <div class="city-h" style="color:var(--tokyo)">🗼 Tokyo &nbsp; Days 1–4</div>
+  <div class="city-h" style="color:#64748b;margin-top:4px;">🗓️ Itinerary</div>
+  <a class="link-card" href="japan-itinerary.html#ch-tokyo"><div class="lc-icon" style="color:var(--tokyo)">🗼</div><div class="lc-info"><div class="lc-title" style="color:var(--tokyo)">Tokyo</div><div class="lc-sub">Days 1–4 &nbsp;•&nbsp; 25–28 Sep</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-itinerary.html#ch-kyoto"><div class="lc-icon" style="color:var(--kyoto)">⛩️</div><div class="lc-info"><div class="lc-title" style="color:var(--kyoto)">Kyoto</div><div class="lc-sub">Days 5–6 &nbsp;•&nbsp; 29–30 Sep</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-itinerary.html#ch-hiro"><div class="lc-icon" style="color:var(--hiro)">🕊️</div><div class="lc-info"><div class="lc-title" style="color:var(--hiro)">Hiroshima</div><div class="lc-sub">Days 7–8 &nbsp;•&nbsp; 1–2 Oct</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-itinerary.html#ch-osaka"><div class="lc-icon" style="color:var(--osaka)">🏯</div><div class="lc-info"><div class="lc-title" style="color:var(--osaka)">Osaka + Nara</div><div class="lc-sub">Days 9–12 &nbsp;•&nbsp; 3–6 Oct</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-itinerary.html#ch-tokyo2"><div class="lc-icon" style="color:var(--tokyo2)">✈️</div><div class="lc-info"><div class="lc-title" style="color:var(--tokyo2)">Tokyo — Return</div><div class="lc-sub">Days 13–14 &nbsp;•&nbsp; 7–8 Oct</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-itinerary.html#ddep"><div class="lc-icon">🛫</div><div class="lc-info"><div class="lc-title">Departure</div><div class="lc-sub">9 Oct &nbsp;•&nbsp; Sydney bound</div></div><div class="lc-arr">›</div></a>
 
-  <div class="day" id="d1">
-    <div class="dh" onclick="tog('d1')"><div class="dnum"><div class="n">Day 1</div><div class="d">25 Sep</div></div><div class="dtitle"><div class="t">Arrive Tokyo</div><div class="s">Friday &nbsp;•&nbsp; Arrival</div></div><div class="cdot" style="background:var(--tokyo)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act stay"><div class="atime">Arrival</div><div class="abar"></div><div class="ainfo"><div class="at">Land + transfer to hotel</div><div class="as">Narita or Haneda. Check in, drop bags. Rest.</div></div></div>
-      <div class="act sight"><div class="atime">After check-in</div><div class="abar"></div><div class="ainfo"><div class="at">Activate JR Pass + get Suica IC cards</div><div class="as">JR office at airport or major station. Load ¥5,000–10,000 each onto Suica card — works on trains, buses, convenience stores.</div></div></div>
-      <div class="act tip"><div class="atime">Evening</div><div class="abar"></div><div class="ainfo"><div class="at">Rest & explore the local area</div><div class="as">Early night after long flight. Convenience store dinner is genuinely great in Japan.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 1…" id="n1" oninput="sn(1)"></textarea></div>
-    </div>
-  </div>
+  <div class="city-h" style="color:#64748b;margin-top:8px;">✅ Plan & packing</div>
+  <a class="link-card" href="japan-plan.html#cs-book"><div class="lc-icon">📋</div><div class="lc-info"><div class="lc-title">Book & organise</div><div class="lc-sub">Flights, JR Pass, hotels, tickets</div></div><div class="lc-badge" id="ds-cs0">0 / 9</div></a>
+  <a class="link-card" href="japan-plan.html#cs-docs"><div class="lc-icon">💰</div><div class="lc-info"><div class="lc-title">Documents & money</div><div class="lc-sub">Passports, insurance, cash, cards</div></div><div class="lc-badge" id="ds-cs1">0 / 6</div></a>
+  <a class="link-card" href="japan-plan.html#cs-sarah"><div class="lc-icon">⚕️</div><div class="lc-info"><div class="lc-title">Sarah — health & medical</div><div class="lc-sub">Meds, doctor letter, medical card</div></div><div class="lc-badge" id="ds-cs2">0 / 4</div></a>
+  <a class="link-card" href="japan-plan.html#cs-tech"><div class="lc-icon">📱</div><div class="lc-info"><div class="lc-title">Tech & connectivity</div><div class="lc-sub">WiFi, apps, adapters</div></div><div class="lc-badge" id="ds-cs3">0 / 4</div></a>
+  <a class="link-card" href="japan-plan.html#cs-pack"><div class="lc-icon">🎒</div><div class="lc-info"><div class="lc-title">Packing</div><div class="lc-sub">Shoes, luggage, bags, coin purse</div></div><div class="lc-badge" id="ds-cs4">0 / 4</div></a>
 
-  <div class="day" id="d2">
-    <div class="dh" onclick="tog('d2')"><div class="dnum"><div class="n">Day 2</div><div class="d">26 Sep</div></div><div class="dtitle"><div class="t">Shibuya & Harajuku</div><div class="s">Saturday &nbsp;•&nbsp; West Tokyo</div></div><div class="cdot" style="background:var(--tokyo)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Meiji Shrine</div><div class="as">Peaceful forest shrine in central Tokyo. Free entry. Calm start to the day.</div></div></div>
-      <div class="act sight"><div class="atime">Late morning</div><div class="abar"></div><div class="ainfo"><div class="at">Harajuku — Takeshita Street</div><div class="as">Street fashion, crepes, colourful shops. Great for Sarah & Russell.</div></div></div>
-      <div class="act food"><div class="atime">Lunch</div><div class="abar"></div><div class="ainfo"><div class="at">Omotesando</div><div class="as">Upscale boulevard — excellent cafes, architecture, people-watching.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Shibuya Crossing</div><div class="as">World's busiest pedestrian crossing. View from Starbucks 2F or Shibuya Sky rooftop.</div></div></div>
-      <div class="act food"><div class="atime">Dinner</div><div class="abar"></div><div class="ainfo"><div class="at">Dinner in Shibuya</div><div class="as">Ramen, sushi, izakaya — endless choices. Budget ¥2,000–4,000pp.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 2…" id="n2" oninput="sn(2)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d3">
-    <div class="dh" onclick="tog('d3')"><div class="dnum"><div class="n">Day 3</div><div class="d">27 Sep</div></div><div class="dtitle"><div class="t">Asakusa & Ueno</div><div class="s">Sunday &nbsp;•&nbsp; Old Tokyo</div></div><div class="cdot" style="background:var(--tokyo)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">Early</div><div class="abar"></div><div class="ainfo"><div class="at">Senso-ji Temple</div><div class="as">Tokyo's oldest temple. Go early — crowded by 9am. Nakamise shopping street for souvenirs.</div></div></div>
-      <div class="act food"><div class="atime">Mid-morning</div><div class="abar"></div><div class="ainfo"><div class="at">Asakusa food walk</div><div class="as">Ningyo-yaki cakes, melonpan, senbei rice crackers along Nakamise.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Ueno Park & Museum</div><div class="as">Tokyo National Museum or walk the park. Beautiful and free.</div></div></div>
-      <div class="act sight"><div class="atime">Evening</div><div class="abar"></div><div class="ainfo"><div class="at">Tokyo Skytree (optional)</div><div class="as">City views at night. ¥2,100–3,400pp. Book ahead or queue.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 3…" id="n3" oninput="sn(3)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d4">
-    <div class="dh" onclick="tog('d4')"><div class="dnum"><div class="n">Day 4</div><div class="d">28 Sep</div></div><div class="dtitle"><div class="t">TeamLab + free day</div><div class="s">Monday &nbsp;•&nbsp; Art & explore</div></div><div class="cdot" style="background:var(--tokyo)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">TeamLab Borderless</div><div class="as">Immersive digital art — sells out months ahead. Book before leaving Australia. ¥3,200pp.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Odaiba or Akihabara</div><div class="as">Odaiba: waterfront, Rainbow Bridge views. Akihabara: electronics, anime, gaming.</div></div></div>
-      <div class="act stay"><div class="atime">Evening</div><div class="abar"></div><div class="ainfo"><div class="at">Pack for travel day tomorrow</div><div class="as">Consider Takkyubin: send bags to Kyoto hotel tonight (~¥2,000/bag). Shinkansen tomorrow.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 4…" id="n4" oninput="sn(4)"></textarea></div>
-    </div>
-  </div>
-
-  <!-- KYOTO -->
-  <div class="city-h" style="color:var(--kyoto)">⛩️ Kyoto &nbsp; Days 5–6</div>
-
-  <div class="day" id="d5">
-    <div class="dh" onclick="tog('d5')"><div class="dnum"><div class="n">Day 5</div><div class="d">29 Sep</div></div><div class="dtitle"><div class="t">Tokyo → Kyoto</div><div class="s">Tuesday &nbsp;•&nbsp; Travel day</div></div><div class="cdot" style="background:var(--kyoto)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc"><div class="ti">🚄</div><div class="tr"><div class="from">Tokyo → Kyoto</div><div class="det">Tokaido Shinkansen (Hikari or Nozomi) &nbsp;•&nbsp; JR Pass ✓<br>Shinagawa → Kyoto &nbsp;•&nbsp; ~2hr 15min</div></div><div class="td">~2h 15m</div></div>
-      <div class="act stay"><div class="atime">On arrival</div><div class="abar"></div><div class="ainfo"><div class="at">Check in, Kyoto hotel</div><div class="as">Drop bags. Collect Takkyubin if sent ahead.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Arashiyama bamboo grove</div><div class="as">Bamboo forest, Tenryu-ji garden (¥500), Togetsukyo bridge. 20min by bus/train from central Kyoto.</div></div></div>
-      <div class="act sight"><div class="atime">Late afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Monkey Park Iwatayama (optional)</div><div class="as">20min hike up for views + Japanese macaques. ¥550. Good if everyone has energy.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 5…" id="n5" oninput="sn(5)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d6">
-    <div class="dh" onclick="tog('d6')"><div class="dnum"><div class="n">Day 6</div><div class="d">30 Sep</div></div><div class="dtitle"><div class="t">Fushimi Inari & Gion</div><div class="s">Wednesday &nbsp;•&nbsp; Iconic Kyoto</div></div><div class="cdot" style="background:var(--kyoto)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">7am early</div><div class="abar"></div><div class="ainfo"><div class="at">Fushimi Inari Taisha</div><div class="as">Thousands of torii gates up the mountain. Go early — crowded by 9am. Free entry. 1–2hr hike.</div></div></div>
-      <div class="act food"><div class="atime">Late morning</div><div class="abar"></div><div class="ainfo"><div class="at">Nishiki Market</div><div class="as">"Kyoto's kitchen" — pickles, tofu, street food, Japanese sweets in a covered arcade.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Gion district</div><div class="as">Traditional machiya townhouses, Hanamikoji Street. Possible geiko/maiko sightings late afternoon.</div></div></div>
-      <div class="act sight"><div class="atime">Late afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Philosopher's Path</div><div class="as">1km canal-side walk through Higashiyama. Nanzen-ji temple at the end. Peaceful.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 6…" id="n6" oninput="sn(6)"></textarea></div>
-    </div>
-  </div>
-
-  <!-- HIROSHIMA -->
-  <div class="city-h" style="color:var(--hiro)">🕊️ Hiroshima &nbsp; Days 7–8</div>
-
-  <div class="day" id="d7">
-    <div class="dh" onclick="tog('d7')"><div class="dnum"><div class="n">Day 7</div><div class="d">1 Oct</div></div><div class="dtitle"><div class="t">Kyoto → Hiroshima</div><div class="s">Thursday &nbsp;•&nbsp; Travel + Peace Memorial</div></div><div class="cdot" style="background:var(--hiro)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc"><div class="ti">🚄</div><div class="tr"><div class="from">Kyoto → Hiroshima</div><div class="det">San'yo Shinkansen &nbsp;•&nbsp; JR Pass ✓</div></div><div class="td">~1h 40m</div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Peace Memorial Museum</div><div class="as">Powerful and essential. Allow 2 hours. ¥200 entry. Respectful atmosphere throughout.</div></div></div>
-      <div class="act sight"><div class="atime">Late afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">A-Bomb Dome & Peace Park</div><div class="as">UNESCO World Heritage site. Free. Riverside walk. Quiet and moving at dusk.</div></div></div>
-      <div class="act food"><div class="atime">Dinner</div><div class="abar"></div><div class="ainfo"><div class="at">Hiroshima-style okonomiyaki</div><div class="as">Layered savoury pancake with noodles — unique to Hiroshima. Okonomimura building has 3 floors of stalls.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 7…" id="n7" oninput="sn(7)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d8">
-    <div class="dh" onclick="tog('d8')"><div class="dnum"><div class="n">Day 8</div><div class="d">2 Oct</div></div><div class="dtitle"><div class="t">Miyajima Island</div><div class="s">Friday &nbsp;•&nbsp; Island day trip</div></div><div class="cdot" style="background:var(--hiro)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc"><div class="ti">⛴️</div><div class="tr"><div class="from">Hiroshima → Miyajima</div><div class="det">JR train to Miyajima-guchi + JR Ferry &nbsp;•&nbsp; JR Pass ✓ for both</div></div><div class="td">~40m total</div></div>
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Itsukushima Shrine + floating torii</div><div class="as">Check tide times before going — torii floats at high tide, walkable at low tide. Both are stunning. ¥300 shrine entry.</div></div></div>
-      <div class="act sight"><div class="atime">Mid-morning</div><div class="abar"></div><div class="ainfo"><div class="at">Daisho-in Temple</div><div class="as">Hillside temple, quieter than the shrine. Free. Friendly deer roam the island.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Mount Misen</div><div class="as">Cable car up (¥1,840 return) then 30min walk to summit. Spectacular views. Skip if Sarah needs a rest day.</div></div></div>
-      <div class="act food"><div class="atime">Lunch</div><div class="abar"></div><div class="ainfo"><div class="at">Oysters & momiji manju</div><div class="as">Grilled oysters from stalls ¥200–400 each. Momiji-manju maple-leaf cakes — Miyajima's signature snack.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 8…" id="n8" oninput="sn(8)"></textarea></div>
-    </div>
-  </div>
-
-  <!-- OSAKA -->
-  <div class="city-h" style="color:var(--osaka)">🏯 Osaka + Nara &nbsp; Days 9–12</div>
-
-  <div class="day" id="d9">
-    <div class="dh" onclick="tog('d9')"><div class="dnum"><div class="n">Day 9</div><div class="d">3 Oct</div></div><div class="dtitle"><div class="t">Hiroshima → Osaka</div><div class="s">Saturday &nbsp;•&nbsp; Travel + Dotonbori</div></div><div class="cdot" style="background:var(--osaka)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc"><div class="ti">🚄</div><div class="tr"><div class="from">Hiroshima → Osaka (Shin-Osaka)</div><div class="det">San'yo Shinkansen &nbsp;•&nbsp; JR Pass ✓</div></div><div class="td">~1h 20m</div></div>
-      <div class="act stay"><div class="atime">On arrival</div><div class="abar"></div><div class="ainfo"><div class="at">Check in, Osaka hotel</div><div class="as">Namba or Shinsaibashi area ideal — walking distance to Dotonbori.</div></div></div>
-      <div class="act sight"><div class="atime">Evening</div><div class="abar"></div><div class="ainfo"><div class="at">Dotonbori</div><div class="as">Osaka's neon canal food street. Glico Running Man sign, takoyaki, street energy. Best at night.</div></div></div>
-      <div class="act food"><div class="atime">Dinner</div><div class="abar"></div><div class="ainfo"><div class="at">Osaka street food</div><div class="as">Takoyaki (octopus balls), kushikatsu (skewers), Osaka-style okonomiyaki. Budget ¥2,000–3,500pp.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 9…" id="n9" oninput="sn(9)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d10">
-    <div class="dh" onclick="tog('d10')"><div class="dnum"><div class="n">Day 10</div><div class="d">4 Oct</div></div><div class="dtitle"><div class="t">Osaka Castle & Shinsekai</div><div class="s">Sunday &nbsp;•&nbsp; History + retro streets</div></div><div class="cdot" style="background:var(--osaka)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Osaka Castle</div><div class="as">Historic castle with museum inside. ¥600 entry. Beautiful free park grounds. Views from top floor.</div></div></div>
-      <div class="act food"><div class="atime">Lunch</div><div class="abar"></div><div class="ainfo"><div class="at">Kuromon Ichiba Market</div><div class="as">"Osaka's kitchen" — 180 stalls. Fresh seafood, wagyu, produce. Perfect grazing lunch.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Shinsekai</div><div class="as">Retro 1950s neighbourhood. Tsutenkaku Tower ¥800. Famous for kushikatsu — no double-dipping rule!</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 10…" id="n10" oninput="sn(10)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d11">
-    <div class="dh" onclick="tog('d11')"><div class="dnum"><div class="n">Day 11</div><div class="d">5 Oct</div></div><div class="dtitle"><div class="t">Universal Studios Japan</div><div class="s">Monday &nbsp;•&nbsp; Theme park day</div></div><div class="cdot" style="background:var(--osaka)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">All day</div><div class="abar"></div><div class="ainfo"><div class="at">Universal Studios Japan</div><div class="as">Nintendo World, Harry Potter World, Minion Park. Book tickets + Express Pass well before departure. Opens 9am.</div></div></div>
-      <div class="act tip"><div class="atime">Getting there</div><div class="abar"></div><div class="ainfo"><div class="at">JR Yumesaki Line from Osaka Station</div><div class="as">→ Universal City Station. 5 minutes. JR Pass ✓. First train ~7am on busy days.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 11…" id="n11" oninput="sn(11)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d12">
-    <div class="dh" onclick="tog('d12')"><div class="dnum"><div class="n">Day 12</div><div class="d">6 Oct</div></div><div class="dtitle"><div class="t">Day trip — Nara</div><div class="s">Tuesday &nbsp;•&nbsp; Deer park</div></div><div class="cdot" style="background:var(--osaka)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc" style="border-left-color:#64748b;background:#f8fafc;"><div class="ti">🚆</div><div class="tr"><div class="from" style="color:#334155;">Osaka → Nara (day trip)</div><div class="det" style="color:#64748b;">Kintetsu Nara Line from Osaka-Namba &nbsp;•&nbsp; NOT JR Pass &nbsp;•&nbsp; ~¥680pp each way</div></div><div class="td" style="color:#334155;">~45m</div></div>
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Nara Deer Park</div><div class="as">1,200+ free-roaming deer. Shika-senbei deer crackers ¥200/pack from stalls — deer will bow for them!</div></div></div>
-      <div class="act sight"><div class="atime">Mid-morning</div><div class="abar"></div><div class="ainfo"><div class="at">Todai-ji Great Buddha</div><div class="as">World's largest bronze Buddha. ¥600 entry. Enormous wooden hall — genuinely impressive scale.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Kasuga-taisha Shrine</div><div class="as">Thousands of stone and bronze lanterns lining the path. Free grounds, ¥500 inner shrine.</div></div></div>
-      <div class="act food"><div class="atime">Return</div><div class="abar"></div><div class="ainfo"><div class="at">Back to Osaka for dinner</div><div class="as">Return by 5–6pm. Final evening in Namba/Dotonbori.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 12…" id="n12" oninput="sn(12)"></textarea></div>
-    </div>
-  </div>
-
-  <!-- TOKYO RETURN -->
-  <div class="city-h" style="color:var(--tokyo2)">✈️ Tokyo — Return &nbsp; Days 13–14</div>
-
-  <div class="day" id="d13">
-    <div class="dh" onclick="tog('d13')"><div class="dnum"><div class="n">Day 13</div><div class="d">7 Oct</div></div><div class="dtitle"><div class="t">Osaka → Tokyo</div><div class="s">Wednesday &nbsp;•&nbsp; Return journey</div></div><div class="cdot" style="background:var(--tokyo2)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="tc"><div class="ti">🚄</div><div class="tr"><div class="from">Osaka (Shin-Osaka) → Tokyo</div><div class="det">Tokaido Shinkansen &nbsp;•&nbsp; JR Pass ✓</div></div><div class="td">~2h 30m</div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Tsukiji Outer Market</div><div class="as">Fresh seafood, tamagoyaki omelettes, street food. Afternoon is fine — main market opens early but outer stalls run all day.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Ginza or Akihabara</div><div class="as">Ginza: upscale shopping, Apple Store, department stores. Akihabara: electronics, anime, duty-free.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 13…" id="n13" oninput="sn(13)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="d14">
-    <div class="dh" onclick="tog('d14')"><div class="dnum"><div class="n">Day 14</div><div class="d">8 Oct</div></div><div class="dtitle"><div class="t">Last full day</div><div class="s">Thursday &nbsp;•&nbsp; Shopping & farewell</div></div><div class="cdot" style="background:var(--tokyo2)"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act sight"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Final shopping</div><div class="as">Don Quijote, Tokyu Hands, Loft, department stores. Stock up on omiyage (gifts). Matcha KitKats, sake, cosmetics.</div></div></div>
-      <div class="act sight"><div class="atime">Afternoon</div><div class="abar"></div><div class="ainfo"><div class="at">Shibuya Sky or Tokyo Skytree</div><div class="as">Observation deck views over Tokyo. Shibuya Sky ¥2,000, Skytree ¥2,100–3,400. Book ahead.</div></div></div>
-      <div class="act food"><div class="atime">Evening</div><div class="abar"></div><div class="ainfo"><div class="at">Farewell dinner</div><div class="as">Make it special — wagyu beef, kaiseki multi-course, or a rooftop restaurant. Book in advance.</div></div></div>
-      <div class="act stay"><div class="atime">Night</div><div class="abar"></div><div class="ainfo"><div class="at">Final pack + check airport transfer</div><div class="as">Early departure tomorrow. Print boarding passes. Pack omiyage carefully.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from Day 14…" id="n14" oninput="sn(14)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="day" id="ddep">
-    <div class="dh" onclick="tog('ddep')"><div class="dnum"><div class="n">Dep</div><div class="d">9 Oct</div></div><div class="dtitle"><div class="t">Depart for Sydney</div><div class="s">Friday &nbsp;•&nbsp; Homeward bound</div></div><div class="cdot" style="background:#94a3b8"></div><div class="arr">▼</div></div>
-    <div class="dbody">
-      <div class="act stay"><div class="atime">Morning</div><div class="abar"></div><div class="ainfo"><div class="at">Check out + airport transfer</div><div class="as">Narita Express ~1hr ¥3,070 (or JR Pass). Haneda monorail ~30min. Allow 3hrs before international flight.</div></div></div>
-      <div class="act food"><div class="atime">Airport</div><div class="abar"></div><div class="ainfo"><div class="at">Duty-free & last ramen</div><div class="as">Japanese airports have excellent duty-free and food courts. Last chance for matcha KitKats and sake.</div></div></div>
-      <div class="dnotes"><textarea placeholder="Notes from departure day…" id="ndep" oninput="sn('dep')"></textarea></div>
-    </div>
-  </div>
+  <div class="city-h" style="color:#64748b;margin-top:8px;">ℹ️ Info</div>
+  <a class="link-card" href="japan-info.html#ic-emergency"><div class="lc-icon">🆘</div><div class="lc-info"><div class="lc-title">Emergency contacts</div><div class="lc-sub">Ambulance, police, embassy</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-info.html#budget-tracker"><div class="lc-icon">💴</div><div class="lc-info"><div class="lc-title">Budget tracker</div><div class="lc-sub" id="ds-btxt">No expenses logged yet</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-info.html#ic-shinkansen"><div class="lc-icon">🚄</div><div class="lc-info"><div class="lc-title">Shinkansen</div><div class="lc-sub">All routes — covered by JR Pass</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-info.html#ic-tips"><div class="lc-icon">🎌</div><div class="lc-info"><div class="lc-title">Essential tips</div><div class="lc-sub">Cash, Suica, Takkyubin, etiquette</div></div><div class="lc-arr">›</div></a>
+  <a class="link-card" href="japan-info.html#ic-notes"><div class="lc-icon">📝</div><div class="lc-info"><div class="lc-title">Notes</div><div class="lc-sub">Booking refs, ideas, reminders</div></div><div class="lc-arr">›</div></a>
+  <div style="height:8px;"></div>
 </div>
 
-<!-- ═══ PLAN TAB ═══ -->
-<div id="tab-plan" class="tab">
-  <div style="height:12px;"></div>
-
-  <div class="overall-prog">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:15px;font-weight:700;">Preparation progress</div>
-      <div id="op-txt" style="font-size:13px;font-weight:700;color:var(--teal)">0 / 27</div>
-    </div>
-    <div style="height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;">
-      <div id="op-bar" style="height:100%;background:linear-gradient(90deg,var(--teal),#0891b2);border-radius:4px;width:0%;transition:width 0.3s;"></div>
-    </div>
-  </div>
-
-  <div class="ck-sec">
-    <div class="ck-head"><h3>Book & organise — do this first</h3><div class="prog-bar"><div class="prog-fill" id="pb0"></div></div><div class="prog-txt" id="pt0">0 / 9</div></div>
-    <div class="cki"><input type="checkbox" id="c1" onchange="ck()"><label for="c1">Flights — Sydney ↔ Tokyo booked (Qantas, JAL, ANA)</label></div>
-    <div class="cki"><input type="checkbox" id="c2" onchange="ck()"><label for="c2">JR Pass — 14-day, 4 adult passes ordered before departure</label></div>
-    <div class="cki"><input type="checkbox" id="c3" onchange="ck()"><label for="c3">Tokyo hotel — 4 nights, Days 1–4</label></div>
-    <div class="cki"><input type="checkbox" id="c4" onchange="ck()"><label for="c4">Kyoto hotel — 2 nights, Days 5–6</label></div>
-    <div class="cki"><input type="checkbox" id="c5" onchange="ck()"><label for="c5">Hiroshima hotel — 2 nights, Days 7–8</label></div>
-    <div class="cki"><input type="checkbox" id="c6" onchange="ck()"><label for="c6">Osaka hotel — 4 nights, Days 9–12</label></div>
-    <div class="cki"><input type="checkbox" id="c7" onchange="ck()"><label for="c7">Tokyo return hotel — 2 nights, Days 13–14</label></div>
-    <div class="cki"><input type="checkbox" id="c8" onchange="ck()"><label for="c8">TeamLab Borderless Tokyo tickets (books out months ahead)</label></div>
-    <div class="cki"><input type="checkbox" id="c9" onchange="ck()"><label for="c9">Universal Studios Japan tickets + Express Pass</label></div>
-  </div>
-
-  <div class="ck-sec">
-    <div class="ck-head"><h3>Documents & money</h3><div class="prog-bar"><div class="prog-fill" id="pb1"></div></div><div class="prog-txt" id="pt1">0 / 6</div></div>
-    <div class="cki"><input type="checkbox" id="c10" onchange="ck()"><label for="c10">Passports valid 6+ months beyond 9 Oct 2026 — all 4</label></div>
-    <div class="cki"><input type="checkbox" id="c11" onchange="ck()"><label for="c11">Visa check — Australians usually 90-day visa-free</label></div>
-    <div class="cki"><input type="checkbox" id="c12" onchange="ck()"><label for="c12">Travel insurance — 4 people, include Sarah's conditions</label></div>
-    <div class="cki"><input type="checkbox" id="c13" onchange="ck()"><label for="c13">Notify banks of overseas travel — Cath & Andrew</label></div>
-    <div class="cki"><input type="checkbox" id="c14" onchange="ck()"><label for="c14">Japanese Yen — order AUD $500–800pp before departure</label></div>
-    <div class="cki"><input type="checkbox" id="c15" onchange="ck()"><label for="c15">Wise / travel card loaded as backup</label></div>
-  </div>
-
-  <div class="ck-sec">
-    <div class="ck-head"><h3>Sarah — health & medical</h3><div class="prog-bar"><div class="prog-fill" id="pb2"></div></div><div class="prog-txt" id="pt2">0 / 4</div></div>
-    <div class="cki"><input type="checkbox" id="c16" onchange="ck()"><label for="c16">Medication supply — enough for trip + 2 week buffer</label></div>
-    <div class="cki"><input type="checkbox" id="c17" onchange="ck()"><label for="c17">Doctor letter for medications (Japanese customs can query)</label></div>
-    <div class="cki"><input type="checkbox" id="c18" onchange="ck()"><label for="c18">Medical alert card in Japanese — epilepsy & MS details</label></div>
-    <div class="cki"><input type="checkbox" id="c19" onchange="ck()"><label for="c19">Research nearest hospital to each accommodation</label></div>
-  </div>
-
-  <div class="ck-sec">
-    <div class="ck-head"><h3>Tech & connectivity</h3><div class="prog-bar"><div class="prog-fill" id="pb3"></div></div><div class="prog-txt" id="pt3">0 / 4</div></div>
-    <div class="cki"><input type="checkbox" id="c20" onchange="ck()"><label for="c20">Japan pocket WiFi or SIM card ordered (Sakura Mobile, IIJmio)</label></div>
-    <div class="cki"><input type="checkbox" id="c21" onchange="ck()"><label for="c21">Google Maps offline — Tokyo, Kyoto, Hiroshima, Osaka</label></div>
-    <div class="cki"><input type="checkbox" id="c22" onchange="ck()"><label for="c22">Hyperdia or Japan Official Travel App downloaded</label></div>
-    <div class="cki"><input type="checkbox" id="c23" onchange="ck()"><label for="c23">Universal power adapters (Japan 100V, Type A)</label></div>
-  </div>
-
-  <div class="ck-sec">
-    <div class="ck-head"><h3>Packing</h3><div class="prog-bar"><div class="prog-fill" id="pb4"></div></div><div class="prog-txt" id="pt4">0 / 4</div></div>
-    <div class="cki"><input type="checkbox" id="c24" onchange="ck()"><label for="c24">Comfortable walking shoes — 15,000+ steps/day expected</label></div>
-    <div class="cki"><input type="checkbox" id="c25" onchange="ck()"><label for="c25">Luggage sized for Shinkansen racks or plan Takkyubin forwarding</label></div>
-    <div class="cki"><input type="checkbox" id="c26" onchange="ck()"><label for="c26">Small day backpack — 1 per person</label></div>
-    <div class="cki"><input type="checkbox" id="c27" onchange="ck()"><label for="c27">Coin purse — Japan uses lots of ¥100 and ¥500 coins</label></div>
-  </div>
-</div>
-
-<!-- ═══ INFO TAB ═══ -->
-<div id="tab-info" class="tab">
-  <div style="height:12px;"></div>
-
-  <div class="sos">
-    <h3>Emergency contacts</h3>
-    <div class="sos-row"><span class="lbl">Japan ambulance / fire</span><span class="num">119</span></div>
-    <div class="sos-row"><span class="lbl">Japan police</span><span class="num">110</span></div>
-    <div class="sos-row"><span class="lbl">Australian Embassy Tokyo</span><span class="num">+81 3 6722 7200</span></div>
-    <div class="sos-row"><span class="lbl">Australia overseas emergency</span><span class="num">+61 2 6261 3305</span></div>
-    <div class="sos-row"><span class="lbl">Japan helpline (English 24hr)</span><span class="num">0570-000-911</span></div>
-  </div>
-
-  <div class="info-card">
-    <h3>🚄 Shinkansen — all covered by JR Pass</h3>
-    <div class="trn"><div class="r">Tokyo → Kyoto</div><div class="d">Tokaido Shinkansen (Hikari/Nozomi) &nbsp;•&nbsp; Shinagawa → Kyoto &nbsp;•&nbsp; ~2hr 15min</div><span class="tag">Day 5 &nbsp;•&nbsp; Tue 29 Sep</span></div>
-    <div class="trn"><div class="r">Kyoto → Hiroshima</div><div class="d">San'yo Shinkansen &nbsp;•&nbsp; ~1hr 40min</div><span class="tag">Day 7 &nbsp;•&nbsp; Thu 1 Oct</span></div>
-    <div class="trn"><div class="r">Hiroshima → Osaka</div><div class="d">San'yo Shinkansen &nbsp;•&nbsp; Hiroshima → Shin-Osaka &nbsp;•&nbsp; ~1hr 20min</div><span class="tag">Day 9 &nbsp;•&nbsp; Sat 3 Oct</span></div>
-    <div class="trn"><div class="r">Osaka → Tokyo</div><div class="d">Tokaido Shinkansen &nbsp;•&nbsp; Shin-Osaka → Tokyo &nbsp;•&nbsp; ~2hr 30min</div><span class="tag">Day 13 &nbsp;•&nbsp; Wed 7 Oct</span></div>
-    <div class="trn" style="border-left-color:#6366f1;background:#eef2ff;"><div class="r" style="color:#3730a3;">Hiroshima ↔ Miyajima (ferry)</div><div class="d" style="color:#4338ca;">JR Train to Miyajima-guchi + JR Ferry &nbsp;•&nbsp; JR Pass ✓ &nbsp;•&nbsp; ~40min total each way</div><span class="tag" style="background:#3730a3;">Day 8 &nbsp;•&nbsp; Fri 2 Oct</span></div>
-    <div class="trn" style="border-left-color:#94a3b8;background:#f8fafc;"><div class="r" style="color:#475569;">Osaka ↔ Nara — NOT JR Pass</div><div class="d" style="color:#64748b;">Kintetsu Nara Line from Osaka-Namba &nbsp;•&nbsp; ~¥680pp each way &nbsp;•&nbsp; ~45min</div><span class="tag" style="background:#64748b;">Day 12 &nbsp;•&nbsp; Tue 6 Oct</span></div>
-  </div>
-
-  <div class="info-card">
-    <h3>💴 Budget guide — 4 people, 14 nights</h3>
-    <div class="row"><strong>Flights</strong> &nbsp; AUD $6,000–10,000</div>
-    <div class="row"><strong>Accommodation</strong> &nbsp; AUD $5,000–8,000</div>
-    <div class="row"><strong>JR Pass × 4</strong> &nbsp; AUD $3,500–4,000</div>
-    <div class="row"><strong>Food</strong> &nbsp; AUD $4,000–5,000 (~¥5,000pp/day)</div>
-    <div class="row"><strong>Activities & entry fees</strong> &nbsp; AUD $2,000–3,000</div>
-    <div class="row"><strong>Shopping & souvenirs</strong> &nbsp; AUD $2,000+</div>
-    <div class="row"><strong>Total estimate</strong> &nbsp; <strong>AUD $22,000–32,000</strong></div>
-  </div>
-
-  <div class="info-card">
-    <h3>🎌 Essential tips</h3>
-    <div class="row"><strong>Cash is king</strong> &nbsp; Carry ¥50,000–100,000 per person. 7-Eleven and Japan Post ATMs reliably accept foreign cards.</div>
-    <div class="row"><strong>Suica IC card</strong> &nbsp; Get at airport on arrival. Works on almost all trains, buses, and convenience stores across the country. Top up at any JR machine.</div>
-    <div class="row"><strong>Luggage forwarding (Takkyubin)</strong> &nbsp; Send bags city-to-city via Yamato Transport (~¥2,000/bag). Next-day delivery. Hotels hold them. Game-changing on travel days.</div>
-    <div class="row"><strong>Convenience stores</strong> &nbsp; 7-Eleven, Lawson, FamilyMart are genuinely excellent — fresh food, ATMs, hot meals, printing, everything.</div>
-    <div class="row"><strong>Etiquette</strong> &nbsp; No eating while walking. Quiet on trains. Remove shoes in traditional spaces. Always queue. No tipping — ever.</div>
-    <div class="row"><strong>For Sarah</strong> &nbsp; Accessible stations marked on Google Maps (look for elevator icon). Carry water and rest often in heat. Keep medical card in Japanese on you at all times.</div>
-    <div class="row"><strong>Weather</strong> &nbsp; Late Sep: 22–27°C. Early Oct: 18–24°C. Comfortable walking weather. Pack a light layer for evenings.</div>
-  </div>
-
-  <div class="info-card">
-    <h3>Notes</h3>
-    <textarea class="notes-ta" id="gnotes" placeholder="Booking refs, ideas, reminders…" oninput="sgn()"></textarea>
-  </div>
-</div>
-
-<!-- Tab bar -->
-<div class="tab-bar">
-  <button class="tb on" onclick="sw('trip',this)"><span class="ic">🗓️</span>Itinerary</button>
-  <button class="tb" onclick="sw('plan',this)"><span class="ic">✅</span>Plan</button>
-  <button class="tb" onclick="sw('info',this)"><span class="ic">ℹ️</span>Info</button>
-</div>
+<nav class="tab-bar">
+  <a class="tb on" href="japan-2026.html"><span class="ic">🏠</span>Home</a>
+  <a class="tb" href="japan-itinerary.html"><span class="ic">🗓️</span>Itinerary</a>
+  <a class="tb" href="japan-plan.html"><span class="ic">✅</span>Plan</a>
+  <a class="tb" href="japan-info.html"><span class="ic">ℹ️</span>Info</a>
+</nav>
 
 <a href="japan-ai.html" class="fab" title="Japan AI">🇯🇵</a>
-<button class="fab-today" id="fab-today" onclick="goToday()">Today ▸</button>
 
 <script>
-const DAYS=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,'dep'];
-const CK_SECS=[
-  {ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],pb:'pb0',pt:'pt0',tot:9},
-  {ids:['c10','c11','c12','c13','c14','c15'],pb:'pb1',pt:'pt1',tot:6},
-  {ids:['c16','c17','c18','c19'],pb:'pb2',pt:'pt2',tot:4},
-  {ids:['c20','c21','c22','c23'],pb:'pb3',pt:'pt3',tot:4},
-  {ids:['c24','c25','c26','c27'],pb:'pb4',pt:'pt4',tot:4}
-];
-
-function sw(name,btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tab-'+name).classList.add('on');
-  btn.classList.add('on');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function tog(id){
-  const card=document.getElementById(id);
-  const head=card.querySelector('.dh');
-  const body=card.querySelector('.dbody');
-  const isOpen=head.classList.contains('open');
-  head.classList.toggle('open',!isOpen);
-  body.style.display=isOpen?'none':'block';
-}
-
 function countdown(){
   const now=new Date(),dep=new Date('2026-09-25'),ret=new Date('2026-10-10');
   const el=document.getElementById('cd');
-  if(now<dep){
-    const d=Math.ceil((dep-now)/86400000);
-    el.textContent=d+' days to go';
-  } else if(now<ret){
-    const day=Math.floor((now-dep)/86400000)+1;
-    const city=['','Tokyo','Tokyo','Tokyo','Tokyo','Kyoto','Kyoto','Hiroshima','Hiroshima','Osaka','Osaka','Osaka','Osaka','Tokyo','Tokyo'];
-    el.textContent='Day '+day+' of 14 — '+(city[day]||'Japan');
-    document.getElementById('fab-today').style.display='block';
-  } else {
-    el.textContent='Trip complete — 14 amazing days ✓';
-  }
+  if(now<dep){const d=Math.ceil((dep-now)/86400000);el.textContent=d+' days to go';}
+  else if(now<ret){const day=Math.floor((now-dep)/86400000)+1;const city=['','Tokyo','Tokyo','Tokyo','Tokyo','Kyoto','Kyoto','Hiroshima','Hiroshima','Osaka','Osaka','Osaka','Osaka','Tokyo','Tokyo'];el.textContent='Day '+day+' of 14 — '+(city[day]||'Japan');}
+  else{el.textContent='Trip complete — 14 amazing days ✓';}
 }
-
-function goToday(){
-  const dep=new Date('2026-09-25');
-  const day=Math.floor((new Date()-dep)/86400000)+1;
-  if(day>=1&&day<=14){
-    const card=document.getElementById('d'+day);
-    if(!card)return;
-    const head=card.querySelector('.dh');
-    if(!head.classList.contains('open')){head.classList.add('open');card.querySelector('.dbody').style.display='block';}
-    card.scrollIntoView({behavior:'smooth',block:'center'});
-  }
-}
-
-function sn(d){localStorage.setItem('jn-'+d,document.getElementById('n'+d).value);}
-function sgn(){localStorage.setItem('jn-g',document.getElementById('gnotes').value);}
-
-function loadNotes(){
-  DAYS.forEach(d=>{const el=document.getElementById('n'+d),v=localStorage.getItem('jn-'+d);if(el&&v)el.value=v;});
-  const gv=localStorage.getItem('jn-g');if(gv)document.getElementById('gnotes').value=gv;
-}
-
-function ck(){
-  const state={};let total=0;
-  for(let i=1;i<=27;i++){const cb=document.getElementById('c'+i);if(cb){state['c'+i]=cb.checked;cb.nextElementSibling.classList.toggle('done',cb.checked);if(cb.checked)total++;}}
-  localStorage.setItem('jck',JSON.stringify(state));
-  CK_SECS.forEach(s=>{
-    const done=s.ids.filter(id=>{const e=document.getElementById(id);return e&&e.checked;}).length;
-    const pct=Math.round(done/s.tot*100);
-    document.getElementById(s.pb).style.width=pct+'%';
-    document.getElementById(s.pt).textContent=done+' / '+s.tot;
+function loadState(){
+  const ck=JSON.parse(localStorage.getItem('jck')||'{}');
+  const secs=[
+    {ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],tot:9,ds:'ds-cs0'},
+    {ids:['c10','c11','c12','c13','c14','c15'],tot:6,ds:'ds-cs1'},
+    {ids:['c16','c17','c18','c19'],tot:4,ds:'ds-cs2'},
+    {ids:['c20','c21','c22','c23'],tot:4,ds:'ds-cs3'},
+    {ids:['c24','c25','c26','c27'],tot:4,ds:'ds-cs4'}
+  ];
+  let total=0;
+  secs.forEach(s=>{
+    const done=s.ids.filter(id=>ck[id]).length;
+    total+=done;
+    const el=document.getElementById(s.ds);if(el)el.textContent=done+' / '+s.tot;
   });
-  const pct=Math.round(total/27*100);
-  document.getElementById('op-bar').style.width=pct+'%';
-  document.getElementById('op-txt').textContent=total+' / 27 done';
-  document.getElementById('sv-ck').textContent=total+'/27';
+  const dsck=document.getElementById('ds-ck');if(dsck)dsck.textContent=total+' / 27';
+  const exp=JSON.parse(localStorage.getItem('jbudget')||'[]');
+  const spent=exp.reduce((s,e)=>s+e.amt,0);
+  const dsspent=document.getElementById('ds-spent');if(dsspent)dsspent.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU')+' spent':'$0 spent';
+  const dsbtxt=document.getElementById('ds-btxt');if(dsbtxt)dsbtxt.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU')+' of $25,000 spent':'No expenses logged yet';
 }
-
-function loadCk(){
-  const saved=localStorage.getItem('jck');
-  if(saved){const s=JSON.parse(saved);Object.entries(s).forEach(([id,v])=>{const cb=document.getElementById(id);if(cb){cb.checked=v;cb.nextElementSibling.classList.toggle('done',v);}});}
-  ck();
-}
-
 countdown();
-loadNotes();
-loadCk();
+loadState();
 </script>
 </body>
 </html>

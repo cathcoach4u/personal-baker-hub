@@ -83,30 +83,6 @@ body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:#f0
 .notes-ta:focus { outline:none; border-color:#0d9488; background:white; }
 .save-btn { margin-top:8px; background:#0d9488; color:white; border:none; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; }
 
-/* ── AI Chat ── */
-.ai-wrap { background:white; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; margin-bottom:16px; }
-.ai-header { background:linear-gradient(135deg,#4c1d95,#7c3aed); color:white; padding:14px 16px; display:flex; align-items:center; gap:10px; }
-.ai-header .ai-icon { width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.ai-header h3 { font-size:15px; font-weight:700; }
-.ai-header p { font-size:11px; opacity:0.85; margin-top:1px; }
-.ai-msgs { padding:14px; min-height:120px; max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-.ai-msg { max-width:88%; padding:10px 13px; border-radius:12px; font-size:13px; line-height:1.5; }
-.ai-msg.user { background:#0d9488; color:white; align-self:flex-end; border-bottom-right-radius:4px; }
-.ai-msg.bot { background:#f1f5f9; color:#1e293b; align-self:flex-start; border-bottom-left-radius:4px; }
-.ai-msg.bot a { color:#7c3aed; }
-.ai-typing { display:none; align-self:flex-start; background:#f1f5f9; border-radius:12px; border-bottom-left-radius:4px; padding:10px 14px; }
-.ai-typing span { display:inline-block; width:6px; height:6px; background:#94a3b8; border-radius:50%; animation:bounce 1.2s infinite; }
-.ai-typing span:nth-child(2) { animation-delay:0.2s; }
-.ai-typing span:nth-child(3) { animation-delay:0.4s; }
-@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
-.ai-chips { padding:0 14px 10px; display:flex; flex-wrap:wrap; gap:6px; }
-.ai-chip { background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; border-radius:20px; padding:5px 11px; font-size:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-.ai-chip:hover { background:#ede9fe; }
-.ai-inp-row { display:flex; gap:8px; padding:10px 14px; border-top:1px solid #f1f5f9; }
-.ai-inp { flex:1; border:1px solid #e2e8f0; border-radius:10px; padding:9px 13px; font-size:13px; font-family:inherit; outline:none; }
-.ai-inp:focus { border-color:#7c3aed; }
-.ai-send { background:#7c3aed; color:white; border:none; border-radius:10px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; flex-shrink:0; }
-.ai-send:disabled { opacity:0.5; cursor:default; }
 
 .info-banner { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#1e40af; line-height:1.5; }
 
@@ -195,31 +171,15 @@ body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:#f0
     </div>
   </div>
 
-  <!-- AI agent -->
-  <div class="ai-wrap">
-    <div class="ai-header">
-      <div class="ai-icon">🇯🇵</div>
-      <div>
-        <h3>Japan Trip AI</h3>
-        <p>Ask anything about the trip — activities, food, phrases, packing, tips</p>
-      </div>
+  <!-- Japan AI link -->
+  <a href="japan-ai.html" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;padding:14px 18px;border-radius:14px;text-decoration:none;margin-bottom:16px;">
+    <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🇯🇵</div>
+    <div>
+      <div style="font-size:15px;font-weight:700;">Japan Trip AI</div>
+      <div style="font-size:12px;opacity:0.85;margin-top:1px;">Ask about activities, food, packing, phrases &amp; more</div>
     </div>
-    <div class="ai-msgs" id="ai-msgs">
-      <div class="ai-msg bot">Konnichiwa! I'm your Japan trip assistant. I know your itinerary, family details, and budget. Ask me anything — what to do in each city, best food, packing tips, Japanese phrases, or how to get around.</div>
-    </div>
-    <div class="ai-typing" id="ai-typing"><span></span><span></span><span></span></div>
-    <div class="ai-chips" id="ai-chips">
-      <span class="ai-chip" onclick="aiChip('What should we pack for 2 weeks in Japan?')">What to pack?</span>
-      <span class="ai-chip" onclick="aiChip('What are the best foods to try in Tokyo?')">Best Tokyo food</span>
-      <span class="ai-chip" onclick="aiChip('Give me 10 useful Japanese phrases for tourists')">Useful phrases</span>
-      <span class="ai-chip" onclick="aiChip('What should we book in advance before we go?')">What to book early</span>
-      <span class="ai-chip" onclick="aiChip('Tips for travelling Japan with someone who has a medical condition (epilepsy)')">Travelling with Sarah</span>
-    </div>
-    <div class="ai-inp-row">
-      <input class="ai-inp" id="ai-inp" type="text" placeholder="Ask about Japan..." onkeydown="if(event.key==='Enter')aiSend()">
-      <button class="ai-send" id="ai-btn" onclick="aiSend()">Send</button>
-    </div>
-  </div>
+    <div style="margin-left:auto;font-size:18px;opacity:0.7;">&#8250;</div>
+  </a>
 
   <!-- Tokyo section -->
   <div class="section" id="sec-tokyo">
@@ -444,27 +404,8 @@ body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:#f0
 </div>
 
 <script>
-const PROXY = 'https://ziwycymhaqghdiznyhhw.supabase.co/functions/v1/claude-proxy';
 const CK_KEY = 'japan-2026-checklist';
 const NT_KEY = 'japan-2026-notes';
-const AI_SYS = `You are a Japan travel assistant for the Baker family's Japan trip in 2026.
-
-Trip details:
-- Dates: 25 September to 9 October 2026 (14 nights)
-- Travellers: Cath, Andrew, Sarah, Russell Baker (family of 4 from Sydney, Australia)
-- Budget: approximately AUD $25,000 total
-- Itinerary: Days 1-4 Tokyo, Days 5-6 Kyoto, Days 7-8 Hiroshima, Days 9-12 Osaka (with Nara day trip on Day 12), Days 13-14 back to Tokyo, depart Oct 9
-- Sarah has epilepsy and MS — important to consider accessibility, rest, medication, and avoid overcrowding/heat stress
-- Currency references should be in both JPY and AUD
-- Today's date context: this trip is September–October 2026
-
-Your role: Help plan activities, recommend food, give packing tips, teach useful Japanese phrases, advise on transport, and answer any Japan travel questions. Be practical, specific, and helpful. Keep responses concise and easy to read. Use bullet points where helpful.`;
-
-let aiHistory = [];
-const msgsEl = document.getElementById('ai-msgs');
-const typingEl = document.getElementById('ai-typing');
-const inpEl = document.getElementById('ai-inp');
-const btnEl = document.getElementById('ai-btn');
 
 function scrollTo(id) {
   const el = document.getElementById(id);
@@ -481,56 +422,6 @@ function scrollTo(id) {
 function toggleSec(header) {
   header.classList.toggle('collapsed');
   header.nextElementSibling.classList.toggle('hidden');
-}
-
-function aiChip(text) {
-  document.getElementById('ai-chips').style.display = 'none';
-  inpEl.value = text;
-  aiSend();
-}
-
-function aiAddMsg(text, role) {
-  const d = document.createElement('div');
-  d.className = 'ai-msg ' + (role === 'user' ? 'user' : 'bot');
-  d.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
-  msgsEl.appendChild(d);
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-}
-
-async function aiSend() {
-  const text = inpEl.value.trim();
-  if (!text) return;
-  aiAddMsg(text, 'user');
-  inpEl.value = '';
-  btnEl.disabled = true;
-  typingEl.style.display = 'flex';
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-  aiHistory.push({role:'user', content:text});
-  try {
-    const res = await fetch(PROXY, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 600,
-        system: AI_SYS,
-        messages: aiHistory.slice(-10)
-      })
-    });
-    typingEl.style.display = 'none';
-    if (!res.ok) { aiAddMsg('Error: ' + res.status, 'bot'); }
-    else {
-      const d = await res.json();
-      const reply = d.content ? d.content[0].text : (d.reply || 'No response');
-      aiAddMsg(reply, 'bot');
-      aiHistory.push({role:'assistant', content:reply});
-    }
-  } catch(e) {
-    typingEl.style.display = 'none';
-    aiAddMsg('Connection error. Please try again.', 'bot');
-  }
-  btnEl.disabled = false;
-  inpEl.focus();
 }
 
 function saveCk() {

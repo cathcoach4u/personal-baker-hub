@@ -1,0 +1,23 @@
+{
+  "name": "Japan AI",
+  "short_name": "Japan AI",
+  "description": "Baker family Japan trip AI assistant",
+  "start_url": "./japan-ai.html",
+  "display": "standalone",
+  "background_color": "#4c1d95",
+  "theme_color": "#4c1d95",
+  "icons": [
+    {
+      "src": "japan-ai-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "japan-ai-icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

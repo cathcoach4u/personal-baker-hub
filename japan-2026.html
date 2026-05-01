@@ -138,6 +138,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .notes-ta{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:vertical;min-height:80px;background:#f8fafc;color:#1e293b;}
 .notes-ta:focus{outline:none;border-color:var(--teal);background:white;}
 
+/* DASHBOARD LINK CARDS */
+.link-card{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:13px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.link-card:active{background:#f8fafc;}
+.lc-icon{font-size:20px;flex-shrink:0;}
+.lc-info{flex:1;}
+.lc-title{font-size:14px;font-weight:700;}
+.lc-sub{font-size:12px;color:#64748b;margin-top:2px;}
+.lc-badge{font-size:12px;font-weight:700;color:var(--teal);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:2px 10px;flex-shrink:0;white-space:nowrap;}
+.lc-arr{font-size:16px;color:#cbd5e1;flex-shrink:0;}
+
+/* BUDGET TRACKER */
+.bt-inp{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;background:white;}
+.bt-inp:focus{border-color:var(--teal);}
+.bt-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f8fafc;}
+.bt-row:last-child{border-bottom:none;}
+
 @media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
@@ -149,15 +165,118 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="countdown" id="cd">Loading…</div>
 </div>
 
+<!-- ═══ HOME / DASHBOARD TAB ═══ -->
+<div id="tab-dash" class="tab on">
+  <div style="height:12px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;">
+      <div id="ds-ck" style="font-size:22px;font-weight:800;color:var(--teal);">0 / 27</div>
+      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">Planned</div>
+    </div>
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;cursor:pointer;" onclick="goSection('info','budget-tracker')">
+      <div id="ds-spent" style="font-size:22px;font-weight:800;color:#1e293b;">$0 spent</div>
+      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">of $25,000 budget ›</div>
+    </div>
+  </div>
+
+  <div class="city-h" style="color:#64748b;margin-top:4px;">🗓️ Itinerary</div>
+  <div class="link-card" onclick="goSection('trip','ch-tokyo')">
+    <div class="lc-icon" style="color:var(--tokyo)">🗼</div>
+    <div class="lc-info"><div class="lc-title" style="color:var(--tokyo)">Tokyo</div><div class="lc-sub">Days 1–4 &nbsp;•&nbsp; 25–28 Sep</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('trip','ch-kyoto')">
+    <div class="lc-icon" style="color:var(--kyoto)">⛩️</div>
+    <div class="lc-info"><div class="lc-title" style="color:var(--kyoto)">Kyoto</div><div class="lc-sub">Days 5–6 &nbsp;•&nbsp; 29–30 Sep</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('trip','ch-hiro')">
+    <div class="lc-icon" style="color:var(--hiro)">🕊️</div>
+    <div class="lc-info"><div class="lc-title" style="color:var(--hiro)">Hiroshima</div><div class="lc-sub">Days 7–8 &nbsp;•&nbsp; 1–2 Oct</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('trip','ch-osaka')">
+    <div class="lc-icon" style="color:var(--osaka)">🏯</div>
+    <div class="lc-info"><div class="lc-title" style="color:var(--osaka)">Osaka + Nara</div><div class="lc-sub">Days 9–12 &nbsp;•&nbsp; 3–6 Oct</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('trip','ch-tokyo2')">
+    <div class="lc-icon" style="color:var(--tokyo2)">✈️</div>
+    <div class="lc-info"><div class="lc-title" style="color:var(--tokyo2)">Tokyo — Return</div><div class="lc-sub">Days 13–14 &nbsp;•&nbsp; 7–8 Oct</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('trip','ddep')">
+    <div class="lc-icon">🛫</div>
+    <div class="lc-info"><div class="lc-title">Departure</div><div class="lc-sub">9 Oct &nbsp;•&nbsp; Sydney bound</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+
+  <div class="city-h" style="color:#64748b;margin-top:8px;">✅ Plan & packing</div>
+  <div class="link-card" onclick="goSection('plan','cs-book')">
+    <div class="lc-icon">📋</div>
+    <div class="lc-info"><div class="lc-title">Book & organise</div><div class="lc-sub">Flights, JR Pass, hotels, tickets</div></div>
+    <div class="lc-badge" id="ds-cs0">0 / 9</div>
+  </div>
+  <div class="link-card" onclick="goSection('plan','cs-docs')">
+    <div class="lc-icon">💰</div>
+    <div class="lc-info"><div class="lc-title">Documents & money</div><div class="lc-sub">Passports, insurance, cash, cards</div></div>
+    <div class="lc-badge" id="ds-cs1">0 / 6</div>
+  </div>
+  <div class="link-card" onclick="goSection('plan','cs-sarah')">
+    <div class="lc-icon">⚕️</div>
+    <div class="lc-info"><div class="lc-title">Sarah — health & medical</div><div class="lc-sub">Meds, doctor letter, medical card</div></div>
+    <div class="lc-badge" id="ds-cs2">0 / 4</div>
+  </div>
+  <div class="link-card" onclick="goSection('plan','cs-tech')">
+    <div class="lc-icon">📱</div>
+    <div class="lc-info"><div class="lc-title">Tech & connectivity</div><div class="lc-sub">WiFi, apps, adapters</div></div>
+    <div class="lc-badge" id="ds-cs3">0 / 4</div>
+  </div>
+  <div class="link-card" onclick="goSection('plan','cs-pack')">
+    <div class="lc-icon">🎒</div>
+    <div class="lc-info"><div class="lc-title">Packing</div><div class="lc-sub">Shoes, luggage, bags, coin purse</div></div>
+    <div class="lc-badge" id="ds-cs4">0 / 4</div>
+  </div>
+
+  <div class="city-h" style="color:#64748b;margin-top:8px;">ℹ️ Info</div>
+  <div class="link-card" onclick="goSection('info','ic-emergency')">
+    <div class="lc-icon">🆘</div>
+    <div class="lc-info"><div class="lc-title">Emergency contacts</div><div class="lc-sub">Ambulance, police, embassy</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('info','budget-tracker')">
+    <div class="lc-icon">💴</div>
+    <div class="lc-info"><div class="lc-title">Budget tracker</div><div class="lc-sub" id="ds-btxt">No expenses logged yet</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('info','ic-shinkansen')">
+    <div class="lc-icon">🚄</div>
+    <div class="lc-info"><div class="lc-title">Shinkansen</div><div class="lc-sub">All routes — covered by JR Pass</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('info','ic-tips')">
+    <div class="lc-icon">🎌</div>
+    <div class="lc-info"><div class="lc-title">Essential tips</div><div class="lc-sub">Cash, Suica, Takkyubin, etiquette</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div class="link-card" onclick="goSection('info','ic-notes')">
+    <div class="lc-icon">📝</div>
+    <div class="lc-info"><div class="lc-title">Notes</div><div class="lc-sub">Booking refs, ideas, reminders</div></div>
+    <div class="lc-arr">›</div>
+  </div>
+  <div style="height:8px;"></div>
+</div>
+
 <!-- ═══ ITINERARY TAB ═══ -->
-<div id="tab-trip" class="tab on">
+<div id="tab-trip" class="tab">
   <div style="height:12px;"></div>
 
   <div class="stats">
     <div class="stat"><div class="stat-v">14</div><div class="stat-l">Nights</div></div>
     <div class="stat"><div class="stat-v">5</div><div class="stat-l">Cities</div></div>
     <div class="stat"><div class="stat-v" id="sv-ck">0/27</div><div class="stat-l">Planned</div></div>
-    <div class="stat"><div class="stat-v">$25k</div><div class="stat-l">Budget</div></div>
+    <div class="stat" style="cursor:pointer;" onclick="goSection('info','budget-tracker')"><div class="stat-v">$25k</div><div class="stat-l">Budget ›</div></div>
   </div>
 
   <div class="ribbon">
@@ -175,7 +294,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- TOKYO -->
-  <div class="city-h" style="color:var(--tokyo)">🗼 Tokyo &nbsp; Days 1–4</div>
+  <div class="city-h" id="ch-tokyo" style="color:var(--tokyo)">🗼 Tokyo &nbsp; Days 1–4</div>
 
   <div class="day" id="d1">
     <div class="dh" onclick="tog('d1')"><div class="dnum"><div class="n">Day 1</div><div class="d">25 Sep</div></div><div class="dtitle"><div class="t">Arrive Tokyo</div><div class="s">Friday &nbsp;•&nbsp; Arrival</div></div><div class="cdot" style="background:var(--tokyo)"></div><div class="arr">▼</div></div>
@@ -221,7 +340,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- KYOTO -->
-  <div class="city-h" style="color:var(--kyoto)">⛩️ Kyoto &nbsp; Days 5–6</div>
+  <div class="city-h" id="ch-kyoto" style="color:var(--kyoto)">⛩️ Kyoto &nbsp; Days 5–6</div>
 
   <div class="day" id="d5">
     <div class="dh" onclick="tog('d5')"><div class="dnum"><div class="n">Day 5</div><div class="d">29 Sep</div></div><div class="dtitle"><div class="t">Tokyo → Kyoto</div><div class="s">Tuesday &nbsp;•&nbsp; Travel day</div></div><div class="cdot" style="background:var(--kyoto)"></div><div class="arr">▼</div></div>
@@ -246,7 +365,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- HIROSHIMA -->
-  <div class="city-h" style="color:var(--hiro)">🕊️ Hiroshima &nbsp; Days 7–8</div>
+  <div class="city-h" id="ch-hiro" style="color:var(--hiro)">🕊️ Hiroshima &nbsp; Days 7–8</div>
 
   <div class="day" id="d7">
     <div class="dh" onclick="tog('d7')"><div class="dnum"><div class="n">Day 7</div><div class="d">1 Oct</div></div><div class="dtitle"><div class="t">Kyoto → Hiroshima</div><div class="s">Thursday &nbsp;•&nbsp; Travel + Peace Memorial</div></div><div class="cdot" style="background:var(--hiro)"></div><div class="arr">▼</div></div>
@@ -272,7 +391,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- OSAKA -->
-  <div class="city-h" style="color:var(--osaka)">🏯 Osaka + Nara &nbsp; Days 9–12</div>
+  <div class="city-h" id="ch-osaka" style="color:var(--osaka)">🏯 Osaka + Nara &nbsp; Days 9–12</div>
 
   <div class="day" id="d9">
     <div class="dh" onclick="tog('d9')"><div class="dnum"><div class="n">Day 9</div><div class="d">3 Oct</div></div><div class="dtitle"><div class="t">Hiroshima → Osaka</div><div class="s">Saturday &nbsp;•&nbsp; Travel + Dotonbori</div></div><div class="cdot" style="background:var(--osaka)"></div><div class="arr">▼</div></div>
@@ -317,7 +436,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <!-- TOKYO RETURN -->
-  <div class="city-h" style="color:var(--tokyo2)">✈️ Tokyo — Return &nbsp; Days 13–14</div>
+  <div class="city-h" id="ch-tokyo2" style="color:var(--tokyo2)">✈️ Tokyo — Return &nbsp; Days 13–14</div>
 
   <div class="day" id="d13">
     <div class="dh" onclick="tog('d13')"><div class="dnum"><div class="n">Day 13</div><div class="d">7 Oct</div></div><div class="dtitle"><div class="t">Osaka → Tokyo</div><div class="s">Wednesday &nbsp;•&nbsp; Return journey</div></div><div class="cdot" style="background:var(--tokyo2)"></div><div class="arr">▼</div></div>
@@ -364,7 +483,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <div class="ck-sec">
+  <div class="ck-sec" id="cs-book">
     <div class="ck-head"><h3>Book & organise — do this first</h3><div class="prog-bar"><div class="prog-fill" id="pb0"></div></div><div class="prog-txt" id="pt0">0 / 9</div></div>
     <div class="cki"><input type="checkbox" id="c1" onchange="ck()"><label for="c1">Flights — Sydney ↔ Tokyo booked (Qantas, JAL, ANA)</label></div>
     <div class="cki"><input type="checkbox" id="c2" onchange="ck()"><label for="c2">JR Pass — 14-day, 4 adult passes ordered before departure</label></div>
@@ -377,7 +496,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="cki"><input type="checkbox" id="c9" onchange="ck()"><label for="c9">Universal Studios Japan tickets + Express Pass</label></div>
   </div>
 
-  <div class="ck-sec">
+  <div class="ck-sec" id="cs-docs">
     <div class="ck-head"><h3>Documents & money</h3><div class="prog-bar"><div class="prog-fill" id="pb1"></div></div><div class="prog-txt" id="pt1">0 / 6</div></div>
     <div class="cki"><input type="checkbox" id="c10" onchange="ck()"><label for="c10">Passports valid 6+ months beyond 9 Oct 2026 — all 4</label></div>
     <div class="cki"><input type="checkbox" id="c11" onchange="ck()"><label for="c11">Visa check — Australians usually 90-day visa-free</label></div>
@@ -387,7 +506,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="cki"><input type="checkbox" id="c15" onchange="ck()"><label for="c15">Wise / travel card loaded as backup</label></div>
   </div>
 
-  <div class="ck-sec">
+  <div class="ck-sec" id="cs-sarah">
     <div class="ck-head"><h3>Sarah — health & medical</h3><div class="prog-bar"><div class="prog-fill" id="pb2"></div></div><div class="prog-txt" id="pt2">0 / 4</div></div>
     <div class="cki"><input type="checkbox" id="c16" onchange="ck()"><label for="c16">Medication supply — enough for trip + 2 week buffer</label></div>
     <div class="cki"><input type="checkbox" id="c17" onchange="ck()"><label for="c17">Doctor letter for medications (Japanese customs can query)</label></div>
@@ -395,7 +514,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="cki"><input type="checkbox" id="c19" onchange="ck()"><label for="c19">Research nearest hospital to each accommodation</label></div>
   </div>
 
-  <div class="ck-sec">
+  <div class="ck-sec" id="cs-tech">
     <div class="ck-head"><h3>Tech & connectivity</h3><div class="prog-bar"><div class="prog-fill" id="pb3"></div></div><div class="prog-txt" id="pt3">0 / 4</div></div>
     <div class="cki"><input type="checkbox" id="c20" onchange="ck()"><label for="c20">Japan pocket WiFi or SIM card ordered (Sakura Mobile, IIJmio)</label></div>
     <div class="cki"><input type="checkbox" id="c21" onchange="ck()"><label for="c21">Google Maps offline — Tokyo, Kyoto, Hiroshima, Osaka</label></div>
@@ -403,7 +522,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="cki"><input type="checkbox" id="c23" onchange="ck()"><label for="c23">Universal power adapters (Japan 100V, Type A)</label></div>
   </div>
 
-  <div class="ck-sec">
+  <div class="ck-sec" id="cs-pack">
     <div class="ck-head"><h3>Packing</h3><div class="prog-bar"><div class="prog-fill" id="pb4"></div></div><div class="prog-txt" id="pt4">0 / 4</div></div>
     <div class="cki"><input type="checkbox" id="c24" onchange="ck()"><label for="c24">Comfortable walking shoes — 15,000+ steps/day expected</label></div>
     <div class="cki"><input type="checkbox" id="c25" onchange="ck()"><label for="c25">Luggage sized for Shinkansen racks or plan Takkyubin forwarding</label></div>
@@ -416,7 +535,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="tab-info" class="tab">
   <div style="height:12px;"></div>
 
-  <div class="sos">
+  <div class="sos" id="ic-emergency">
     <h3>Emergency contacts</h3>
     <div class="sos-row"><span class="lbl">Japan ambulance / fire</span><span class="num">119</span></div>
     <div class="sos-row"><span class="lbl">Japan police</span><span class="num">110</span></div>
@@ -425,7 +544,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sos-row"><span class="lbl">Japan helpline (English 24hr)</span><span class="num">0570-000-911</span></div>
   </div>
 
-  <div class="info-card">
+  <!-- BUDGET TRACKER -->
+  <div class="info-card" id="budget-tracker">
+    <h3>💴 Budget tracker — AUD $25,000</h3>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+      <div>
+        <div id="bt-spent" style="font-size:26px;font-weight:800;color:var(--teal);">$0</div>
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:1px;">spent of $25,000</div>
+      </div>
+      <div style="text-align:right;">
+        <div id="bt-rem" style="font-size:26px;font-weight:800;color:#1e293b;">$25,000</div>
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:1px;">remaining</div>
+      </div>
+    </div>
+    <div style="height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:4px;">
+      <div id="bt-bar" style="height:100%;background:linear-gradient(90deg,var(--teal),#0891b2);border-radius:4px;width:0%;transition:width 0.3s;"></div>
+    </div>
+    <div id="bt-bar-txt" style="font-size:11px;color:#94a3b8;margin-bottom:14px;">0% of $25,000 spent</div>
+
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+      <input class="bt-inp" id="bt-desc" type="text" placeholder="Description" style="flex:1;min-width:110px;">
+      <input class="bt-inp" id="bt-amt" type="number" placeholder="AUD $" style="width:85px;" min="0" step="1">
+      <select class="bt-inp" id="bt-cat" style="background:white;">
+        <option>Flights</option>
+        <option>Accommodation</option>
+        <option>JR Pass</option>
+        <option>Food</option>
+        <option>Activities</option>
+        <option>Shopping</option>
+        <option>Other</option>
+      </select>
+      <button onclick="addExp()" style="background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">+ Add</button>
+    </div>
+
+    <div id="bt-list"><div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div></div>
+  </div>
+
+  <div class="info-card" id="ic-shinkansen">
     <h3>🚄 Shinkansen — all covered by JR Pass</h3>
     <div class="trn"><div class="r">Tokyo → Kyoto</div><div class="d">Tokaido Shinkansen (Hikari/Nozomi) &nbsp;•&nbsp; Shinagawa → Kyoto &nbsp;•&nbsp; ~2hr 15min</div><span class="tag">Day 5 &nbsp;•&nbsp; Tue 29 Sep</span></div>
     <div class="trn"><div class="r">Kyoto → Hiroshima</div><div class="d">San'yo Shinkansen &nbsp;•&nbsp; ~1hr 40min</div><span class="tag">Day 7 &nbsp;•&nbsp; Thu 1 Oct</span></div>
@@ -446,7 +601,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="row"><strong>Total estimate</strong> &nbsp; <strong>AUD $22,000–32,000</strong></div>
   </div>
 
-  <div class="info-card">
+  <div class="info-card" id="ic-tips">
     <h3>🎌 Essential tips</h3>
     <div class="row"><strong>Cash is king</strong> &nbsp; Carry ¥50,000–100,000 per person. 7-Eleven and Japan Post ATMs reliably accept foreign cards.</div>
     <div class="row"><strong>Suica IC card</strong> &nbsp; Get at airport on arrival. Works on almost all trains, buses, and convenience stores across the country. Top up at any JR machine.</div>
@@ -457,7 +612,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="row"><strong>Weather</strong> &nbsp; Late Sep: 22–27°C. Early Oct: 18–24°C. Comfortable walking weather. Pack a light layer for evenings.</div>
   </div>
 
-  <div class="info-card">
+  <div class="info-card" id="ic-notes">
     <h3>Notes</h3>
     <textarea class="notes-ta" id="gnotes" placeholder="Booking refs, ideas, reminders…" oninput="sgn()"></textarea>
   </div>
@@ -465,9 +620,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- Tab bar -->
 <div class="tab-bar">
-  <button class="tb on" onclick="sw('trip',this)"><span class="ic">🗓️</span>Itinerary</button>
-  <button class="tb" onclick="sw('plan',this)"><span class="ic">✅</span>Plan</button>
-  <button class="tb" onclick="sw('info',this)"><span class="ic">ℹ️</span>Info</button>
+  <button class="tb on" id="tb-dash" onclick="sw('dash',this)"><span class="ic">🏠</span>Home</button>
+  <button class="tb" id="tb-trip" onclick="sw('trip',this)"><span class="ic">🗓️</span>Itinerary</button>
+  <button class="tb" id="tb-plan" onclick="sw('plan',this)"><span class="ic">✅</span>Plan</button>
+  <button class="tb" id="tb-info" onclick="sw('info',this)"><span class="ic">ℹ️</span>Info</button>
 </div>
 
 <a href="japan-ai.html" class="fab" title="Japan AI">🇯🇵</a>
@@ -476,12 +632,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 const DAYS=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,'dep'];
 const CK_SECS=[
-  {ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],pb:'pb0',pt:'pt0',tot:9},
-  {ids:['c10','c11','c12','c13','c14','c15'],pb:'pb1',pt:'pt1',tot:6},
-  {ids:['c16','c17','c18','c19'],pb:'pb2',pt:'pt2',tot:4},
-  {ids:['c20','c21','c22','c23'],pb:'pb3',pt:'pt3',tot:4},
-  {ids:['c24','c25','c26','c27'],pb:'pb4',pt:'pt4',tot:4}
+  {ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],pb:'pb0',pt:'pt0',tot:9,ds:'ds-cs0'},
+  {ids:['c10','c11','c12','c13','c14','c15'],pb:'pb1',pt:'pt1',tot:6,ds:'ds-cs1'},
+  {ids:['c16','c17','c18','c19'],pb:'pb2',pt:'pt2',tot:4,ds:'ds-cs2'},
+  {ids:['c20','c21','c22','c23'],pb:'pb3',pt:'pt3',tot:4,ds:'ds-cs3'},
+  {ids:['c24','c25','c26','c27'],pb:'pb4',pt:'pt4',tot:4,ds:'ds-cs4'}
 ];
+let EXPENSES=[];
+const BUDGET=25000;
+const CAT_COL={'Flights':'#3b82f6','Accommodation':'#22c55e','JR Pass':'#d97706','Food':'#f97316','Activities':'#7c3aed','Shopping':'#ec4899','Other':'#94a3b8'};
 
 function sw(name,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -489,6 +648,11 @@ function sw(name,btn){
   document.getElementById('tab-'+name).classList.add('on');
   btn.classList.add('on');
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goSection(tab,id){
+  sw(tab,document.getElementById('tb-'+tab));
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},150);
 }
 
 function tog(id){
@@ -517,14 +681,17 @@ function countdown(){
 }
 
 function goToday(){
+  sw('trip',document.getElementById('tb-trip'));
   const dep=new Date('2026-09-25');
   const day=Math.floor((new Date()-dep)/86400000)+1;
   if(day>=1&&day<=14){
-    const card=document.getElementById('d'+day);
-    if(!card)return;
-    const head=card.querySelector('.dh');
-    if(!head.classList.contains('open')){head.classList.add('open');card.querySelector('.dbody').style.display='block';}
-    card.scrollIntoView({behavior:'smooth',block:'center'});
+    setTimeout(()=>{
+      const card=document.getElementById('d'+day);
+      if(!card)return;
+      const head=card.querySelector('.dh');
+      if(!head.classList.contains('open')){head.classList.add('open');card.querySelector('.dbody').style.display='block';}
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+    },150);
   }
 }
 
@@ -545,11 +712,13 @@ function ck(){
     const pct=Math.round(done/s.tot*100);
     document.getElementById(s.pb).style.width=pct+'%';
     document.getElementById(s.pt).textContent=done+' / '+s.tot;
+    const badge=document.getElementById(s.ds);if(badge)badge.textContent=done+' / '+s.tot;
   });
   const pct=Math.round(total/27*100);
   document.getElementById('op-bar').style.width=pct+'%';
   document.getElementById('op-txt').textContent=total+' / 27 done';
-  document.getElementById('sv-ck').textContent=total+'/27';
+  const svck=document.getElementById('sv-ck');if(svck)svck.textContent=total+'/27';
+  const dsck=document.getElementById('ds-ck');if(dsck)dsck.textContent=total+' / 27';
 }
 
 function loadCk(){
@@ -558,9 +727,70 @@ function loadCk(){
   ck();
 }
 
+function fmtAUD(n){
+  return '$'+Math.abs(n).toLocaleString('en-AU',{maximumFractionDigits:0});
+}
+
+function addExp(){
+  const desc=document.getElementById('bt-desc').value.trim();
+  const amt=parseFloat(document.getElementById('bt-amt').value);
+  const cat=document.getElementById('bt-cat').value;
+  if(!desc||isNaN(amt)||amt<=0)return;
+  EXPENSES.push({desc,amt,cat,ts:Date.now()});
+  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
+  renderBudget();
+  document.getElementById('bt-desc').value='';
+  document.getElementById('bt-amt').value='';
+  document.getElementById('bt-desc').focus();
+}
+
+function delExp(ts){
+  EXPENSES=EXPENSES.filter(e=>e.ts!==ts);
+  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
+  renderBudget();
+}
+
+function renderBudget(){
+  const spent=EXPENSES.reduce((s,e)=>s+e.amt,0);
+  const rem=BUDGET-spent;
+  const pct=Math.min(100,Math.round(spent/BUDGET*100));
+  document.getElementById('bt-spent').textContent=fmtAUD(spent);
+  document.getElementById('bt-rem').textContent=(rem<0?'-':'')+fmtAUD(rem);
+  const bar=document.getElementById('bt-bar');
+  bar.style.width=pct+'%';
+  bar.style.background=rem<0?'#ef4444':'linear-gradient(90deg,var(--teal),#0891b2)';
+  document.getElementById('bt-bar-txt').textContent=pct+'% of $25,000 spent';
+  const dsbtxt=document.getElementById('ds-btxt');
+  if(dsbtxt)dsbtxt.textContent=spent>0?fmtAUD(spent)+' of $25,000 spent':'No expenses logged yet';
+  const dsspent=document.getElementById('ds-spent');
+  if(dsspent)dsspent.textContent=spent>0?fmtAUD(spent)+' spent':'$0 spent';
+  const listEl=document.getElementById('bt-list');
+  if(EXPENSES.length===0){listEl.innerHTML='<div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div>';return;}
+  const cats={};
+  EXPENSES.forEach(e=>{cats[e.cat]=(cats[e.cat]||0)+e.amt;});
+  let html='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">';
+  Object.entries(cats).forEach(([cat,total])=>{
+    const col=CAT_COL[cat]||'#94a3b8';
+    html+=`<span style="background:${col}18;color:${col};border:1px solid ${col}40;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;">${cat} ${fmtAUD(total)}</span>`;
+  });
+  html+='</div>';
+  [...EXPENSES].reverse().forEach(e=>{
+    const col=CAT_COL[e.cat]||'#94a3b8';
+    html+=`<div class="bt-row"><div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div><div style="flex:1;font-size:13px;font-weight:600;">${e.desc.replace(/</g,'&lt;')}</div><div style="font-size:11px;color:#94a3b8;white-space:nowrap;padding:0 6px;">${e.cat}</div><div style="font-size:14px;font-weight:700;color:#1e293b;white-space:nowrap;">${fmtAUD(e.amt)}</div><button onclick="delExp(${e.ts})" style="background:none;border:none;color:#cbd5e1;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;font-family:inherit;flex-shrink:0;">×</button></div>`;
+  });
+  listEl.innerHTML=html;
+}
+
+function loadBudget(){
+  const saved=localStorage.getItem('jbudget');
+  if(saved)EXPENSES=JSON.parse(saved);
+  renderBudget();
+}
+
 countdown();
 loadNotes();
 loadCk();
+loadBudget();
 </script>
 </body>
 </html>

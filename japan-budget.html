@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d9488">
 <title>Budget — Japan 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <style>
 :root{--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -37,7 +39,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="top-bar">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;">
     <div><h1>Budget 💴</h1><div class="sub">Japan 2026 &nbsp;•&nbsp; AUD $25,000 total</div></div>
-    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.11</span>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.12</span>
   </div>
   <div class="countdown" id="cd">Loading…</div>
 </div>
@@ -73,10 +75,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <option>Shopping</option>
         <option>Other</option>
       </select>
-      <button onclick="addExp()" style="background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">+ Add</button>
+      <button onclick="addExp()" id="bt-add" style="background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">+ Add</button>
     </div>
 
-    <div id="bt-list"><div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div></div>
+    <div id="bt-list"><div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">Loading…</div></div>
   </div>
 
   <div class="card">
@@ -104,9 +106,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <a href="japan-ai.html" class="fab" title="Japan AI">🇯🇵</a>
 
 <script>
-let EXPENSES=[];
+const sb=supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
 const BUDGET=25000;
 const CAT_COL={'Flights':'#3b82f6','Accommodation':'#22c55e','JR Pass':'#d97706','Food':'#f97316','Activities':'#7c3aed','Shopping':'#ec4899','Other':'#94a3b8'};
+let EXPENSES=[];
 
 function countdown(){
   const now=new Date(),dep=new Date('2026-09-25'),ret=new Date('2026-10-10');
@@ -118,27 +121,30 @@ function countdown(){
 
 function fmt(n){return '$'+Math.abs(n).toLocaleString('en-AU',{maximumFractionDigits:0});}
 
-function addExp(){
+async function addExp(){
   const desc=document.getElementById('bt-desc').value.trim();
   const amt=parseFloat(document.getElementById('bt-amt').value);
   const cat=document.getElementById('bt-cat').value;
   if(!desc||isNaN(amt)||amt<=0)return;
-  EXPENSES.push({desc,amt,cat,ts:Date.now()});
-  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
-  render();
+  const btn=document.getElementById('bt-add');
+  btn.textContent='Saving…';btn.disabled=true;
+  const{error}=await sb.from('japan_expenses').insert({description:desc,amount:amt,category:cat});
+  btn.textContent='+ Add';btn.disabled=false;
+  if(error){alert('Error saving: '+error.message);return;}
   document.getElementById('bt-desc').value='';
   document.getElementById('bt-amt').value='';
   document.getElementById('bt-desc').focus();
+  await loadAndRender();
 }
 
-function delExp(ts){
-  EXPENSES=EXPENSES.filter(e=>e.ts!==ts);
-  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
-  render();
+async function delExp(id){
+  const{error}=await sb.from('japan_expenses').delete().eq('id',id);
+  if(error){alert('Error deleting: '+error.message);return;}
+  await loadAndRender();
 }
 
 function render(){
-  const spent=EXPENSES.reduce((s,e)=>s+e.amt,0);
+  const spent=EXPENSES.reduce((s,e)=>s+parseFloat(e.amount),0);
   const rem=BUDGET-spent;
   const pct=Math.min(100,Math.round(spent/BUDGET*100));
   document.getElementById('bt-spent').textContent=fmt(spent);
@@ -149,7 +155,7 @@ function render(){
   document.getElementById('bt-pct').textContent=pct+'% of $25,000 spent';
   const listEl=document.getElementById('bt-list');
   if(EXPENSES.length===0){listEl.innerHTML='<div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div>';return;}
-  const cats={};EXPENSES.forEach(e=>{cats[e.cat]=(cats[e.cat]||0)+e.amt;});
+  const cats={};EXPENSES.forEach(e=>{cats[e.category]=(cats[e.category]||0)+parseFloat(e.amount);});
   let html='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">';
   Object.entries(cats).forEach(([cat,total])=>{
     const col=CAT_COL[cat]||'#94a3b8';
@@ -157,14 +163,21 @@ function render(){
   });
   html+='</div>';
   [...EXPENSES].reverse().forEach(e=>{
-    const col=CAT_COL[e.cat]||'#94a3b8';
-    html+=`<div class="bt-row"><div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div><div style="flex:1;font-size:13px;font-weight:600;">${e.desc.replace(/</g,'&lt;')}</div><div style="font-size:11px;color:#94a3b8;padding:0 6px;white-space:nowrap;">${e.cat}</div><div style="font-size:14px;font-weight:700;color:#1e293b;white-space:nowrap;">${fmt(e.amt)}</div><button onclick="delExp(${e.ts})" style="background:none;border:none;color:#cbd5e1;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;font-family:inherit;flex-shrink:0;">×</button></div>`;
+    const col=CAT_COL[e.category]||'#94a3b8';
+    html+=`<div class="bt-row"><div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div><div style="flex:1;font-size:13px;font-weight:600;">${e.description.replace(/</g,'&lt;')}</div><div style="font-size:11px;color:#94a3b8;padding:0 6px;white-space:nowrap;">${e.category}</div><div style="font-size:14px;font-weight:700;color:#1e293b;white-space:nowrap;">${fmt(parseFloat(e.amount))}</div><button onclick="delExp(${e.id})" style="background:none;border:none;color:#cbd5e1;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;font-family:inherit;flex-shrink:0;">×</button></div>`;
   });
   listEl.innerHTML=html;
 }
 
+async function loadAndRender(){
+  const{data,error}=await sb.from('japan_expenses').select('*').order('created_at',{ascending:true});
+  if(error){document.getElementById('bt-list').innerHTML='<div style="text-align:center;color:#ef4444;font-size:13px;padding:16px 0;">Error loading expenses.</div>';return;}
+  EXPENSES=data||[];
+  render();
+}
+
 countdown();
-const saved=localStorage.getItem('jbudget');if(saved)EXPENSES=JSON.parse(saved);render();
+loadAndRender();
 </script>
 </body>
 </html>

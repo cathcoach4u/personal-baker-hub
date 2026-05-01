@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d9488">
 <title>Itinerary — Japan 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <style>
 :root{--tokyo:#1d4ed8;--tokyo-bg:#eff6ff;--kyoto:#7c3aed;--kyoto-bg:#f5f3ff;--hiro:#b45309;--hiro-bg:#fffbeb;--osaka:#c2410c;--osaka-bg:#fff7ed;--tokyo2:#0369a1;--tokyo2-bg:#f0f9ff;--transit:#d97706;--transit-bg:#fef3c7;--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -75,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="top-bar">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;">
     <div><h1>Itinerary 🗓️</h1><div class="sub">Japan 2026 &nbsp;•&nbsp; 15 days &nbsp;•&nbsp; Baker Family</div></div>
-    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.11</span>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.12</span>
   </div>
   <div class="countdown" id="cd">Loading…</div>
 </div>
@@ -87,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="stat"><div class="stat-v">14</div><div class="stat-l">Nights</div></div>
     <div class="stat"><div class="stat-v">5</div><div class="stat-l">Cities</div></div>
     <div class="stat"><div class="stat-v" id="sv-ck">—</div><div class="stat-l">Planned</div></div>
-    <a class="stat" href="japan-info.html#budget-tracker" style="text-decoration:none;display:block;"><div class="stat-v">$25k</div><div class="stat-l">Budget ›</div></a>
+    <a class="stat" href="japan-budget.html" style="text-decoration:none;display:block;"><div class="stat-v" id="sv-bud">$25k</div><div class="stat-l">Budget ›</div></a>
   </div>
 
   <div class="ribbon">
@@ -340,9 +342,20 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
+async function loadBudgetStat(){
+  try{
+    const sb=supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+    const{data}=await sb.from('japan_expenses').select('amount');
+    const spent=data?data.reduce((s,e)=>s+parseFloat(e.amount),0):0;
+    const el=document.getElementById('sv-bud');
+    if(el)el.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU'):'$25k';
+  }catch(e){}
+}
+
 countdown();
 loadNotes();
 loadCkStat();
+loadBudgetStat();
 </script>
 </body>
 </html>

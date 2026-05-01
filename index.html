@@ -478,7 +478,7 @@
     <h1>Baker Hub</h1>
     <div style="display:flex;align-items:center;gap:8px;">
       <button onclick="phHardRefresh()" title="Hard refresh — clears cache" style="background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;padding:0;font-family:inherit;">&#x21BB;</button>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v5.82</span></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div id="ph-topbar-date" style="font-size:13px;font-weight:700;color:white;white-space:nowrap;"></div><span style="font-size:11px;font-weight:600;background:#065f46;color:white;padding:3px 11px;border-radius:99px;">v6.8</span></div>
     </div>
   </div>
   <div class="mobile-drawer-overlay" id="ph-drawer-overlay" onclick="phCloseDrawer()"></div>
@@ -507,7 +507,7 @@
     <div class="mobile-drawer-footer" style="display:flex;align-items:center;justify-content:center;"><button class="signout-btn" onclick="phSignOut()">Sign out</button></div>
   </div>
   <div class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v5.82</span></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-right:4px;"><h1 style="margin:0;">Baker Hub</h1><div style="display:flex;align-items:center;gap:6px;"><button onclick="phHardRefresh()" title="Hard refresh — clears cache and reloads" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0;font-family:inherit;">&#x21BB;</button><span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:6px;">v6.8</span></div></div>
     <button class="nav-item active" onclick="phNav('home',this)"><span class="icon">&#x1F3E0;</span> Dashboard</button>
     <button class="nav-item" onclick="phNav('todo',this)"><span class="icon">&#x2705;</span> To-Do</button>
     <button class="nav-item" onclick="phNav('fiona',this)"><span class="icon">&#x1F9F9;</span> Fiona Tasks</button>
@@ -597,9 +597,10 @@
       <div class="add-form" id="ph-ins-form">
         <h3 id="if-title">New Policy</h3>
         <div class="form-grid">
-          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Baker Family</option><option>Russell Baker</option></select></div>
+          <div class="form-group"><label>Person</label><select id="if-name"><option>Cathrine Baker</option><option>Andrew Baker</option><option>Russell Baker</option></select></div>
           <div class="form-group"><label>Category</label><select id="if-cat"><option>Personal Insurance</option><option>Household</option><option>Car</option><option>Health</option><option>Investments</option><option>Superannuation</option></select></div>
           <div class="form-group"><label>Insurer / Provider</label><input type="text" id="if-ins" placeholder="e.g. Zurich"></div>
+          <div class="form-group"><label>Linked Contact</label><select id="if-contact"><option value="">— None —</option></select></div>
           <div class="form-group"><label>Policy No / Account</label><input type="text" id="if-pol" placeholder="e.g. 50210902"></div>
           <div class="form-group"><label>Cover / Product</label><input type="text" id="if-cover" placeholder="e.g. Life & TPD"></div>
           <div class="form-group"><label>Premium / Contribution ($)</label><input type="number" id="if-prem" step="0.01" placeholder="0.00"></div>
@@ -828,7 +829,7 @@
           <div class="form-group"><label>Priority</label><select id="pf-priority"><option>Medium</option><option>Urgent</option><option>High</option><option>Low</option></select></div>
           <div class="form-group"><label>Status</label><select id="pf-status"><option>Not Started</option><option>In Progress</option><option>Complete</option></select></div>
           <div class="form-group"><label>Due Date</label><input type="date" id="pf-due"></div>
-          <div class="form-group" id="pf-cost-group" style="display:none;"><label>Approx. Cost ($)<span style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px;">project bill total</span></label><input type="number" id="pf-cost" placeholder="e.g. 1810" step="0.01" min="0"></div>
+          <div class="form-group" id="pf-cost-group"><label>Estimated Cost ($)<span id="pf-cost-hint" style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px;">optional — rolls up to project total</span></label><input type="number" id="pf-cost" placeholder="e.g. 500" step="0.01" min="0"></div>
           <div class="form-group"><label>Zone</label><select id="pf-zone"><option value="">No Zone</option><option>Left Shed</option><option>Left Fence</option><option>Garage</option><option>Front Fence</option><option>Front Garden Bed</option><option>Right Fence</option><option>Right Shed</option><option>Back Deck</option><option>House</option><option>Pool Deck</option><option>Side of House</option><option>Car</option></select></div>
           <div class="form-group full"><label>Parent project (group under)</label><select id="pf-parent" onchange="phUpdateCostFieldVisibility()"><option value="">— None (standalone) —</option></select><div style="font-size:11px;color:#94a3b8;margin-top:4px;">Only real projects (with at least one item attached) appear here. To create a new project, use + New Project from the Projects tab.</div></div>
           <div class="form-group full" id="pf-items-group" style="display:none;"><label>Items in this project<span style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px;">tick existing items to add as sub-tasks</span></label><div id="pf-items-picker" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px;max-height:240px;overflow-y:auto;background:#fafafa;"></div></div>
@@ -1138,7 +1139,7 @@
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e2e8f0;border-radius:8px;">
             <span style="font-size:20px;">&#x26A1;</span>
-            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (22+ tables), file storage (NDIS receipts, HCF claims), Edge Functions (AI proxy). You own all data.</div></div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Supabase</div><div style="font-size:11px;color:#64748b;">Database (28 tables), file storage (NDIS receipts, HCF claims), Edge Functions (AI proxy). You own all data.</div></div>
             <div style="font-size:11px;font-weight:700;color:#16a34a;">Free tier</div>
           </div>
           <div style="font-size:11px;font-weight:700;color:#94a3b8;padding-top:8px;text-transform:uppercase;letter-spacing:0.5px;">AI Services (independent & replaceable)</div>
@@ -1167,10 +1168,10 @@
           <li><strong>To-Do</strong> — Task management with categories, due dates, overdue highlighting</li>
           <li><strong>Fiona Tasks</strong> — Cleaner task list with print view, auto-refresh, quick-add via URL</li>
           <li><strong>NDIS</strong> — Transaction tracking with provider dropdown, receipt uploads, mobile card view, CSV export, receipt status indicator</li>
-          <li><strong>Finance & Insurance</strong> — Bills (Finance Overview with totals), insurance policies with due date tracking and Mark Paid, super and investment balance tracking, home loans with balance/rate/repayment updates, HCF health claims with receipt uploads, car insurance. Auto-advance overdue due dates. Policy payment reminders auto-generated in Dates.</li>
+          <li><strong>Finance & Insurance</strong> — Bills split into Outstanding and Completed/Paid. Insurance policies with due date tracking, Mark Paid, and linked contact lookup. Super tab: ASFA retirement tracker ($730k target), FY contribution caps (concessional $30k, non-concessional $110k per person), planned FY targets with "still to contribute" summary. Investment balance tracking. Home loans with balance/rate/repayment updates. HCF health claims with receipt uploads. Budget &amp; Cashflow 6-month projection with bank balances, bills, loans, projects, travel, and planned super contributions.</li>
           <li><strong>Medical</strong> — Medicare Safety Net tracker with threshold, out-of-pocket costs, and progress towards rebate threshold. Add/delete individual costs with auto-calculation.</li>
-          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Insurance cards link to matching contacts.</li>
-          <li><strong>House Projects</strong> — Zone-based (Left Shed, Garage, Front Fence, etc.), assignee (Andrew/Cath), checklist with complete toggle, print view, expand/collapse all, hide completed</li>
+          <li><strong>Contacts</strong> — Grouped by category with filter pills, copy to clipboard, CSV export. Dynamic categories. Open button on links auto-adds https:// prefix. Insurance cards link to matching contacts.</li>
+          <li><strong>House Projects</strong> — Zone-based with dual cost tracking: item-level costs (rollup) or fixed project cost. House Tasks pinned at top with auto-rollup. Move items between projects inline. Complete project prompts to move active sub-tasks. Assignee (Andrew/Cath), print view, expand/collapse all.</li>
           <li><strong>Dates</strong> — Important dates with month/week timeline, category filters including Sarah Medical. Policy payment reminders auto-generated from insurance data.</li>
           <li><strong>Habits & Rhythms</strong> — Weekly/fortnightly/monthly/6-monthly/annual habit tracking with progress bars. Weekly checklist management for dashboard items.</li>
           <li><strong>Animals</strong> — Pet profiles (Gypsy, Ellie, Rosie) with age calculated from DOB, medical records, tick treatment tracking, weight history, vet details</li>
@@ -1180,26 +1181,32 @@
         </ul>
       </div>
       <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Supabase Tables</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px;color:#1e293b;">Supabase Tables (28)</div>
         <ul style="font-size:12px;color:#64748b;padding-left:18px;list-style:disc;line-height:2;">
           <li><strong>ndis_funds</strong> — Funding bucket budgets</li>
           <li><strong>ndis_transactions</strong> — NDIS transaction history with receipt uploads</li>
           <li><strong>ndis_providers</strong> — Provider defaults (name, NDIS#, fund)</li>
-          <li><strong>insurance_policies</strong> — Insurance, superannuation & investment policies</li>
+          <li><strong>insurance_policies</strong> — Insurance, superannuation &amp; investment policies (contact_id links to contacts)</li>
           <li><strong>bills</strong> — Recurring household bills</li>
           <li><strong>home_loans</strong> — Home loan balances, rates and repayments</li>
+          <li><strong>health_claims</strong> — HCF health insurance claims with receipt uploads</li>
+          <li><strong>medicare_safety_net</strong> — Medicare Safety Net threshold + out-of-pocket costs (singleton row)</li>
+          <li><strong>bank_accounts</strong> — Bank accounts and credit cards with balance tracking</li>
+          <li><strong>bank_balance_history</strong> — Weekly balance snapshots per account</li>
+          <li><strong>travel_trips</strong> — Travel trip planning with budget and status</li>
+          <li><strong>travel_expenses</strong> — Expense tracking per trip</li>
           <li><strong>contacts</strong> — Family contacts with dynamic categories</li>
-          <li><strong>house_projects</strong> — House projects with zones and assignees</li>
-          <li><strong>important_dates</strong> — Important dates & events (includes Sarah Medical category)</li>
+          <li><strong>house_projects</strong> — House projects and items with zones, assignees, and costs</li>
+          <li><strong>important_dates</strong> — Important dates &amp; events (includes Sarah Medical category)</li>
           <li><strong>sarah_medical_history</strong> — Completion history for Sarah medical items</li>
           <li><strong>todos</strong> — To-do task list</li>
           <li><strong>fiona_tasks</strong> — Fiona cleaner task list</li>
           <li><strong>animals</strong> — Pet records (name, breed, DOB, vet, insurance)</li>
           <li><strong>animal_medical_records</strong> — Vaccinations, treatments, weight checks</li>
-          <li><strong>habits</strong> — Habits & rhythms with frequency tracking</li>
+          <li><strong>habits</strong> — Habits &amp; rhythms with frequency tracking</li>
           <li><strong>checklist_items</strong> — Weekly dashboard checklist items</li>
           <li><strong>weekly_checklist</strong> — Checklist done state per week</li>
-          <li><strong>ai_settings</strong> — Baker AI system prompt & model config</li>
+          <li><strong>ai_settings</strong> — Baker AI system prompt &amp; model config</li>
           <li><strong>shopping_items</strong> — AisleMate weekly shopping list</li>
           <li><strong>master_items</strong> — AisleMate master item catalogue</li>
           <li><strong>receipts</strong> — AisleMate scanned receipts</li>
@@ -1333,6 +1340,13 @@
     <!-- ═══ TRAVEL ═══ -->
     <div class="screen" id="ph-travel">
       <h2>&#x2708;&#xFE0F; Travel</h2>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;margin-bottom:8px;">Japan 2026 &nbsp;•&nbsp; 25 Sep – 9 Oct</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a href="japan-2026.html" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#0d9488,#0891b2);color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;flex:1;min-width:140px;">&#x1F5FE; Trip Planner</a>
+          <a href="japan-ai.html" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;flex:1;min-width:140px;">&#x1F1EF;&#x1F1F5; Japan AI</a>
+        </div>
+      </div>
       <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
         <button class="add-btn" onclick="phToggleTripForm()">+ New Trip</button>
       </div>
@@ -1766,7 +1780,8 @@
       state: r.state || '',
       startDate: r.policy_start_date || '',
       expiry: r.policy_expiry_date || '',
-      review: r.annual_review_date || ''
+      review: r.annual_review_date || '',
+      contact_id: r.contact_id || null
     }));
 
     HCF_CLAIMS = (hcfRes.data || []).map(r => ({
@@ -1855,6 +1870,19 @@
       parent_id: r.parent_id || null,
       is_project: r.is_project===true
     }));
+
+    // Auto-assign standalone items to House Tasks project
+    (async()=>{
+      const ht=PROJECTS.find(p=>p.is_project&&p.title==='House Tasks');
+      if(!ht)return;
+      // Always keep House Tasks collapsed by default
+      phExpandedProjects.delete(ht.id);
+      phSaveCollapsedProjects();
+      const orphans=PROJECTS.filter(p=>!p.is_project&&p.parent_id==null);
+      if(!orphans.length)return;
+      orphans.forEach(o=>o.parent_id=ht.id);
+      await sb.from('house_projects').update({parent_id:ht.id}).in('id',orphans.map(o=>o.id));
+    })();
 
     DATES = (datesRes.data || []).map(r => ({
       id: r.id,
@@ -2388,9 +2416,9 @@
     const isYearBased=insCatFilter==='Household'||insCatFilter==='Car';
 
     function renderCard(p){
-      // Find matching contact for this insurer
-      var insLower=p.ins.toLowerCase();
-      var mc=CONTACTS.find(function(c){return c.name.toLowerCase().includes(insLower)||insLower.includes(c.name.toLowerCase());});
+      // Use explicit contact_id link first, then fall back to fuzzy name match
+      var mc=p.contact_id?CONTACTS.find(function(c){return c.id===p.contact_id;}):null;
+      if(!mc){var insLower=p.ins.toLowerCase();mc=CONTACTS.find(function(c){return c.name.toLowerCase().includes(insLower)||insLower.includes(c.name.toLowerCase());});}
 
       var t='<div class="card" style="margin-bottom:8px;cursor:pointer;padding:14px;" onclick="phEditIns('+p.id+')">';
       t+='<div style="display:flex;justify-content:space-between;align-items:start;">';
@@ -2503,6 +2531,13 @@
 
   let editingInsId=null;
 
+  function phPopulateContactDropdown(selectedId){
+    const sel=$('#if-contact');
+    if(!sel)return;
+    const sorted=(CONTACTS||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));
+    sel.innerHTML='<option value="">— None —</option>'+sorted.map(c=>'<option value="'+c.id+'"'+(c.id===selectedId?' selected':'')+'>'+c.name+(c.category?' ('+c.category+')':'')+'</option>').join('');
+  }
+
   function resetInsForm(){
     editingInsId=null;
     $('#if-title').textContent='New Policy';
@@ -2511,9 +2546,11 @@
     $('#if-name').value='Cathrine Baker';$('#if-ins').value='';$('#if-pol').value='';
     $('#if-cover').value='';$('#if-prem').value='';$('#if-freq').value='Monthly';
     $('#if-pay').value='';$('#if-due').value='';$('#if-paid').value='';$('#if-super').value='';
+    $('#if-super').value='';
     $('#if-product').value='';$('#if-state').value='';$('#if-start').value='';$('#if-expiry').value='';$('#if-review').value='';
     $('#if-advanced').style.display='none';
     $('#if-msg').className='form-msg';$('#if-msg').textContent='';
+    phPopulateContactDropdown(null);
   }
 
   window.phToggleInsForm=function(){
@@ -2539,6 +2576,7 @@
     $('#if-pay').value=p.pay;$('#if-due').value=p.due;$('#if-paid').value=p.paid;
     $('#if-super').value=p.super||'';
     $('#if-product').value=p.product;$('#if-state').value=p.state;$('#if-start').value=p.startDate;$('#if-expiry').value=p.expiry;$('#if-review').value=p.review;
+    phPopulateContactDropdown(p.contact_id);
     // Auto-show advanced if any advanced field has data
     if(p.product||p.state||p.startDate||p.expiry||p.review)$('#if-advanced').style.display='block';
     $('#if-msg').className='form-msg';$('#if-msg').textContent='';
@@ -2563,6 +2601,8 @@
     const startDate=$('#if-start').value||null;
     const expiry=$('#if-expiry').value||null;
     const review=$('#if-review').value||null;
+    const contactIdRaw=$('#if-contact').value;
+    const contact_id=contactIdRaw?Number(contactIdRaw):null;
 
     if(!ins||!cover){
       $('#if-msg').className='form-msg error';
@@ -2575,7 +2615,8 @@
       premium:prem,premium_frequency:freq,payment_method:pay,
       due_date:due,paid_to_date:paid,superannuation_amount:superAmt,
       category:category,product_type:product||null,state:state||null,
-      policy_start_date:startDate,policy_expiry_date:expiry,annual_review_date:review
+      policy_start_date:startDate,policy_expiry_date:expiry,annual_review_date:review,
+      contact_id:contact_id
     };
 
     try {
@@ -2583,13 +2624,13 @@
         const {error}=await sb.from('insurance_policies').update(row).eq('id',editingInsId);
         if(error)throw error;
         const idx=INS.findIndex(x=>x.id===editingInsId);
-        if(idx>=0)INS[idx]={id:editingInsId,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category,product:product,state:state,startDate:startDate||'',expiry:expiry||'',review:review||''};
+        if(idx>=0)INS[idx]={id:editingInsId,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category,product:product,state:state,startDate:startDate||'',expiry:expiry||'',review:review||'',contact_id:contact_id};
         $('#if-msg').className='form-msg success';
         $('#if-msg').textContent='Updated!';
       } else {
         const {data:inserted,error}=await sb.from('insurance_policies').insert(row).select().single();
         if(error)throw error;
-        INS.push({id:inserted.id,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category,product:product,state:state,startDate:startDate||'',expiry:expiry||'',review:review||''});
+        INS.push({id:inserted.id,name:name,ins:ins,pol:pol,cover:cover,prem:prem,freq:freq,pay:pay,due:due||'',paid:paid||'',super:superAmt,category:category,product:product,state:state,startDate:startDate||'',expiry:expiry||'',review:review||'',contact_id:contact_id});
         $('#if-msg').className='form-msg success';
         $('#if-msg').textContent='Policy saved!';
       }
@@ -2716,13 +2757,15 @@
     navigator.clipboard.writeText(text).then(()=>phToast('Copied!','success'));
   };
 
+  function mkContactLinkEl(url){if(!url)return '';const fullUrl=/^https?:\/\//i.test(url)?url:'https://'+url;let host='';try{host=new URL(fullUrl).hostname.replace(/^www\./,'');}catch(e){host=url.length>30?url.slice(0,30)+'…':url;}return '<div style="display:flex;align-items:center;gap:6px;margin-top:1px;" onclick="event.stopPropagation()"><span style="font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">'+host+'</span><a href="'+fullUrl+'" target="_blank" rel="noopener" style="font-size:10px;font-weight:600;color:white;background:#3b82f6;padding:2px 7px;border-radius:4px;text-decoration:none;white-space:nowrap;flex-shrink:0;">Open</a></div>';}
+
   function renderContactCards(items){
     return items.map(c=>{
       const phoneLink=c.phone?'<a href="tel:'+c.phone.replace(/\s/g,'')+'">'+c.phone+'</a>':'';
-      const emailLink=c.email?'<a href="mailto:'+c.email+'" style="font-size:11px;color:#0d9488;text-decoration:none;">'+c.email+'</a>':'';
-      const meetLink=c.link?'<a href="'+c.link+'" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;" onclick="event.stopPropagation()">Portal / Link</a>':'';
-      const link2El=c.link2?'<a href="'+c.link2+'" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;" onclick="event.stopPropagation()">Link 2</a>':'';
-      const link3El=c.link3?'<a href="'+c.link3+'" target="_blank" style="font-size:11px;color:#3b82f6;text-decoration:none;" onclick="event.stopPropagation()">Link 3</a>':'';
+      const emailLink=c.email?'<div style="display:flex;align-items:center;gap:6px;margin-top:1px;" onclick="event.stopPropagation()"><span style="font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">'+c.email+'</span><a href="mailto:'+c.email+'" style="font-size:10px;font-weight:600;color:white;background:#0d9488;padding:2px 7px;border-radius:4px;text-decoration:none;white-space:nowrap;flex-shrink:0;">Email</a></div>':'';
+      const meetLink=mkContactLinkEl(c.link);
+      const link2El=mkContactLinkEl(c.link2);
+      const link3El=mkContactLinkEl(c.link3);
       const personTag=c.forPerson?c.forPerson.split(', ').map(p=>'<span class="person-tag">'+p+'</span>').join(''):'';
       const copyBtn='<button onclick="phCopyContact('+c.id+',event)" aria-label="Copy contact" style="position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#94a3b8;" title="Copy">\u{1F4CB}</button>';
       return '<div class="contact-card" data-contact-id="'+c.id+'" onclick="phEditContact('+c.id+')" style="cursor:pointer;position:relative;">'+copyBtn+'<div class="cc-name">'+c.name+'</div>'+(c.person?'<div class="cc-person">'+c.person+'</div>':'')+'<div class="cc-phone" onclick="event.stopPropagation()" style="display:flex;flex-direction:column;gap:2px;">'+(phoneLink||'')+(emailLink?'<div>'+emailLink+'</div>':'')+(meetLink?'<div>'+meetLink+'</div>':'')+(link2El?'<div>'+link2El+'</div>':'')+(link3El?'<div>'+link3El+'</div>':'')+'</div>'+(c.notes?'<div style="font-size:10px;color:#94a3b8;margin-top:4px;">'+c.notes+'</div>':'')+personTag+'</div>';
@@ -2902,10 +2945,13 @@
     if(!EXPENSES.length)await loadExpenses();
     const fmt=n=>'$'+Number(n||0).toLocaleString('en-AU',{minimumFractionDigits:0,maximumFractionDigits:2});
 
-    // Project costs (one-off bills) — sum est_cost from is_project rows
+    // Project costs — effective cost = fixed cost if set, else sum of item costs (Mode A rollup)
     const projects=PROJECTS.filter(p=>p.is_project===true);
+    const itemsByParent={};
+    PROJECTS.filter(p=>p.parent_id!=null).forEach(c=>{if(!itemsByParent[c.parent_id])itemsByParent[c.parent_id]=[];itemsByParent[c.parent_id].push(c);});
+    const effectiveProjCost=p=>{const isHT=p.title==='House Tasks';const hasFixed=!isHT&&p.est_cost!=null&&Number(p.est_cost)>0;if(hasFixed)return Number(p.est_cost);return(itemsByParent[p.id]||[]).reduce((s,c)=>s+(Number(c.est_cost)||0),0);};
     const openProjects=projects.filter(p=>p.status!=='Complete');
-    const projectCostsTotal=openProjects.reduce((s,p)=>s+(Number(p.est_cost)||0),0);
+    const projectCostsTotal=openProjects.reduce((s,p)=>s+effectiveProjCost(p),0);
 
     // Recurring bills — normalise amount to monthly
     const monthlyBills=(typeof BILLS!=='undefined'?BILLS:[]).reduce((s,b)=>{
@@ -2924,6 +2970,21 @@
     // Bank balances total
     const bankTotal=(typeof BANK_ACCOUNTS!=='undefined'?BANK_ACCOUNTS:[]).reduce((s,b)=>s+(Number(b.balance||0)),0);
 
+    // Planned super contributions remaining (from super localStorage)
+    const now=new Date();
+    const fyStart2=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+    const superPlanned=JSON.parse(localStorage.getItem('super_planned_'+fyStart2)||'{}');
+    const superContribs2=JSON.parse(localStorage.getItem('super_contribs_'+fyStart2)||'{}');
+    const superRemainingByPerson=Object.keys(superPlanned).map(function(n){
+      const plan=superPlanned[n]||0;
+      const c=superContribs2[n]||{};
+      const paid=(c.concessional||0)+(c.nonConcessional||0);
+      const rem=Math.max(0,plan-paid);
+      const firstName=n.split(' ')[0]==='Cathrine'?'Cath':n.split(' ')[0];
+      return{name:firstName,planned:plan,paid:paid,remaining:rem};
+    }).filter(function(x){return x.planned>0;});
+    const superRemainingTotal=superRemainingByPerson.reduce(function(s,x){return s+x.remaining;},0);
+
     // Travel — only count active/upcoming trips (not Complete)
     const activeTrips=(typeof TRIPS!=='undefined'?TRIPS:[]).filter(t=>t.status!=='Complete');
     const travelBudgetTotal=activeTrips.reduce((s,t)=>s+(Number(t.budget)||0),0);
@@ -2934,7 +2995,6 @@
     const travelRemaining=travelBudgetTotal-travelSpentTotal;
 
     // ─── 6-month projection (starting from bank balances) ───
-    const now=new Date();
     const tripAllocByMonth={}; // index 0..5 → array of {name, amount, scheduled}
     activeTrips.forEach(t=>{
       const spent=(typeof EXPENSES!=='undefined'?EXPENSES:[]).filter(e=>e.trip_id===t.id).reduce((ss,e)=>ss+(Number(e.amount)||0),0);
@@ -2971,6 +3031,10 @@
           outflow+=pa.amount;
           breakdown.push({label:'Project — '+pa.title,amount:pa.amount});
         });
+        // Planned super contributions remaining this FY
+        superRemainingByPerson.forEach(function(x){
+          if(x.remaining>0){outflow+=x.remaining;breakdown.push({label:'Super — '+x.name+' (planned '+fmt(x.planned)+')',amount:x.remaining});}
+        });
       }
       // Travel allocations
       (tripAllocByMonth[i]||[]).forEach(tr=>{
@@ -2993,6 +3057,7 @@
     html+='<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#be123c;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Loan repayments</div><div style="font-size:20px;font-weight:700;color:#be123c;margin-top:4px;">'+fmt(monthlyLoans)+'</div><div style="font-size:11px;color:#be123c;margin-top:2px;">monthly loans</div></div>';
     html+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#9a3412;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">House Projects</div><div style="font-size:20px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(projectCostsTotal)+'</div><div style="font-size:11px;color:#9a3412;margin-top:2px;">'+openProjects.length+' active project'+(openProjects.length===1?'':'s')+'</div></div>';
     html+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Travel commitments</div><div style="font-size:20px;font-weight:700;color:#7c3aed;margin-top:4px;">'+fmt(travelRemaining)+'</div><div style="font-size:11px;color:#7c3aed;margin-top:2px;">'+activeTrips.length+' trip'+(activeTrips.length===1?'':'s')+' • '+fmt(travelSpentTotal)+' spent</div></div>';
+    if(superRemainingTotal>0)html+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;"><div style="font-size:11px;color:#15803d;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Super contributions</div><div style="font-size:20px;font-weight:700;color:#15803d;margin-top:4px;">'+fmt(superRemainingTotal)+'</div><div style="font-size:11px;color:#15803d;margin-top:2px;">still to contribute this FY</div></div>';
     html+='</div>';
 
     // ─── Accounting & Planning Agent callout ───
@@ -3341,41 +3406,192 @@
     const superAccounts=INS.filter(p=>p.category==='Superannuation');
     if(!superAccounts.length){$('#super-cards').innerHTML='<div class="todo-empty">No super accounts yet. Add one from the Personal tab.</div>';return;}
 
+    const totalBalance=superAccounts.reduce((s,p)=>s+(p.super||p.prem||0),0);
+
+    // FY setup
+    const now=new Date();
+    const fyStart=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+    const fyLabel=fyStart+'-'+(fyStart+1).toString().slice(-2);
+    const CONC_CAP=30000, NON_CONC_CAP=110000;
+    const CONTRIB_KEY='super_contribs_'+fyStart;
+    const PLANNED_KEY='super_planned_'+fyStart;
+    const contribs=JSON.parse(localStorage.getItem(CONTRIB_KEY)||'{}');
+    const planned=JSON.parse(localStorage.getItem(PLANNED_KEY)||'{}');
+    const persons=[...new Set(superAccounts.map(p=>p.name))];
+    // Defaults
+    const cDefaults={'Cathrine Baker':{concessional:5360.83,nonConcessional:0},'Andrew Baker':{concessional:null,nonConcessional:0}};
+    const pDefaults={'Cathrine Baker':20000,'Andrew Baker':10000};
+    let changed=false;
+    persons.forEach(function(n){
+      if(!contribs[n]){contribs[n]=cDefaults[n]||{concessional:null,nonConcessional:0};changed=true;}
+      if(planned[n]===undefined){planned[n]=pDefaults[n]||null;changed=true;}
+    });
+    if(contribs['Cathrine Baker']&&contribs['Cathrine Baker'].concessional===24639.17){contribs['Cathrine Baker'].concessional=5360.83;changed=true;}
+    if(changed){localStorage.setItem(CONTRIB_KEY,JSON.stringify(contribs));localStorage.setItem(PLANNED_KEY,JSON.stringify(planned));}
+
+    const fn=function(n){return n.split(' ')[0]==='Cathrine'?'Cath':n.split(' ')[0];};
+    const esc=function(s){return s.replace(/'/g,"\\'");};
+
     let html='';
-    superAccounts.forEach(function(p){
-      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;">';
-      html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:12px;">';
-      html+='<div><div style="font-size:17px;font-weight:700;color:#1e293b;">'+p.ins+'</div>';
-      html+='<div style="font-size:13px;color:#64748b;margin-top:4px;">'+p.cover+'</div>';
-      if(p.pol)html+='<div style="font-size:12px;color:#94a3b8;margin-top:2px;">Account: '+p.pol+'</div>';
-      html+='<div style="font-size:12px;color:#94a3b8;">Member: '+p.name+'</div>';
-      if(p.pay)html+='<div style="font-size:12px;color:#94a3b8;">Contributions: '+p.pay+'</div>';
-      html+='</div>';
-      html+='<div style="text-align:right;">';
-      html+='<div style="font-size:11px;color:#64748b;margin-bottom:2px;">Current Balance</div>';
-      html+='<div style="font-size:22px;font-weight:700;color:#0d9488;">'+(p.super?money(p.super):(p.prem?money(p.prem):'—'))+'</div>';
-      if(p.freq)html+='<div style="font-size:11px;color:#94a3b8;">'+p.freq+'</div>';
+
+    // ── ASFA card ──
+    const ASFA_TARGET=730000;
+    const gap=Math.max(0,ASFA_TARGET-totalBalance);
+    const pct=Math.min(100,Math.round(totalBalance/ASFA_TARGET*100));
+    const barColor=totalBalance>=ASFA_TARGET?'#16a34a':pct>=80?'#0d9488':'#f59e0b';
+    const statusMsg=totalBalance>=ASFA_TARGET?'Target reached.'
+      :pct>=85?'Very close — strong position.'
+      :pct>=75?'Lower edge of "on track" — ahead of most couples.'
+      :'Building — '+pct+'% of the way there.';
+    html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">';
+    html+='<div><div style="font-size:13px;font-weight:700;color:#1e293b;">ASFA Retirement Standard</div><div style="font-size:11px;color:#64748b;margin-top:1px;">Comfortable retirement — home-owning couple</div></div>';
+    html+='<a href="https://moneysmart.gov.au/glossary/asfa-retirement-standard" target="_blank" style="font-size:11px;color:#0d9488;font-weight:600;text-decoration:none;">Moneysmart ↗</a>';
+    html+='</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">';
+    html+='<div style="text-align:center;padding:8px;background:#f8fafc;border-radius:8px;"><div style="font-size:10px;color:#64748b;">Total super</div><div style="font-size:15px;font-weight:700;color:#0d9488;margin-top:2px;">'+money(totalBalance)+'</div></div>';
+    html+='<div style="text-align:center;padding:8px;background:#f8fafc;border-radius:8px;"><div style="font-size:10px;color:#64748b;">Target</div><div style="font-size:15px;font-weight:700;color:#1e293b;margin-top:2px;">'+money(ASFA_TARGET)+'</div></div>';
+    html+='<div style="text-align:center;padding:8px;background:'+(gap===0?'#f0fdf4':'#fff7ed')+';border-radius:8px;"><div style="font-size:10px;color:#64748b;">'+(gap===0?'Status':'Gap')+'</div><div style="font-size:15px;font-weight:700;color:'+(gap===0?'#16a34a':'#ea580c')+';margin-top:2px;">'+(gap===0?'Reached':money(gap))+'</div></div>';
+    html+='</div>';
+    html+='<div style="background:#f1f5f9;border-radius:99px;height:7px;margin-bottom:6px;overflow:hidden;"><div style="background:'+barColor+';height:100%;border-radius:99px;width:'+pct+'%;"></div></div>';
+    html+='<div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#64748b;">'+statusMsg+'</span><span style="font-weight:700;color:'+barColor+';">'+pct+'%</span></div>';
+    html+='</div>';
+
+    // ── Contributions card ──
+    html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;">';
+    html+='<div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:6px;">Contributions — FY '+fyLabel+'</div>';
+    html+='<div style="font-size:11px;color:#64748b;margin-bottom:14px;line-height:1.6;padding:8px;background:#f8fafc;border-radius:6px;">';
+    html+='<strong style="color:#1d4ed8;">Concessional (pre-tax)</strong> — employer 11.5% SG + salary sacrifice. Taxed 15% in fund. Cap $30k/yr.&nbsp; ';
+    html+='<strong style="color:#15803d;">Non-concessional (after-tax)</strong> — your own savings/bonus. No entry tax. Cap $110k/yr.';
+    html+='</div>';
+
+    persons.forEach(function(name){
+      const pc=contribs[name]||{};
+      const conc=pc.concessional!=null?pc.concessional:null;
+      const nonC=pc.nonConcessional||0;
+      const totalContrib=(conc||0)+nonC;
+      const planAmt=planned[name]!=null?planned[name]:null;
+      const stillToGo=planAmt!=null?Math.max(0,planAmt-totalContrib):null;
+
+      const concPct=conc!=null?Math.min(100,Math.round(conc/CONC_CAP*100)):0;
+      const concColor=concPct>=90?'#dc2626':concPct>=70?'#f59e0b':'#2563eb';
+      const nonCPct=Math.min(100,Math.round(nonC/NON_CONC_CAP*100));
+
+      html+='<div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:10px;">';
+
+      // Header row: name + planned target
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+      html+='<div style="font-size:13px;font-weight:700;color:#1e293b;">'+fn(name)+'</div>';
+      html+='<div style="display:flex;align-items:center;gap:6px;">';
+      if(planAmt!=null){
+        html+='<span style="font-size:11px;color:#64748b;">Planned this FY: <strong style="color:#1e293b;">'+money(planAmt)+'</strong></span>';
+      } else {
+        html+='<span style="font-size:11px;color:#94a3b8;">No FY target set</span>';
+      }
+      html+='<button onclick="phUpdateSuperPlanned(\''+esc(name)+'\')" style="font-size:10px;padding:2px 8px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;color:#475569;">'+( planAmt!=null?'Edit':'Set target')+'</button>';
       html+='</div></div>';
-      if(p.due)html+='<div style="font-size:11px;color:#94a3b8;margin-top:8px;">Paid to: '+p.due+'</div>';
-      if(p.paid)html+='<div style="font-size:11px;color:#94a3b8;">Last updated: '+new Date(p.paid).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'</div>';
+
+      // Concessional row
+      html+='<div style="margin-bottom:10px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
+      html+='<span style="font-size:11px;font-weight:600;color:#1d4ed8;">Concessional (pre-tax)</span>';
+      html+='<span style="font-size:10px;color:#64748b;">cap '+money(CONC_CAP)+'</span>';
+      html+='</div>';
+      if(conc!=null){
+        html+='<div style="background:#f1f5f9;border-radius:99px;height:6px;margin-bottom:4px;overflow:hidden;"><div style="background:'+concColor+';height:100%;border-radius:99px;width:'+concPct+'%;"></div></div>';
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;">';
+        html+='<span style="color:#64748b;">Paid in: <strong style="color:#1e293b;">'+money(conc)+'</strong></span>';
+        html+='<div style="display:flex;align-items:center;gap:6px;"><span style="color:#64748b;">Cap remaining: <strong style="color:'+concColor+';">'+money(Math.max(0,CONC_CAP-conc))+'</strong></span>';
+        html+='<button onclick="phUpdateSuperContrib(\''+esc(name)+'\',\'concessional\')" style="font-size:10px;padding:1px 6px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;color:#475569;">Edit</button></div>';
+        html+='</div>';
+      } else {
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;">';
+        html+='<span style="font-size:11px;color:#94a3b8;font-style:italic;">Amount not entered</span>';
+        html+='<button onclick="phUpdateSuperContrib(\''+esc(name)+'\',\'concessional\')" style="font-size:10px;padding:2px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;cursor:pointer;color:#1d4ed8;">Enter</button>';
+        html+='</div>';
+      }
+      html+='</div>';
+
+      // Non-concessional row
+      html+='<div style="margin-bottom:'+(stillToGo!=null?'10':'0')+'px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
+      html+='<span style="font-size:11px;font-weight:600;color:#15803d;">Non-concessional (after-tax)</span>';
+      html+='<span style="font-size:10px;color:#64748b;">cap '+money(NON_CONC_CAP)+'</span>';
+      html+='</div>';
+      html+='<div style="background:#f1f5f9;border-radius:99px;height:6px;margin-bottom:4px;overflow:hidden;"><div style="background:#16a34a;height:100%;border-radius:99px;width:'+nonCPct+'%;"></div></div>';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;">';
+      html+='<span style="color:#64748b;">Paid in: <strong style="color:#1e293b;">'+money(nonC)+'</strong></span>';
+      html+='<div style="display:flex;align-items:center;gap:6px;"><span style="color:#64748b;">Cap remaining: <strong style="color:#15803d;">'+money(Math.max(0,NON_CONC_CAP-nonC))+'</strong></span>';
+      html+='<button onclick="phUpdateSuperContrib(\''+esc(name)+'\',\'nonConcessional\')" style="font-size:10px;padding:1px 6px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;color:#475569;">'+(nonC>0?'Edit':'Enter')+'</button></div>';
+      html+='</div>';
+      html+='</div>';
+
+      // Still to contribute towards FY target
+      if(stillToGo!=null){
+        const doneColor=stillToGo===0?'#16a34a':'#ea580c';
+        html+='<div style="background:'+(stillToGo===0?'#f0fdf4':'#fff7ed')+';border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">';
+        html+='<span style="font-size:11px;color:#475569;">'+(stillToGo===0?'FY target reached':'Still to contribute towards '+money(planAmt)+' target')+'</span>';
+        html+='<span style="font-size:13px;font-weight:700;color:'+doneColor+';">'+(stillToGo===0?'Done':money(stillToGo))+'</span>';
+        html+='</div>';
+      }
+
+      html+='</div>'; // end person card
+    });
+    html+='</div>'; // end contributions card
+
+    // ── Account cards ──
+    superAccounts.forEach(function(p){
+      const bal=p.super||p.prem||0;
       const todayVal=new Date().toISOString().split('T')[0];
-      html+='<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">';
-      html+='<label style="font-size:10px;color:#64748b;">Date: </label><input type="date" id="super-date-'+p.id+'" value="'+todayVal+'" style="font-size:11px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-family:inherit;">';
+      html+='<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+      html+='<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:#1e293b;">'+p.ins+(p.cover&&p.cover!==p.ins?' <span style="font-size:12px;font-weight:400;color:#64748b;">— '+p.cover+'</span>':'')+'</div>';
+      html+='<div style="font-size:11px;color:#94a3b8;margin-top:2px;">'+(p.pol?p.name+' · '+p.pol:p.name)+(p.paid?' · Updated '+new Date(p.paid).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):'')+'</div></div>';
+      html+='<div style="text-align:right;"><div style="font-size:11px;color:#64748b;">Balance</div><div style="font-size:18px;font-weight:700;color:#0d9488;">'+(bal?money(bal):'—')+'</div></div>';
       html+='</div>';
-      html+='<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">';
-      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;" onclick="phUpdateBalance('+p.id+',\'super\')">Update Balance</button>';
-      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#64748b;" onclick="phEditIns('+p.id+')">Edit Details</button>';
-      html+='<button class="add-btn" style="font-size:11px;padding:6px 14px;background:#3b82f6;" onclick="phGoToContact(\''+p.ins.replace(/'/g,"\\'")+'\')">\u{1F4D6} Contact</button>';
-      html+='</div>';
-      html+='</div>';
+      html+='<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">';
+      html+='<input type="date" id="super-date-'+p.id+'" value="'+todayVal+'" style="font-size:11px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-family:inherit;">';
+      html+='<button class="add-btn" style="font-size:11px;padding:5px 12px;" onclick="phUpdateBalance('+p.id+',\'super\')">Update Balance</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:5px 12px;background:#64748b;" onclick="phEditIns('+p.id+')">Edit</button>';
+      html+='<button class="add-btn" style="font-size:11px;padding:5px 12px;background:#3b82f6;" onclick="phGoToContact(\''+p.ins.replace(/'/g,"\\'")+'\')">\u{1F4D6} Contact</button>';
+      html+='</div></div>';
     });
 
-    // Total across all super
-    const totalBalance=superAccounts.reduce((s,p)=>s+(p.super||p.prem||0),0);
-    if(superAccounts.length>1){
-      html='<div style="background:#f0fdf4;border-radius:10px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;color:#1e293b;">Total Superannuation</span><span style="font-size:18px;font-weight:700;color:#0d9488;">'+money(totalBalance)+'</span></div>'+html;
-    }
     $('#super-cards').innerHTML=html;
+  };
+
+  window.phUpdateSuperContrib=function(name,type){
+    const now=new Date();
+    const fyStart=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+    const fyLabel=fyStart+'-'+(fyStart+1).toString().slice(-2);
+    const CONTRIB_KEY='super_contribs_'+fyStart;
+    const contribs=JSON.parse(localStorage.getItem(CONTRIB_KEY)||'{}');
+    const firstName=name.split(' ')[0]==='Cathrine'?'Cath':name.split(' ')[0];
+    const label=type==='concessional'?'Concessional (pre-tax)':'Non-concessional (after-tax)';
+    const cur=(contribs[name]&&contribs[name][type]!=null)?contribs[name][type]:'';
+    const val=prompt(firstName+' — '+label+'\nFY '+fyLabel+'\n\nTotal paid into super so far this FY ($):',cur);
+    if(val===null)return;
+    if(!contribs[name])contribs[name]={};
+    const parsed=parseFloat(String(val).replace(/[$,\s]/g,''));
+    contribs[name][type]=isNaN(parsed)?null:parsed;
+    localStorage.setItem(CONTRIB_KEY,JSON.stringify(contribs));
+    phSuperView();
+  };
+
+  window.phUpdateSuperPlanned=function(name){
+    const now=new Date();
+    const fyStart=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+    const fyLabel=fyStart+'-'+(fyStart+1).toString().slice(-2);
+    const PLANNED_KEY='super_planned_'+fyStart;
+    const planned=JSON.parse(localStorage.getItem(PLANNED_KEY)||'{}');
+    const firstName=name.split(' ')[0]==='Cathrine'?'Cath':name.split(' ')[0];
+    const cur=planned[name]!=null?planned[name]:'';
+    const val=prompt(firstName+' — Planned super contributions\nFY '+fyLabel+'\n\nTotal you plan to contribute this financial year ($):',cur);
+    if(val===null)return;
+    const parsed=parseFloat(String(val).replace(/[$,\s]/g,''));
+    planned[name]=isNaN(parsed)?null:parsed;
+    localStorage.setItem(PLANNED_KEY,JSON.stringify(planned));
+    phSuperView();
   };
 
   // ─── INVESTMENTS VIEW ───
@@ -4107,6 +4323,21 @@
     e.stopPropagation();
     const p=PROJECTS.find(x=>x.id===id);if(!p)return;
     const newStatus=p.status==='Complete'?'Not Started':'Complete';
+    // If completing a project, check for active sub-tasks and offer to move them
+    if(p.is_project&&newStatus==='Complete'){
+      const activeKids=PROJECTS.filter(c=>c.parent_id===id&&c.status!=='Complete');
+      if(activeKids.length){
+        const ht=PROJECTS.find(x=>x.is_project&&x.title==='House Tasks');
+        const moveTo=ht&&ht.id!==id?ht:null;
+        const msg=activeKids.length+' unfinished item'+(activeKids.length>1?'s are':' is')+' still open.\n\n'+(moveTo?'Move them to House Tasks before completing?':'Complete the project anyway?');
+        const move=moveTo?confirm(msg):confirm('This project has '+activeKids.length+' unfinished item'+(activeKids.length>1?'s':'')+'. Complete anyway?');
+        if(moveTo&&move){
+          const {error:me}=await sb.from('house_projects').update({parent_id:moveTo.id}).in('id',activeKids.map(c=>c.id));
+          if(me){phToast('Error moving items: '+me.message,'error');return;}
+          activeKids.forEach(c=>c.parent_id=moveTo.id);
+        }
+      }
+    }
     const {error}=await sb.from('house_projects').update({status:newStatus}).eq('id',id);
     if(error){phToast('Error: '+error.message,'error');return;}
     p.status=newStatus;
@@ -4276,8 +4507,7 @@
     const assignSelect='<select onclick="event.stopPropagation()" onchange="phQuickAssign('+p.id+',this.value)" style="font-size:11px;font-weight:600;background:'+assignBg+';color:'+assignColor+';border:1px solid '+assignColor+'33;border-radius:99px;padding:2px 8px;cursor:pointer;font-family:inherit;appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;">'+assignOpts+'</select>';
     const costVal=p.est_cost!=null?p.est_cost:'';
     const hasCost=p.est_cost!=null;
-    // Cost is only shown/editable on parent projects — items don't carry costs
-    const costInput=isParent?'<div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;background:'+(hasCost?'#f0fdf4':'#f8fafc')+';border:1px solid '+(hasCost?'#bbf7d0':'#e2e8f0')+';border-radius:99px;padding:1px 6px;"><span style="font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#94a3b8')+';">$</span><input type="number" step="0.01" min="0" value="'+costVal+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" onclick="event.stopPropagation()" style="width:55px;font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#64748b')+';border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>':'';
+    const costInput='<div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;background:'+(hasCost?'#f0fdf4':'#f8fafc')+';border:1px solid '+(hasCost?'#bbf7d0':'#e2e8f0')+';border-radius:99px;padding:1px 6px;"><span style="font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#94a3b8')+';">$</span><input type="number" step="0.01" min="0" value="'+costVal+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" onclick="event.stopPropagation()" style="width:55px;font-size:11px;font-weight:600;color:'+(hasCost?'#0d9488':'#64748b')+';border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>';
     return '<div class="proj-card" style="cursor:pointer;position:relative;'+(isDone?'opacity:0.5;':'')+(isParent?'background:#fafaff;':'')+'"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div style="width:24px;height:24px;border:2px solid '+(isDone?'#0d9488':'#cbd5e1')+';border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(isDone?'#0d9488':'white')+';color:white;font-size:13px;font-weight:700;cursor:pointer;" onclick="phToggleComplete('+p.id+',event)">'+(isDone?'\u2713':'')+'</div><div onclick="phEditProj('+p.id+')" style="flex:1;min-width:120px;"><div class="pc-title" style="'+(isDone?'text-decoration:line-through;color:#94a3b8;':'')+'">'+childMark+'<span class="priority-dot '+p.priority.toLowerCase()+'"></span>'+parentMark+p.title+'</div>'+(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')+'</div>'+costInput+assignSelect+'<button onclick="event.stopPropagation();phDeleteProj('+p.id+')" style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:4px;" title="Delete">\u{1F5D1}</button></div></div>';
   }
 
@@ -4353,16 +4583,17 @@
     PROJECTS.forEach(p=>{if(p.parent_id!=null){if(!kidsMap[p.parent_id])kidsMap[p.parent_id]=[];kidsMap[p.parent_id].push(p);}});
     const parents=PROJECTS.filter(p=>p.is_project===true);
 
-    let totalParentCost=0,totalChildCost=0,totalChildren=0,doneChildren=0;
+    let totalChildren=0,doneChildren=0;
+    const effCost=p=>{const isHT=p.title==='House Tasks';const hasFixed=!isHT&&p.est_cost!=null&&Number(p.est_cost)>0;if(hasFixed)return Number(p.est_cost);return(kidsMap[p.id]||[]).reduce((s,c)=>s+(Number(c.est_cost)||0),0);};
     parents.forEach(p=>{
-      totalParentCost+=Number(p.est_cost)||0;
       const kids=kidsMap[p.id]||[];
       totalChildren+=kids.length;
-      kids.forEach(c=>{
-        totalChildCost+=Number(c.est_cost)||0;
-        if(c.status==='Complete')doneChildren++;
-      });
+      kids.forEach(c=>{if(c.status==='Complete')doneChildren++;});
     });
+    const activeParents=parents.filter(p=>p.status!=='Complete');
+    const doneParents=parents.filter(p=>p.status==='Complete');
+    const totalOutstanding=activeParents.reduce((s,p)=>s+effCost(p),0);
+    const totalPaid=doneParents.reduce((s,p)=>s+effCost(p),0);
 
     let summary='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">';
     summary+='<div style="display:flex;gap:4px;">';
@@ -4374,16 +4605,17 @@
     summary+='<div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;">';
     summary+='<div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Project Summary</div>';
     summary+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">';
-    summary+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;">Active projects</div><div style="font-size:18px;font-weight:700;color:#7c3aed;margin-top:4px;">'+parents.length+'</div></div>';
+    summary+='<div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#7c3aed;font-weight:600;">Active projects</div><div style="font-size:18px;font-weight:700;color:#7c3aed;margin-top:4px;">'+activeParents.length+'</div></div>';
     summary+='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#1e40af;font-weight:600;">Sub-tasks</div><div style="font-size:18px;font-weight:700;color:#1e40af;margin-top:4px;">'+doneChildren+' / '+totalChildren+'</div><div style="font-size:11px;color:#1e40af;margin-top:2px;">done</div></div>';
-    summary+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#9a3412;font-weight:600;">Bills total</div><div style="font-size:18px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(totalParentCost)+'</div></div>';
+    summary+='<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#9a3412;font-weight:600;">Outstanding</div><div style="font-size:18px;font-weight:700;color:#9a3412;margin-top:4px;">'+fmt(totalOutstanding)+'</div></div>';
+    summary+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;"><div style="font-size:11px;color:#0d9488;font-weight:600;">Completed / Paid</div><div style="font-size:18px;font-weight:700;color:#0d9488;margin-top:4px;">'+fmt(totalPaid)+'</div><div style="font-size:11px;color:#0d9488;margin-top:2px;">'+doneParents.length+' project'+(doneParents.length===1?'':'s')+'</div></div>';
     summary+='</div></div>';
 
     let body='';
     if(!parents.length){
       body='<div class="empty-msg">No projects yet. Tap + New Project above to create one. You can attach existing items to it now or later.</div>';
     } else {
-      parents.sort((a,b)=>(b.est_cost||0)-(a.est_cost||0)).forEach(p=>{
+      parents.sort((a,b)=>{if(a.title==='House Tasks')return -1;if(b.title==='House Tasks')return 1;return(b.est_cost||0)-(a.est_cost||0);}).forEach(p=>{
         const kids=kidsMap[p.id]||[];
         const kidsDone=kids.filter(k=>k.status==='Complete').length;
         const isDone=p.status==='Complete';
@@ -4405,7 +4637,15 @@
           body+='<div style="font-size:11px;color:#64748b;margin-top:2px;">'+kidsDone+' of '+kids.length+' done'+(p.assigned?' • '+p.assigned:'')+'</div>';
         }
         body+='</div>';
-        body+='<div onclick="event.stopPropagation()" style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><div style="display:flex;align-items:center;gap:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:4px 10px;"><span style="font-size:16px;font-weight:700;color:#0d9488;">$</span><input type="number" step="0.01" min="0" value="'+(p.est_cost!=null?p.est_cost:'')+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" style="width:90px;font-size:18px;font-weight:700;color:#0d9488;border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div><div style="font-size:10px;color:#94a3b8;">bill total — tap to edit</div></div>';
+        const kidsTotal=(kidsMap[p.id]||[]).reduce((s,c)=>s+(Number(c.est_cost)||0),0);
+        const isHouseTasks=p.title==='House Tasks';
+        const hasFixed=!isHouseTasks&&p.est_cost!=null&&Number(p.est_cost)>0;
+        const effectiveCost=isHouseTasks?kidsTotal:(hasFixed?Number(p.est_cost):kidsTotal);
+        if(isHouseTasks){
+          body+='<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:6px 14px;"><span style="font-size:18px;font-weight:700;color:#0d9488;">'+fmt(effectiveCost)+'</span></div><div style="font-size:10px;color:#94a3b8;">items total</div></div>';
+        } else {
+          body+='<div onclick="event.stopPropagation()" style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><div style="display:flex;align-items:center;gap:4px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:4px 10px;"><span style="font-size:16px;font-weight:700;color:#0d9488;">$</span><input type="number" step="0.01" min="0" value="'+(p.est_cost!=null?p.est_cost:'')+'" placeholder="0" onblur="phQuickCost('+p.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" style="width:90px;font-size:18px;font-weight:700;color:#0d9488;border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>'+(kidsTotal>0&&!hasFixed?'<div style="font-size:11px;font-weight:700;color:#0d9488;">Items: '+fmt(kidsTotal)+'</div>':'')+'<div style="font-size:10px;color:#94a3b8;">'+(hasFixed?'fixed total':'from items')+' — tap to edit</div></div>';
+        }
         body+='</div>';
         if(!collapsed){
         body+='<div style="margin-top:10px;background:#f1f5f9;border-radius:99px;height:6px;overflow:hidden;"><div style="background:#7c3aed;height:100%;width:'+pct+'%;"></div></div>';
@@ -4416,12 +4656,15 @@
         if(!activeKids.length){
           body+='<div style="font-size:12px;color:#94a3b8;padding:6px 0;">All sub-tasks complete &#x2713;</div>';
         } else {
+          const moveOpts='<option value="">Move to…</option>'+parents.filter(x=>x.id!==p.id).map(x=>'<option value="'+x.id+'">'+x.title+'</option>').join('');
           activeKids.forEach(c=>{
             const escCTitle=(c.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            body+='<div id="proj-row-'+c.id+'" style="display:flex;align-items:center;gap:8px;padding:6px 0;">';
+            body+='<div id="proj-row-'+c.id+'" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;">';
             body+='<input type="checkbox" onclick="phToggleComplete('+c.id+',event)" style="accent-color:#0d9488;width:18px;height:18px;flex-shrink:0;cursor:pointer;margin:0;">';
             body+='<span contenteditable="true" spellcheck="false" onblur="phQuickRename('+c.id+',this.innerText)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur();}" style="flex:1;font-size:13px;color:#1e293b;outline:none;padding:2px 4px;border-radius:4px;cursor:text;">'+escCTitle+'</span>';
             if(c.assigned)body+='<span style="font-size:10px;color:#92400e;background:#fef3c7;padding:2px 8px;border-radius:99px;font-weight:600;flex-shrink:0;">'+c.assigned+'</span>';
+            body+='<select onclick="event.stopPropagation()" onchange="phQuickReparent('+c.id+',Number(this.value))" style="font-size:10px;color:#64748b;border:1px solid #e2e8f0;border-radius:6px;padding:2px 6px;background:white;cursor:pointer;font-family:inherit;flex-shrink:0;">'+moveOpts+'</select>';
+            body+='<div onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:1px;background:'+(c.est_cost!=null?'#f0fdf4':'#f8fafc')+';border:1px solid '+(c.est_cost!=null?'#bbf7d0':'#e2e8f0')+';border-radius:6px;padding:2px 6px;flex-shrink:0;"><span style="font-size:11px;color:'+(c.est_cost!=null?'#0d9488':'#94a3b8')+';">$</span><input type="number" step="0.01" min="0" value="'+(c.est_cost!=null?c.est_cost:'')+'" placeholder="0" onblur="phQuickCost('+c.id+',this.value)" onkeydown="if(event.key===\'Enter\')this.blur()" onclick="event.stopPropagation()" style="width:52px;font-size:12px;font-weight:600;color:'+(c.est_cost!=null?'#0d9488':'#94a3b8')+';border:none;background:transparent;outline:none;font-family:inherit;text-align:right;" /></div>';
             body+='<button onclick="phEditProj('+c.id+')" title="Full edit" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px 6px;flex-shrink:0;font-family:inherit;line-height:1;">&#x22EF;</button>';
             body+='</div>';
           });
@@ -4577,6 +4820,15 @@
       }).join('');
   }
 
+  window.phQuickReparent=async function(id,newParentId){
+    const p=PROJECTS.find(x=>x.id===id);if(!p)return;
+    const {error}=await sb.from('house_projects').update({parent_id:newParentId||null}).eq('id',id);
+    if(error){phToast('Error: '+error.message,'error');return;}
+    p.parent_id=newParentId||null;
+    phRenderProjectsView();
+    phToast('Moved!','success');
+  };
+
   window.phQuickCost=async function(id,val){
     const p=PROJECTS.find(x=>x.id===id);
     if(!p)return;
@@ -4602,7 +4854,8 @@
     $('#pf-priority').value='Medium';$('#pf-status').value='Not Started';$('#pf-due').value='';
     $('#pf-assigned').value='';$('#pf-zone').value='';$('#pf-cost').value='';
     phPopulateParentDropdown(null);
-    $('#pf-parent').value='';
+    const _ht=PROJECTS.find(p=>p.is_project&&p.title==='House Tasks');
+    $('#pf-parent').value=_ht?_ht.id:'';
     $('#pf-del-btn').style.display='none';
     $('#pf-msg').className='form-msg';$('#pf-msg').textContent='';
     phPopulateItemsPicker(null);
@@ -4610,16 +4863,14 @@
   }
 
   function phUpdateCostFieldVisibility(){
-    // Cost + items-picker show only when this row is a Project.
-    // Parent dropdown shows only when this row is an Item (projects can't have a parent).
     const isProject=$('#pf-is-project').value==='true';
-    $('#pf-cost-group').style.display=isProject?'':'none';
+    // Items-picker only for projects; parent-picker only for items
     $('#pf-items-group').style.display=isProject?'':'none';
     const parentRow=document.querySelector('label[for="pf-parent"], #pf-parent')?.closest('.form-group');
     if(parentRow)parentRow.style.display=isProject?'none':'';
-    if(!isProject){$('#pf-cost').value='';}
-    // If user picks a parent for an item, clear is_project (defensive)
-    if(!isProject&&$('#pf-parent').value!==''){/* item with parent — already correct */}
+    // Cost field shown for both; label hint differs
+    const hint=$('#pf-cost-hint');
+    if(hint)hint.textContent=isProject?'fixed total — overrides item costs':'optional — rolls up to project total';
   }
 
   function phPopulateItemsPicker(currentProjectId){
@@ -4709,7 +4960,7 @@
 
     if(!title){$('#pf-msg').className='form-msg error';$('#pf-msg').textContent='Please enter a title.';unlockBtn(btn);return;}
 
-    const row={title:title,description:desc||null,notes:notes,priority:priority,status:status,due_date:due,assigned_to:assigned||null,est_cost:isProject?est_cost:null,parent_id:parent_id,is_project:isProject};
+    const row={title:title,description:desc||null,notes:notes,priority:priority,status:status,due_date:due,assigned_to:assigned||null,est_cost:est_cost,parent_id:parent_id,is_project:isProject};
 
     try {
       let savedId=editingProjId;
@@ -6294,7 +6545,9 @@
     const div=document.createElement('div');
     div.className='bai-m '+role;
     let html=baiEscHtml(text);
-    // Markdown links [text](url) → <a>
+    // Markdown mailto: links → styled email button
+    html=html.replace(/\[([^\]]+)\]\((mailto:[^\s)]+)\)/g,'<a href="$2" style="display:inline-block;background:#0d9488;color:white;padding:5px 14px;border-radius:6px;text-decoration:none;font-weight:600;margin-top:6px;font-size:13px;">✉ $1</a>');
+    // Markdown https links [text](url) → <a>
     html=html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener" style="color:#0d9488;text-decoration:underline;font-weight:600;">$1</a>');
     // Bare URLs (avoid wrapping ones already in <a>)
     html=html.replace(/(^|[^"'>])(https?:\/\/[^\s<)]+)/g,'$1<a href="$2" target="_blank" rel="noopener" style="color:#0d9488;text-decoration:underline;font-weight:600;">$2</a>');
@@ -6403,7 +6656,6 @@
       if(!a.title)return 'Error: Missing title.';
       const {data,error}=await sb.from('important_dates').insert({title:a.title,description:a.description||null,date_start:a.date_start||null,date_end:a.date_end||null,time_info:a.time_info||null,location:a.location||null,category:a.category||'Other',notes:a.notes||null,recurring:a.recurring||null}).select().single();
       if(error)return 'Error: '+error.message;
-      DATES.push({id:data.id,title:data.title,desc:data.description||'',start:data.date_start||'',end:data.date_end||'',time:data.time_info||'',loc:data.location||'',cat:data.category,notes:data.notes||'',recurring:data.recurring||''});
       var fmtDate=a.date_start?new Date(a.date_start+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}):'';
       return 'Added date: "'+a.title+'"'+(fmtDate?' on '+fmtDate:'');
     }
@@ -6454,6 +6706,17 @@
       if(de)return 'Error: '+de.message;
       return 'Deleted Fiona task: "'+data[0].task+'"';
     }
+    if(a.type==='compose_email'){
+      if(!a.to_name)return 'Error: Missing contact name.';
+      const {data,error}=await sb.from('contacts').select('*').ilike('name','%'+a.to_name+'%').limit(1);
+      if(error)return 'Error: '+error.message;
+      if(!data||!data.length)return 'Could not find a contact matching "'+a.to_name+'". Check the name and try again.';
+      const contact=data[0];
+      if(!contact.email)return contact.name+' has no email address saved in Contacts.';
+      const subject=encodeURIComponent(a.subject||'');
+      const body=encodeURIComponent(a.body||'');
+      return 'Email ready for **'+contact.name+'** ('+contact.email+'):\n\n[Email '+contact.name+'](mailto:'+contact.email+'?subject='+subject+'&body='+body+')';
+    }
     if(a.type==='add_shopping'){
       if(!a.items)return 'Error: Missing items.';
       const items=a.items.split(',').map(s=>s.trim()).filter(s=>s.length>0);
@@ -6487,7 +6750,7 @@
       const todayStr=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
       const timeStr=now.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
       const calRef=[];
-      for(let i=0;i<14;i++){const d=new Date(now);d.setDate(now.getDate()+i);calRef.push(d.toLocaleDateString('en-AU',{weekday:'short'})+' '+d.toISOString().split('T')[0]);}
+      for(let i=0;i<365;i++){const d=new Date(now);d.setDate(now.getDate()+i);calRef.push(d.toLocaleDateString('en-AU',{weekday:'short'})+' '+d.toISOString().split('T')[0]);}
 
       // Interpolate system prompt template with dynamic values
       const sys=aiSettings.system_prompt_template

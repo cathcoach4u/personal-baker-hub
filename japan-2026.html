@@ -9,6 +9,8 @@
 <link rel="manifest" href="japan-manifest.json">
 <meta name="apple-mobile-web-app-title" content="Japan 2026">
 <title>Japan 2026 — Baker Family</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <style>
 :root{--tokyo:#1d4ed8;--kyoto:#7c3aed;--hiro:#b45309;--osaka:#c2410c;--tokyo2:#0369a1;--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -52,7 +54,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="top-bar">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;">
     <div><h1>Japan 2026 🇯🇵</h1><div class="sub">Baker Family &nbsp;•&nbsp; 25 Sep – 9 Oct</div></div>
-    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.11</span>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.12</span>
   </div>
   <div class="countdown" id="cd">Loading…</div>
 </div>
@@ -177,13 +179,21 @@ function loadState(){
   });
   const dsck=document.getElementById('ds-ck');if(dsck)dsck.textContent=total+' / 27';
   const dssub=document.getElementById('ds-plan-sub');if(dssub)dssub.textContent=total+' / 27 items completed';
-  const exp=JSON.parse(localStorage.getItem('jbudget')||'[]');
-  const spent=exp.reduce((s,e)=>s+e.amt,0);
-  const dsspent=document.getElementById('ds-spent');if(dsspent)dsspent.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU'):'$0';
+}
+
+async function loadBudgetStat(){
+  try{
+    const db=supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+    const{data}=await db.from('japan_expenses').select('amount');
+    const spent=data?data.reduce((s,e)=>s+parseFloat(e.amount),0):0;
+    const el=document.getElementById('ds-spent');
+    if(el)el.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU'):'$0';
+  }catch(e){}
 }
 
 countdown();
 loadState();
+loadBudgetStat();
 </script>
 </body>
 </html>

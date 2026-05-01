@@ -350,6 +350,7 @@ Baker AI accessible via purple B button (bottom-right popup) on all pages.
 | bank_balance_history | Weekly balance snapshots per account (account_id, balance, snapshot_date) | auto bigint |
 | travel_trips | Travel trips (name, destination, start_date, end_date, budget, notes, status: planning/booked/completed) | auto bigint |
 | travel_expenses | Travel expenses per trip (trip_id, description, amount, category, date, notes) | auto bigint |
+| japan_expenses | Japan 2026 trip expenses (description, amount, category, created_at) — shared across all family devices | auto bigint |
 
 All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHECK true).
 
@@ -368,8 +369,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 | japan-2026.html | Japan family trip planner home/dashboard. Open access. Countdown header, mini stats (checklist progress + budget), 3 collapsed section cards linking to other pages. |
 | japan-itinerary.html | Japan itinerary — 15 day accordion cards with city colour coding, route ribbon, stat strip, Today button. |
 | japan-plan.html | Japan plan & packing — 27-item checklist in 5 sections with progress bars. |
-| japan-budget.html | Japan budget tracker — add/delete expenses by category, progress bar vs $25k budget, estimated breakdown guide. |
-| japan-info.html | Japan info — emergency contacts, Shinkansen routes, essential tips, notes. All 5 pages share 5-tab nav (Home/Itinerary/Plan/Budget/Info). localStorage keys: jck (checklist), jbudget (expenses), jn-g (notes). |
+| japan-budget.html | Japan budget tracker — add/delete expenses by category, progress bar vs $25k budget, estimated breakdown guide. Expenses stored in Supabase `japan_expenses` table (cross-device). |
+| japan-info.html | Japan info — emergency contacts, Shinkansen routes, essential tips, notes. All 5 pages share 5-tab nav (Home/Itinerary/Plan/Budget/Info). localStorage keys: jck (checklist), jn-g (notes). Budget stored in Supabase. |
 | ndis.html | Standalone mobile NDIS page (not linked from nav) |
 | apps-directory.html | Apps directory page |
 | sw.js | Service worker for Baker Hub |
@@ -405,7 +406,7 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - For `fiona_tasks` inserts, always include `id: Date.now()` — table doesn't auto-generate IDs
 - Dates and contacts support comma-separated multi-values for categories/people
 - `daysDiff` and `daysUntil` use midnight-to-midnight comparison to avoid AEST timezone issues
-- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v6.11`)
+- Service worker cache version must be bumped when deploying significant changes (currently `baker-hub-v6.12`)
 - All delete operations need RLS DELETE policy (use `allow_all` policy)
 - When adding new Supabase queries to the initial data load, update: the Promise.all array, the error check array, the return object, and the destructuring
 
@@ -413,8 +414,8 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 - **Claude Code cannot run SQL on Supabase** — provide SQL to the user to run manually in the Supabase SQL Editor. Always provide complete copy-paste-ready SQL.
 - **Claude Code cannot access OneDrive/SharePoint links** — just store the URLs as-is in the code, don't try to open or read them.
 - **Claude Code cannot access the Supabase dashboard** — can only work with the code and provide SQL for data changes.
-- **Current version** — v6.11. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
-- **Service worker caching** — cache name must match version (currently `baker-hub-v6.11`). Bump after every change or users will see stale cached pages.
+- **Current version** — v6.12. Major structural shifts bump the major version (e.g. v5.x → v6.0); all other changes bump the minor version. See Working Style for the 4 bump locations.
+- **Service worker caching** — cache name must match version (currently `baker-hub-v6.12`). Bump after every change or users will see stale cached pages.
 - **GitHub Pages deployment** — takes 1-2 minutes after push. If user reports not seeing changes, suggest hard refresh or clearing cache.
 - **The user prefers to see changes immediately** — push to main, not PRs. Don't wait for approval unless asked.
 

@@ -525,9 +525,8 @@ function loadNotes() {
   if (saved) document.getElementById('japan-notes').value = saved;
 }
 
-// Auth check
-(async () => {
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(async function() {
+  const sb = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'index.html'; return; }
   document.documentElement.style.display = '';

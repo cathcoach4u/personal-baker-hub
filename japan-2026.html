@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Japan 2026">
 <title>Japan 2026 — Baker Family</title>
 <style>
-:root{--tokyo:#1d4ed8;--kyoto:#7c3aed;--hiro:#b45309;--osaka:#c2410c;--tokyo2:#0369a1;--transit:#d97706;--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
+:root{--tokyo:#1d4ed8;--kyoto:#7c3aed;--hiro:#b45309;--osaka:#c2410c;--tokyo2:#0369a1;--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b;padding-bottom:calc(68px + var(--sb));}
 .top-bar{background:linear-gradient(135deg,#0d9488,#0891b2);color:white;padding:12px 16px;padding-top:calc(12px + var(--st));position:sticky;top:0;z-index:100;}
@@ -21,16 +21,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;text-decoration:none;}
 .tb.on{color:var(--teal);}
 .tb .ic{font-size:19px;line-height:1;}
-.city-h{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;padding:6px 2px;margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
-.city-h::after{content:'';flex:1;height:1px;background:#e2e8f0;}
-.link-card{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:13px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;color:#1e293b;}
-.link-card:active{background:#f8fafc;}
-.lc-icon{font-size:20px;flex-shrink:0;}
-.lc-info{flex:1;}
-.lc-title{font-size:14px;font-weight:700;}
-.lc-sub{font-size:12px;color:#64748b;margin-top:2px;}
-.lc-badge{font-size:12px;font-weight:700;color:var(--teal);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:2px 10px;flex-shrink:0;white-space:nowrap;}
-.lc-arr{font-size:16px;color:#cbd5e1;flex-shrink:0;}
+
+/* SECTION CARDS */
+.sec{background:white;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.sec-hd{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;user-select:none;}
+.sec-ic{font-size:22px;flex-shrink:0;}
+.sec-inf{flex:1;}
+.sec-title{font-size:15px;font-weight:700;}
+.sec-sub{font-size:12px;color:#64748b;margin-top:2px;}
+.sec-arr{font-size:13px;color:#cbd5e1;transition:transform 0.2s;flex-shrink:0;}
+.sec-hd.open .sec-arr{transform:rotate(180deg);}
+.sec-body{display:none;border-top:1px solid #f1f5f9;padding:8px 8px 4px;}
+
+/* LINK ROWS inside sections */
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:10px;cursor:pointer;text-decoration:none;color:#1e293b;}
+.lrow:active{background:#f8fafc;}
+.lrow + .lrow{border-top:1px solid #f8fafc;}
+.lr-ic{font-size:18px;flex-shrink:0;}
+.lr-inf{flex:1;}
+.lr-title{font-size:14px;font-weight:600;}
+.lr-sub{font-size:12px;color:#64748b;margin-top:1px;}
+.lr-badge{font-size:12px;font-weight:700;color:var(--teal);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:2px 10px;flex-shrink:0;white-space:nowrap;}
+.lr-arr{font-size:14px;color:#cbd5e1;flex-shrink:0;}
+
 .fab{position:fixed;right:14px;bottom:calc(72px + var(--sb));width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;font-size:21px;border:none;box-shadow:0 4px 14px rgba(124,58,237,0.35);display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:90;}
 </style>
 </head>
@@ -38,8 +51,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="top-bar">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-    <div><h1>Japan 2026 🇯🇵</h1><div class="sub">Baker Family &nbsp;•&nbsp; 25 Sep – 9 Oct &nbsp;•&nbsp; 4 travellers</div></div>
-    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.10</span>
+    <div><h1>Japan 2026 🇯🇵</h1><div class="sub">Baker Family &nbsp;•&nbsp; 25 Sep – 9 Oct</div></div>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.11</span>
   </div>
   <div class="countdown" id="cd">Loading…</div>
 </div>
@@ -47,38 +60,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div style="padding:12px 14px;max-width:820px;margin:0 auto;">
   <div style="height:4px;"></div>
 
+  <!-- Mini stats -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
     <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;">
       <div id="ds-ck" style="font-size:22px;font-weight:800;color:var(--teal);">0 / 27</div>
       <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">Planned</div>
     </div>
-    <a href="japan-info.html#budget-tracker" style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;text-decoration:none;display:block;">
-      <div id="ds-spent" style="font-size:22px;font-weight:800;color:#1e293b;">$0 spent</div>
-      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">of $25,000 budget ›</div>
+    <a href="japan-budget.html" style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;text-decoration:none;display:block;">
+      <div id="ds-spent" style="font-size:22px;font-weight:800;color:#1e293b;">$0</div>
+      <div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;">of $25k spent ›</div>
     </a>
   </div>
 
-  <div class="city-h" style="color:#64748b;margin-top:4px;">🗓️ Itinerary</div>
-  <a class="link-card" href="japan-itinerary.html#ch-tokyo"><div class="lc-icon" style="color:var(--tokyo)">🗼</div><div class="lc-info"><div class="lc-title" style="color:var(--tokyo)">Tokyo</div><div class="lc-sub">Days 1–4 &nbsp;•&nbsp; 25–28 Sep</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-itinerary.html#ch-kyoto"><div class="lc-icon" style="color:var(--kyoto)">⛩️</div><div class="lc-info"><div class="lc-title" style="color:var(--kyoto)">Kyoto</div><div class="lc-sub">Days 5–6 &nbsp;•&nbsp; 29–30 Sep</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-itinerary.html#ch-hiro"><div class="lc-icon" style="color:var(--hiro)">🕊️</div><div class="lc-info"><div class="lc-title" style="color:var(--hiro)">Hiroshima</div><div class="lc-sub">Days 7–8 &nbsp;•&nbsp; 1–2 Oct</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-itinerary.html#ch-osaka"><div class="lc-icon" style="color:var(--osaka)">🏯</div><div class="lc-info"><div class="lc-title" style="color:var(--osaka)">Osaka + Nara</div><div class="lc-sub">Days 9–12 &nbsp;•&nbsp; 3–6 Oct</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-itinerary.html#ch-tokyo2"><div class="lc-icon" style="color:var(--tokyo2)">✈️</div><div class="lc-info"><div class="lc-title" style="color:var(--tokyo2)">Tokyo — Return</div><div class="lc-sub">Days 13–14 &nbsp;•&nbsp; 7–8 Oct</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-itinerary.html#ddep"><div class="lc-icon">🛫</div><div class="lc-info"><div class="lc-title">Departure</div><div class="lc-sub">9 Oct &nbsp;•&nbsp; Sydney bound</div></div><div class="lc-arr">›</div></a>
+  <!-- ITINERARY section -->
+  <div class="sec" id="s-itin">
+    <div class="sec-hd" onclick="tog('s-itin')">
+      <div class="sec-ic">🗓️</div>
+      <div class="sec-inf">
+        <div class="sec-title">Itinerary</div>
+        <div class="sec-sub">5 cities &nbsp;•&nbsp; 14 nights &nbsp;•&nbsp; tap to view days</div>
+      </div>
+      <div class="sec-arr">▼</div>
+    </div>
+    <div class="sec-body">
+      <a class="lrow" href="japan-itinerary.html#ch-tokyo"><div class="lr-ic" style="color:var(--tokyo)">🗼</div><div class="lr-inf"><div class="lr-title" style="color:var(--tokyo)">Tokyo</div><div class="lr-sub">Days 1–4 &nbsp;•&nbsp; 25–28 Sep</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-itinerary.html#ch-kyoto"><div class="lr-ic" style="color:var(--kyoto)">⛩️</div><div class="lr-inf"><div class="lr-title" style="color:var(--kyoto)">Kyoto</div><div class="lr-sub">Days 5–6 &nbsp;•&nbsp; 29–30 Sep</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-itinerary.html#ch-hiro"><div class="lr-ic" style="color:var(--hiro)">🕊️</div><div class="lr-inf"><div class="lr-title" style="color:var(--hiro)">Hiroshima</div><div class="lr-sub">Days 7–8 &nbsp;•&nbsp; 1–2 Oct</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-itinerary.html#ch-osaka"><div class="lr-ic" style="color:var(--osaka)">🏯</div><div class="lr-inf"><div class="lr-title" style="color:var(--osaka)">Osaka + Nara</div><div class="lr-sub">Days 9–12 &nbsp;•&nbsp; 3–6 Oct</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-itinerary.html#ch-tokyo2"><div class="lr-ic" style="color:var(--tokyo2)">✈️</div><div class="lr-inf"><div class="lr-title" style="color:var(--tokyo2)">Tokyo — Return</div><div class="lr-sub">Days 13–14 &nbsp;•&nbsp; 7–8 Oct</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-itinerary.html#ddep"><div class="lr-ic">🛫</div><div class="lr-inf"><div class="lr-title">Departure</div><div class="lr-sub">9 Oct &nbsp;•&nbsp; Sydney bound</div></div><div class="lr-arr">›</div></a>
+    </div>
+  </div>
 
-  <div class="city-h" style="color:#64748b;margin-top:8px;">✅ Plan & packing</div>
-  <a class="link-card" href="japan-plan.html#cs-book"><div class="lc-icon">📋</div><div class="lc-info"><div class="lc-title">Book & organise</div><div class="lc-sub">Flights, JR Pass, hotels, tickets</div></div><div class="lc-badge" id="ds-cs0">0 / 9</div></a>
-  <a class="link-card" href="japan-plan.html#cs-docs"><div class="lc-icon">💰</div><div class="lc-info"><div class="lc-title">Documents & money</div><div class="lc-sub">Passports, insurance, cash, cards</div></div><div class="lc-badge" id="ds-cs1">0 / 6</div></a>
-  <a class="link-card" href="japan-plan.html#cs-sarah"><div class="lc-icon">⚕️</div><div class="lc-info"><div class="lc-title">Sarah — health & medical</div><div class="lc-sub">Meds, doctor letter, medical card</div></div><div class="lc-badge" id="ds-cs2">0 / 4</div></a>
-  <a class="link-card" href="japan-plan.html#cs-tech"><div class="lc-icon">📱</div><div class="lc-info"><div class="lc-title">Tech & connectivity</div><div class="lc-sub">WiFi, apps, adapters</div></div><div class="lc-badge" id="ds-cs3">0 / 4</div></a>
-  <a class="link-card" href="japan-plan.html#cs-pack"><div class="lc-icon">🎒</div><div class="lc-info"><div class="lc-title">Packing</div><div class="lc-sub">Shoes, luggage, bags, coin purse</div></div><div class="lc-badge" id="ds-cs4">0 / 4</div></a>
+  <!-- PLAN section -->
+  <div class="sec" id="s-plan">
+    <div class="sec-hd" onclick="tog('s-plan')">
+      <div class="sec-ic">✅</div>
+      <div class="sec-inf">
+        <div class="sec-title">Plan & packing</div>
+        <div class="sec-sub" id="ds-plan-sub">0 / 27 items completed</div>
+      </div>
+      <div class="sec-arr">▼</div>
+    </div>
+    <div class="sec-body">
+      <a class="lrow" href="japan-plan.html#cs-book"><div class="lr-ic">📋</div><div class="lr-inf"><div class="lr-title">Book & organise</div><div class="lr-sub">Flights, JR Pass, hotels, tickets</div></div><div class="lr-badge" id="ds-cs0">0 / 9</div></a>
+      <a class="lrow" href="japan-plan.html#cs-docs"><div class="lr-ic">💰</div><div class="lr-inf"><div class="lr-title">Documents & money</div><div class="lr-sub">Passports, insurance, cash, cards</div></div><div class="lr-badge" id="ds-cs1">0 / 6</div></a>
+      <a class="lrow" href="japan-plan.html#cs-sarah"><div class="lr-ic">⚕️</div><div class="lr-inf"><div class="lr-title">Sarah — health & medical</div><div class="lr-sub">Meds, doctor letter, medical card</div></div><div class="lr-badge" id="ds-cs2">0 / 4</div></a>
+      <a class="lrow" href="japan-plan.html#cs-tech"><div class="lr-ic">📱</div><div class="lr-inf"><div class="lr-title">Tech & connectivity</div><div class="lr-sub">WiFi, apps, adapters</div></div><div class="lr-badge" id="ds-cs3">0 / 4</div></a>
+      <a class="lrow" href="japan-plan.html#cs-pack"><div class="lr-ic">🎒</div><div class="lr-inf"><div class="lr-title">Packing</div><div class="lr-sub">Shoes, luggage, bags, coin purse</div></div><div class="lr-badge" id="ds-cs4">0 / 4</div></a>
+    </div>
+  </div>
 
-  <div class="city-h" style="color:#64748b;margin-top:8px;">ℹ️ Info</div>
-  <a class="link-card" href="japan-info.html#ic-emergency"><div class="lc-icon">🆘</div><div class="lc-info"><div class="lc-title">Emergency contacts</div><div class="lc-sub">Ambulance, police, embassy</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-info.html#budget-tracker"><div class="lc-icon">💴</div><div class="lc-info"><div class="lc-title">Budget tracker</div><div class="lc-sub" id="ds-btxt">No expenses logged yet</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-info.html#ic-shinkansen"><div class="lc-icon">🚄</div><div class="lc-info"><div class="lc-title">Shinkansen</div><div class="lc-sub">All routes — covered by JR Pass</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-info.html#ic-tips"><div class="lc-icon">🎌</div><div class="lc-info"><div class="lc-title">Essential tips</div><div class="lc-sub">Cash, Suica, Takkyubin, etiquette</div></div><div class="lc-arr">›</div></a>
-  <a class="link-card" href="japan-info.html#ic-notes"><div class="lc-icon">📝</div><div class="lc-info"><div class="lc-title">Notes</div><div class="lc-sub">Booking refs, ideas, reminders</div></div><div class="lc-arr">›</div></a>
+  <!-- INFO section -->
+  <div class="sec" id="s-info">
+    <div class="sec-hd" onclick="tog('s-info')">
+      <div class="sec-ic">ℹ️</div>
+      <div class="sec-inf">
+        <div class="sec-title">Info</div>
+        <div class="sec-sub">Emergency, transport, tips, notes</div>
+      </div>
+      <div class="sec-arr">▼</div>
+    </div>
+    <div class="sec-body">
+      <a class="lrow" href="japan-info.html#ic-emergency"><div class="lr-ic">🆘</div><div class="lr-inf"><div class="lr-title">Emergency contacts</div><div class="lr-sub">119 ambulance &nbsp;•&nbsp; 110 police &nbsp;•&nbsp; embassy</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-info.html#ic-shinkansen"><div class="lr-ic">🚄</div><div class="lr-inf"><div class="lr-title">Shinkansen</div><div class="lr-sub">All routes — JR Pass covered</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-info.html#ic-tips"><div class="lr-ic">🎌</div><div class="lr-inf"><div class="lr-title">Essential tips</div><div class="lr-sub">Cash, Suica, Takkyubin, etiquette</div></div><div class="lr-arr">›</div></a>
+      <a class="lrow" href="japan-info.html#ic-notes"><div class="lr-ic">📝</div><div class="lr-inf"><div class="lr-title">Notes</div><div class="lr-sub">Booking refs, ideas, reminders</div></div><div class="lr-arr">›</div></a>
+    </div>
+  </div>
+
   <div style="height:8px;"></div>
 </div>
 
@@ -86,12 +136,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <a class="tb on" href="japan-2026.html"><span class="ic">🏠</span>Home</a>
   <a class="tb" href="japan-itinerary.html"><span class="ic">🗓️</span>Itinerary</a>
   <a class="tb" href="japan-plan.html"><span class="ic">✅</span>Plan</a>
+  <a class="tb" href="japan-budget.html"><span class="ic">💴</span>Budget</a>
   <a class="tb" href="japan-info.html"><span class="ic">ℹ️</span>Info</a>
 </nav>
 
 <a href="japan-ai.html" class="fab" title="Japan AI">🇯🇵</a>
 
 <script>
+function tog(id){
+  const card=document.getElementById(id);
+  const head=card.querySelector('.sec-hd');
+  const body=card.querySelector('.sec-body');
+  const open=head.classList.contains('open');
+  head.classList.toggle('open',!open);
+  body.style.display=open?'none':'block';
+}
+
 function countdown(){
   const now=new Date(),dep=new Date('2026-09-25'),ret=new Date('2026-10-10');
   const el=document.getElementById('cd');
@@ -99,6 +159,7 @@ function countdown(){
   else if(now<ret){const day=Math.floor((now-dep)/86400000)+1;const city=['','Tokyo','Tokyo','Tokyo','Tokyo','Kyoto','Kyoto','Hiroshima','Hiroshima','Osaka','Osaka','Osaka','Osaka','Tokyo','Tokyo'];el.textContent='Day '+day+' of 14 — '+(city[day]||'Japan');}
   else{el.textContent='Trip complete — 14 amazing days ✓';}
 }
+
 function loadState(){
   const ck=JSON.parse(localStorage.getItem('jck')||'{}');
   const secs=[
@@ -115,11 +176,12 @@ function loadState(){
     const el=document.getElementById(s.ds);if(el)el.textContent=done+' / '+s.tot;
   });
   const dsck=document.getElementById('ds-ck');if(dsck)dsck.textContent=total+' / 27';
+  const dssub=document.getElementById('ds-plan-sub');if(dssub)dssub.textContent=total+' / 27 items completed';
   const exp=JSON.parse(localStorage.getItem('jbudget')||'[]');
   const spent=exp.reduce((s,e)=>s+e.amt,0);
-  const dsspent=document.getElementById('ds-spent');if(dsspent)dsspent.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU')+' spent':'$0 spent';
-  const dsbtxt=document.getElementById('ds-btxt');if(dsbtxt)dsbtxt.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU')+' of $25,000 spent':'No expenses logged yet';
+  const dsspent=document.getElementById('ds-spent');if(dsspent)dsspent.textContent=spent>0?'$'+Math.round(spent).toLocaleString('en-AU'):'$0';
 }
+
 countdown();
 loadState();
 </script>

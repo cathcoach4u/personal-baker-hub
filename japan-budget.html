@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d9488">
+<title>Budget — Japan 2026</title>
+<style>
+:root{--teal:#0d9488;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b;padding-bottom:calc(68px + var(--sb));}
+.top-bar{background:linear-gradient(135deg,#0d9488,#0891b2);color:white;padding:12px 16px;padding-top:calc(12px + var(--st));position:sticky;top:0;z-index:100;}
+.top-bar h1{font-size:19px;font-weight:800;letter-spacing:-0.3px;}
+.top-bar .sub{font-size:12px;opacity:0.85;margin-top:2px;}
+.countdown{display:inline-block;background:rgba(255,255,255,0.22);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;margin-top:6px;}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:white;border-top:1px solid #e2e8f0;display:flex;padding-bottom:var(--sb);box-shadow:0 -2px 10px rgba(0,0,0,0.07);}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;text-decoration:none;}
+.tb.on{color:var(--teal);}
+.tb .ic{font-size:19px;line-height:1;}
+.wrap{padding:12px 14px;max-width:820px;margin:0 auto;}
+.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:10px;}
+.card h3{font-size:14px;font-weight:700;padding-bottom:10px;border-bottom:1px solid #f1f5f9;margin-bottom:12px;}
+.bt-inp{border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;background:white;}
+.bt-inp:focus{border-color:var(--teal);}
+.bt-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f8fafc;}
+.bt-row:last-child{border-bottom:none;}
+.guide-row{font-size:13px;color:#475569;padding:7px 0;border-bottom:1px solid #f8fafc;line-height:1.5;}
+.guide-row:last-child{border-bottom:none;}
+.guide-row strong{color:#1e293b;}
+.fab{position:fixed;right:14px;bottom:calc(72px + var(--sb));width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;font-size:21px;border:none;box-shadow:0 4px 14px rgba(124,58,237,0.35);display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:90;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div><h1>Budget 💴</h1><div class="sub">Japan 2026 &nbsp;•&nbsp; AUD $25,000 total</div></div>
+    <span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);padding:2px 9px;border-radius:10px;margin-top:2px;flex-shrink:0;">v6.11</span>
+  </div>
+  <div class="countdown" id="cd">Loading…</div>
+</div>
+
+<div class="wrap">
+  <div style="height:12px;"></div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+      <div>
+        <div id="bt-spent" style="font-size:28px;font-weight:800;color:var(--teal);">$0</div>
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;">spent of $25,000</div>
+      </div>
+      <div style="text-align:right;">
+        <div id="bt-rem" style="font-size:28px;font-weight:800;color:#1e293b;">$25,000</div>
+        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;">remaining</div>
+      </div>
+    </div>
+    <div style="height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden;margin-bottom:6px;">
+      <div id="bt-bar" style="height:100%;background:linear-gradient(90deg,var(--teal),#0891b2);border-radius:5px;width:0%;transition:width 0.3s;"></div>
+    </div>
+    <div id="bt-pct" style="font-size:11px;color:#94a3b8;margin-bottom:16px;">0% of $25,000 spent</div>
+
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+      <input class="bt-inp" id="bt-desc" type="text" placeholder="Description" style="flex:1;min-width:110px;">
+      <input class="bt-inp" id="bt-amt" type="number" placeholder="AUD $" style="width:88px;" min="0" step="1">
+      <select class="bt-inp" id="bt-cat" style="background:white;">
+        <option>Flights</option>
+        <option>Accommodation</option>
+        <option>JR Pass</option>
+        <option>Food</option>
+        <option>Activities</option>
+        <option>Shopping</option>
+        <option>Other</option>
+      </select>
+      <button onclick="addExp()" style="background:var(--teal);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">+ Add</button>
+    </div>
+
+    <div id="bt-list"><div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>Estimated breakdown — 4 people, 14 nights</h3>
+    <div class="guide-row"><strong>Flights</strong> &nbsp; AUD $6,000–10,000</div>
+    <div class="guide-row"><strong>Accommodation</strong> &nbsp; AUD $5,000–8,000</div>
+    <div class="guide-row"><strong>JR Pass × 4</strong> &nbsp; AUD $3,500–4,000</div>
+    <div class="guide-row"><strong>Food</strong> &nbsp; AUD $4,000–5,000 (~¥5,000pp/day)</div>
+    <div class="guide-row"><strong>Activities & entry fees</strong> &nbsp; AUD $2,000–3,000</div>
+    <div class="guide-row"><strong>Shopping & souvenirs</strong> &nbsp; AUD $2,000+</div>
+    <div class="guide-row"><strong>Total estimate</strong> &nbsp; <strong>AUD $22,000–32,000</strong></div>
+  </div>
+
+  <div style="height:8px;"></div>
+</div>
+
+<nav class="tab-bar">
+  <a class="tb" href="japan-2026.html"><span class="ic">🏠</span>Home</a>
+  <a class="tb" href="japan-itinerary.html"><span class="ic">🗓️</span>Itinerary</a>
+  <a class="tb" href="japan-plan.html"><span class="ic">✅</span>Plan</a>
+  <a class="tb on" href="japan-budget.html"><span class="ic">💴</span>Budget</a>
+  <a class="tb" href="japan-info.html"><span class="ic">ℹ️</span>Info</a>
+</nav>
+
+<a href="japan-ai.html" class="fab" title="Japan AI">🇯🇵</a>
+
+<script>
+let EXPENSES=[];
+const BUDGET=25000;
+const CAT_COL={'Flights':'#3b82f6','Accommodation':'#22c55e','JR Pass':'#d97706','Food':'#f97316','Activities':'#7c3aed','Shopping':'#ec4899','Other':'#94a3b8'};
+
+function countdown(){
+  const now=new Date(),dep=new Date('2026-09-25'),ret=new Date('2026-10-10');
+  const el=document.getElementById('cd');
+  if(now<dep){const d=Math.ceil((dep-now)/86400000);el.textContent=d+' days to go';}
+  else if(now<ret){const day=Math.floor((now-dep)/86400000)+1;const city=['','Tokyo','Tokyo','Tokyo','Tokyo','Kyoto','Kyoto','Hiroshima','Hiroshima','Osaka','Osaka','Osaka','Osaka','Tokyo','Tokyo'];el.textContent='Day '+day+' of 14 — '+(city[day]||'Japan');}
+  else{el.textContent='Trip complete — 14 amazing days ✓';}
+}
+
+function fmt(n){return '$'+Math.abs(n).toLocaleString('en-AU',{maximumFractionDigits:0});}
+
+function addExp(){
+  const desc=document.getElementById('bt-desc').value.trim();
+  const amt=parseFloat(document.getElementById('bt-amt').value);
+  const cat=document.getElementById('bt-cat').value;
+  if(!desc||isNaN(amt)||amt<=0)return;
+  EXPENSES.push({desc,amt,cat,ts:Date.now()});
+  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
+  render();
+  document.getElementById('bt-desc').value='';
+  document.getElementById('bt-amt').value='';
+  document.getElementById('bt-desc').focus();
+}
+
+function delExp(ts){
+  EXPENSES=EXPENSES.filter(e=>e.ts!==ts);
+  localStorage.setItem('jbudget',JSON.stringify(EXPENSES));
+  render();
+}
+
+function render(){
+  const spent=EXPENSES.reduce((s,e)=>s+e.amt,0);
+  const rem=BUDGET-spent;
+  const pct=Math.min(100,Math.round(spent/BUDGET*100));
+  document.getElementById('bt-spent').textContent=fmt(spent);
+  document.getElementById('bt-rem').textContent=(rem<0?'-':'')+fmt(rem);
+  const bar=document.getElementById('bt-bar');
+  bar.style.width=pct+'%';
+  bar.style.background=rem<0?'#ef4444':'linear-gradient(90deg,var(--teal),#0891b2)';
+  document.getElementById('bt-pct').textContent=pct+'% of $25,000 spent';
+  const listEl=document.getElementById('bt-list');
+  if(EXPENSES.length===0){listEl.innerHTML='<div style="text-align:center;color:#94a3b8;font-size:13px;padding:16px 0;">No expenses logged yet. Add your first expense above.</div>';return;}
+  const cats={};EXPENSES.forEach(e=>{cats[e.cat]=(cats[e.cat]||0)+e.amt;});
+  let html='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">';
+  Object.entries(cats).forEach(([cat,total])=>{
+    const col=CAT_COL[cat]||'#94a3b8';
+    html+=`<span style="background:${col}18;color:${col};border:1px solid ${col}40;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;">${cat} ${fmt(total)}</span>`;
+  });
+  html+='</div>';
+  [...EXPENSES].reverse().forEach(e=>{
+    const col=CAT_COL[e.cat]||'#94a3b8';
+    html+=`<div class="bt-row"><div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></div><div style="flex:1;font-size:13px;font-weight:600;">${e.desc.replace(/</g,'&lt;')}</div><div style="font-size:11px;color:#94a3b8;padding:0 6px;white-space:nowrap;">${e.cat}</div><div style="font-size:14px;font-weight:700;color:#1e293b;white-space:nowrap;">${fmt(e.amt)}</div><button onclick="delExp(${e.ts})" style="background:none;border:none;color:#cbd5e1;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;font-family:inherit;flex-shrink:0;">×</button></div>`;
+  });
+  listEl.innerHTML=html;
+}
+
+countdown();
+const saved=localStorage.getItem('jbudget');if(saved)EXPENSES=JSON.parse(saved);render();
+</script>
+</body>
+</html>

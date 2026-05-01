@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d9488">
+<title>Japan 2026 — Baker Family</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>document.documentElement.style.display = 'none';</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; line-height: 1.5; }
+
+  .header { background: linear-gradient(135deg, #0d9488 0%, #7c3aed 100%); color: white; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .header a { color: white; text-decoration: none; font-size: 13px; opacity: 0.8; display: inline-block; margin-bottom: 8px; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 16px; padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; }
+  .stat-card .val { font-size: 22px; font-weight: 700; color: #0d9488; }
+  .stat-card .lbl { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .section { background: white; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .section-header { padding: 14px 16px; font-size: 15px; font-weight: 700; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .section-header .arrow { font-size: 12px; color: #94a3b8; transition: transform 0.2s; }
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+  .section-body { padding: 16px; }
+  .section-body.hidden { display: none; }
+
+  .day-row { display: grid; grid-template-columns: 56px 70px 1fr; gap: 10px; align-items: start; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+  .day-row:last-child { border-bottom: none; }
+  .day-num { font-size: 13px; font-weight: 700; color: #0d9488; }
+  .day-date { font-size: 11px; color: #64748b; padding-top: 1px; }
+  .day-content .city { font-size: 14px; font-weight: 700; color: #1e293b; }
+  .day-content .activity { font-size: 12px; color: #475569; margin-top: 3px; line-height: 1.5; }
+
+  .location-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px; }
+  .loc-tokyo { background: #eff6ff; color: #1d4ed8; }
+  .loc-kyoto { background: #fef3c7; color: #92400e; }
+  .loc-hiroshima { background: #fce7f3; color: #9d174d; }
+  .loc-osaka { background: #f0fdf4; color: #166534; }
+  .loc-travel { background: #f5f3ff; color: #5b21b6; }
+
+  .train-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+  .train-row:last-child { border-bottom: none; }
+  .train-from-to { flex: 1; font-weight: 600; }
+  .train-time { color: #7c3aed; font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .train-note { font-size: 11px; color: #94a3b8; display: block; margin-top: 1px; font-weight: 400; }
+
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input[type="checkbox"] { margin-top: 2px; width: 16px; height: 16px; accent-color: #0d9488; flex-shrink: 0; cursor: pointer; }
+  .checklist-item label { cursor: pointer; line-height: 1.4; }
+  .checklist-item label.done { text-decoration: line-through; color: #94a3b8; }
+
+  .checklist-group { margin-bottom: 12px; }
+  .checklist-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 6px; padding: 4px 0; border-bottom: 2px solid #f1f5f9; }
+
+  .tip-card { background: #f8fafc; border-radius: 10px; padding: 12px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+  .tip-card:last-child { margin-bottom: 0; }
+  .tip-card .tip-title { font-weight: 700; color: #0d9488; margin-bottom: 4px; font-size: 13px; }
+
+  .budget-link-btn { display: block; background: linear-gradient(135deg, #0d9488, #7c3aed); color: white; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; margin-bottom: 12px; }
+
+  .notes-textarea { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 80px; color: #1e293b; background: #f8fafc; }
+  .notes-textarea:focus { outline: none; border-color: #0d9488; background: white; }
+  .save-note-btn { margin-top: 8px; background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  .info-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: #1e40af; line-height: 1.5; }
+
+  @media (max-width: 600px) {
+    .day-row { grid-template-columns: 46px 60px 1fr; gap: 6px; }
+    .overview-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media print {
+    .header a { display: none; }
+    .section-header { cursor: default; }
+    .section-body.hidden { display: block !important; }
+    .section-header .arrow { display: none; }
+    .notes-textarea, .save-note-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html#ph-travel">&larr; Back to Travel</a>
+  <h1>Japan 2026</h1>
+  <div class="subtitle">Baker Family — 25 Sep to 9 Oct 2026 &nbsp;•&nbsp; 14 nights</div>
+</div>
+
+<div class="container">
+
+  <div class="info-banner">
+    Autumn in Japan — late September/early October is peak season. Book accommodation and popular attractions (TeamLab, JR Pass) well in advance.
+  </div>
+
+  <!-- Overview stats -->
+  <div class="overview-grid">
+    <div class="stat-card"><div class="val">14</div><div class="lbl">Nights</div></div>
+    <div class="stat-card"><div class="val">5</div><div class="lbl">Cities</div></div>
+    <div class="stat-card"><div class="val">4</div><div class="lbl">Travellers</div></div>
+    <div class="stat-card"><div class="val">25 Sep</div><div class="lbl">Depart</div></div>
+    <div class="stat-card"><div class="val">9 Oct</div><div class="lbl">Return</div></div>
+  </div>
+
+  <!-- Itinerary -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Day-by-day itinerary
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="location-badge loc-tokyo">Tokyo — Days 1–4</div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 1</div>
+          <div class="day-date">Fri 25 Sep</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Arrive Tokyo</div>
+          <div class="activity">Arrive Narita/Haneda. Check in, local walk, rest.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 2</div>
+          <div class="day-date">Sat 26 Sep</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Tokyo — Shibuya & Harajuku</div>
+          <div class="activity">Shibuya crossing, Harajuku, Omotesando, Meiji Shrine.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 3</div>
+          <div class="day-date">Sun 27 Sep</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Tokyo — Asakusa & Ueno</div>
+          <div class="activity">Senso-ji Temple, Nakamise shopping street, Ueno Park & museums.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 4</div>
+          <div class="day-date">Mon 28 Sep</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Tokyo — free / TeamLab</div>
+          <div class="activity">TeamLab Borderless (book ahead), Odaiba or Shinjuku. Repack for travel days ahead.</div>
+        </div>
+      </div>
+
+      <div class="location-badge loc-kyoto" style="margin-top:12px;">Kyoto — Days 5–6</div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 5</div>
+          <div class="day-date">Tue 29 Sep</div>
+        </div>
+        <div class="day-date">Kyoto</div>
+        <div class="day-content">
+          <div class="city">Travel Tokyo → Kyoto + Arashiyama</div>
+          <div class="activity">Shinkansen ~2hr 15min. Check in. Arashiyama bamboo grove, Tenryu-ji, monkey park.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 6</div>
+          <div class="day-date">Wed 30 Sep</div>
+        </div>
+        <div class="day-date">Kyoto</div>
+        <div class="day-content">
+          <div class="city">Kyoto — Fushimi Inari & Gion</div>
+          <div class="activity">Fushimi Inari torii gates (early morning), Gion district, Philosopher's Path.</div>
+        </div>
+      </div>
+
+      <div class="location-badge loc-hiroshima" style="margin-top:12px;">Hiroshima — Days 7–8</div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 7</div>
+          <div class="day-date">Thu 1 Oct</div>
+        </div>
+        <div class="day-date">Hiroshima</div>
+        <div class="day-content">
+          <div class="city">Travel Kyoto → Hiroshima + Peace Memorial</div>
+          <div class="activity">Shinkansen ~1hr 40min. Peace Memorial Museum, A-Bomb Dome, Peace Park.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 8</div>
+          <div class="day-date">Fri 2 Oct</div>
+        </div>
+        <div class="day-date">Hiroshima</div>
+        <div class="day-content">
+          <div class="city">Miyajima Island</div>
+          <div class="activity">Ferry to Miyajima. Itsukushima Shrine, floating torii gate, Mount Misen hike.</div>
+        </div>
+      </div>
+
+      <div class="location-badge loc-osaka" style="margin-top:12px;">Osaka — Days 9–12</div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 9</div>
+          <div class="day-date">Sat 3 Oct</div>
+        </div>
+        <div class="day-date">Osaka</div>
+        <div class="day-content">
+          <div class="city">Travel Hiroshima → Osaka + Dotonbori</div>
+          <div class="activity">Shinkansen ~1hr 20min. Check in. Dotonbori food street, Osaka Castle evening walk.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 10</div>
+          <div class="day-date">Sun 4 Oct</div>
+        </div>
+        <div class="day-date">Osaka</div>
+        <div class="day-content">
+          <div class="city">Osaka — Osaka Castle & Shinsekai</div>
+          <div class="activity">Osaka Castle and park, Shinsekai retro district, Kuromon Market.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 11</div>
+          <div class="day-date">Mon 5 Oct</div>
+        </div>
+        <div class="day-date">Osaka</div>
+        <div class="day-content">
+          <div class="city">Osaka — free / USJ</div>
+          <div class="activity">Universal Studios Japan (book ahead) or explore Umeda, Namba shopping.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 12</div>
+          <div class="day-date">Tue 6 Oct</div>
+        </div>
+        <div class="day-date">Osaka</div>
+        <div class="day-content">
+          <div class="city">Day trip — Nara</div>
+          <div class="activity">~45min train from Osaka. Nara deer park, Todai-ji Great Buddha, Kasuga-taisha Shrine. Return to Osaka for dinner.</div>
+        </div>
+      </div>
+
+      <div class="location-badge loc-tokyo" style="margin-top:12px;">Tokyo — Days 13–14</div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 13</div>
+          <div class="day-date">Wed 7 Oct</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Travel Osaka → Tokyo</div>
+          <div class="activity">Shinkansen ~2hr 30min. Return to Tokyo. Tsukiji Outer Market, Ginza or Akihabara.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Day 14</div>
+          <div class="day-date">Thu 8 Oct</div>
+        </div>
+        <div class="day-date">Tokyo</div>
+        <div class="day-content">
+          <div class="city">Tokyo — last full day</div>
+          <div class="activity">Final shopping, souvenirs, Skytree or Shibuya Sky. Pack. Farewell dinner.</div>
+        </div>
+      </div>
+      <div class="day-row">
+        <div>
+          <div class="day-num">Dep</div>
+          <div class="day-date">Fri 9 Oct</div>
+        </div>
+        <div class="day-date"></div>
+        <div class="day-content">
+          <div class="city">Depart for Sydney</div>
+          <div class="activity">Transfer to Narita/Haneda. Flight home. Arrive Sydney ~Day+1.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transport -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Transport & bullet trains
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="tip-card" style="background:#f5f3ff;margin-bottom:14px;">
+        <div class="tip-title">JR Pass — Buy before leaving Australia</div>
+        Purchase the 14-day JR Pass before you depart. Covers all Shinkansen legs on this itinerary plus local JR lines. 2026 price approx. AUD $850–950 per adult. Buy from an authorised AU reseller or Japan Rail Pass website.
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">🚄</div>
+        <div class="train-from-to">
+          Tokyo → Kyoto
+          <span class="train-note">Tokaido Shinkansen (Hikari or Nozomi)</span>
+        </div>
+        <div class="train-time">~2hr 15min</div>
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">🚄</div>
+        <div class="train-from-to">
+          Kyoto → Hiroshima
+          <span class="train-note">San'yo Shinkansen</span>
+        </div>
+        <div class="train-time">~1hr 40min</div>
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">🚄</div>
+        <div class="train-from-to">
+          Hiroshima → Osaka
+          <span class="train-note">San'yo Shinkansen</span>
+        </div>
+        <div class="train-time">~1hr 20min</div>
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">🚄</div>
+        <div class="train-from-to">
+          Osaka → Tokyo
+          <span class="train-note">Tokaido Shinkansen</span>
+        </div>
+        <div class="train-time">~2hr 30min</div>
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">⛴️</div>
+        <div class="train-from-to">
+          Hiroshima → Miyajima (ferry)
+          <span class="train-note">JR Ferry from Miyajima-guchi — covered by JR Pass</span>
+        </div>
+        <div class="train-time">~10min</div>
+      </div>
+      <div class="train-row">
+        <div style="font-size:18px;">🚆</div>
+        <div class="train-from-to">
+          Osaka → Nara (day trip)
+          <span class="train-note">Kintetsu Nara line (not JR — small fare required)</span>
+        </div>
+        <div class="train-time">~45min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pre-trip checklist -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Pre-trip checklist
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="checklist-group">
+        <div class="checklist-group-title">Book now (fills fast)</div>
+        <div class="checklist-item"><input type="checkbox" id="c1" onchange="saveChecklist()"><label for="c1">Flights — Sydney ↔ Tokyo (check Qantas, Japan Airlines, ANA)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c2" onchange="saveChecklist()"><label for="c2">JR Pass — 14-day, 4 x adult passes (purchase before departure)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c3" onchange="saveChecklist()"><label for="c3">Tokyo accommodation — 4 nights (Days 1–4)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c4" onchange="saveChecklist()"><label for="c4">Kyoto accommodation — 2 nights (Days 5–6)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c5" onchange="saveChecklist()"><label for="c5">Hiroshima accommodation — 2 nights (Days 7–8)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c6" onchange="saveChecklist()"><label for="c6">Osaka accommodation — 4 nights (Days 9–12)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c7" onchange="saveChecklist()"><label for="c7">Tokyo accommodation — 2 nights (Days 13–14)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c8" onchange="saveChecklist()"><label for="c8">TeamLab Borderless Tokyo tickets (book months ahead)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c9" onchange="saveChecklist()"><label for="c9">Universal Studios Japan tickets (if going)</label></div>
+      </div>
+      <div class="checklist-group">
+        <div class="checklist-group-title">Documents & money</div>
+        <div class="checklist-item"><input type="checkbox" id="c10" onchange="saveChecklist()"><label for="c10">Passports valid 6+ months beyond 9 Oct 2026</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c11" onchange="saveChecklist()"><label for="c11">Japan eVisa or visa-on-arrival check (Australians: usually 90-day visa-free)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c12" onchange="saveChecklist()"><label for="c12">Travel insurance — 4 people (check HCF and personal insurance policies)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c13" onchange="saveChecklist()"><label for="c13">Notify bank(s) of overseas travel (Andrew & Cath)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c14" onchange="saveChecklist()"><label for="c14">Japanese Yen — order cash before departure (Japan is still heavily cash-based)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c15" onchange="saveChecklist()"><label for="c15">Wise / travel card for backup spending</label></div>
+      </div>
+      <div class="checklist-group">
+        <div class="checklist-group-title">Tech & connectivity</div>
+        <div class="checklist-item"><input type="checkbox" id="c16" onchange="saveChecklist()"><label for="c16">Japan pocket WiFi or SIM card — book in advance (Sakura Mobile, IIJmio etc.)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c17" onchange="saveChecklist()"><label for="c17">Download Google Maps offline — Tokyo, Kyoto, Hiroshima, Osaka</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c18" onchange="saveChecklist()"><label for="c18">Download Hyperdia or Japan Official Travel App for train planning</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c19" onchange="saveChecklist()"><label for="c19">Universal power adapters (Japan uses Type A — same as AU, but 100V not 240V)</label></div>
+      </div>
+      <div class="checklist-group">
+        <div class="checklist-group-title">Health & medical (Sarah)</div>
+        <div class="checklist-item"><input type="checkbox" id="c20" onchange="saveChecklist()"><label for="c20">Sufficient medication supply for trip + buffer</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c21" onchange="saveChecklist()"><label for="c21">Doctor letter for medications (especially for customs)</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c22" onchange="saveChecklist()"><label for="c22">Medical alert / emergency info card in Japanese</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c23" onchange="saveChecklist()"><label for="c23">Research hospital/clinic near each accommodation</label></div>
+      </div>
+      <div class="checklist-group">
+        <div class="checklist-group-title">Packing</div>
+        <div class="checklist-item"><input type="checkbox" id="c24" onchange="saveChecklist()"><label for="c24">Comfortable walking shoes — expect 15,000+ steps/day</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c25" onchange="saveChecklist()"><label for="c25">Luggage forwarding (Takkyubin) — forward bags between cities rather than carry on trains</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c26" onchange="saveChecklist()"><label for="c26">Small day bag / backpack for each person</label></div>
+        <div class="checklist-item"><input type="checkbox" id="c27" onchange="saveChecklist()"><label for="c27">Coin purse — Japanese vending machines and small shops are coin-heavy</label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Budget & expenses
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <a class="budget-link-btn" href="index.html#ph-travel">Open Baker Hub Travel &rarr; track expenses</a>
+      <div class="tip-card">
+        <div class="tip-title">Rough budget guide (4 people, 14 nights)</div>
+        Flights: $6,000–10,000 &nbsp;•&nbsp; Accommodation: $5,000–8,000 &nbsp;•&nbsp; JR Pass x4: $3,500–4,000 &nbsp;•&nbsp; Food: $4,000–5,000 &nbsp;•&nbsp; Activities: $2,000–3,000 &nbsp;•&nbsp; Shopping: $2,000+ &nbsp;•&nbsp;
+        <strong>Estimate total: $22,000–32,000 AUD</strong> depending on accommodation standard and shopping.
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">Money tips</div>
+        <ul style="list-style:none;padding:0;font-size:13px;line-height:1.8;">
+          <li>Cash is king — carry ¥50,000–100,000 (AUD $500–1,000) per person at all times</li>
+          <li>7-Eleven and Japan Post ATMs reliably accept foreign cards</li>
+          <li>IC card (Suica/Pasmo) — top up on arrival for trains, buses, convenience stores</li>
+          <li>Prices in Japan are fixed — no tipping culture at all</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Japan tips & etiquette
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="tip-card">
+        <div class="tip-title">Getting around</div>
+        Get Suica IC cards from a JR station machine on arrival — works on almost all trains/buses in Tokyo, Kyoto, Osaka. Reload at convenience stores or station machines.
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">Luggage forwarding (Takkyubin)</div>
+        Send your big suitcases ahead between cities via Yamato Transport (black cat logo). Costs ~¥2,000 ($20) per bag, arrives next day. Hotels will hold them. Saves dragging luggage on the Shinkansen.
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">Food & dining</div>
+        Convenience stores (7-Eleven, Lawson, FamilyMart) are exceptional — great cheap meals, onigiri, sandwiches, hot foods. Restaurant meals average ¥1,000–2,500 ($10–25) pp for lunch. Many places have picture menus or plastic food displays.
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">Etiquette</div>
+        No eating while walking (except festival stalls). Quiet on trains — no loud calls. Shoes off when entering traditional rooms. Queue patiently — it's respected. Say "sumimasen" (excuse me) generously.
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">Autumn 2026</div>
+        Late September is still warm (~22–27°C). Early October sees temperatures drop to 18–22°C. Comfortable walking weather. Autumn foliage (koyo) typically peaks late November so it's still green but beautiful.
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Notes
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <textarea class="notes-textarea" id="japan-notes" placeholder="Add booking references, ideas, reminders..."></textarea>
+      <button class="save-note-btn" onclick="saveNotes()">Save notes</button>
+      <div id="note-msg" style="font-size:12px;color:#0d9488;margin-top:6px;display:none;">Saved.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CHECKLIST_KEY = 'japan-2026-checklist';
+const NOTES_KEY = 'japan-2026-notes';
+
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const body = header.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+
+function saveChecklist() {
+  const state = {};
+  document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach(cb => {
+    state[cb.id] = cb.checked;
+    const label = cb.nextElementSibling;
+    if (label) label.classList.toggle('done', cb.checked);
+  });
+  localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
+}
+
+function loadChecklist() {
+  const saved = localStorage.getItem(CHECKLIST_KEY);
+  if (!saved) return;
+  const state = JSON.parse(saved);
+  Object.entries(state).forEach(([id, checked]) => {
+    const cb = document.getElementById(id);
+    if (!cb) return;
+    cb.checked = checked;
+    const label = cb.nextElementSibling;
+    if (label) label.classList.toggle('done', checked);
+  });
+}
+
+function saveNotes() {
+  const val = document.getElementById('japan-notes').value;
+  localStorage.setItem(NOTES_KEY, val);
+  const msg = document.getElementById('note-msg');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 2000);
+}
+
+function loadNotes() {
+  const saved = localStorage.getItem(NOTES_KEY);
+  if (saved) document.getElementById('japan-notes').value = saved;
+}
+
+// Auth check
+(async () => {
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  document.documentElement.style.display = '';
+  loadChecklist();
+  loadNotes();
+})();
+</script>
+</body>
+</html>

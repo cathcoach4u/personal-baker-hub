@@ -3,7 +3,7 @@
 ## Working Style & Preferences
 - **Don't apologise** — just action the request
 - **Always push to main** — ALWAYS commit and push directly to `main`. This is the default and the assumption for every session. Never leave work sitting on a feature branch. If the session configuration forces a feature branch, develop there, merge to `main` immediately when done (do not wait for the user to ask), and confirm with `git log --oneline origin/main -1` that main is up to date before finishing.
-- **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.91 → v5.92). No exceptions, no skipping. The 4 locations to update each time: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md. Forgetting the version bump means users will see cached old pages.
+- **Bump version on every change** — every single commit that touches code MUST increment the version (e.g. v5.91 → v5.92). No exceptions, no skipping. ALL of these locations must be updated in the same commit: (1) mobile top bar badge in `index.html`, (2) sidebar header badge in `index.html`, (3) `sw.js` cache name (`baker-hub-vX.Y`), (4) the version line in this CLAUDE.md, (5) all 5 Japan pages: `japan-2026.html`, `japan-itinerary.html`, `japan-plan.html`, `japan-budget.html`, `japan-info.html`. Every page must show the same version — partial bumps cause user confusion.
 - **Be the full coder** — Claude's role is to code, push, and complete tasks end-to-end
 - **Australian English** — all text, dates (DD/MM/YYYY), currency (AUD $), locale en-AU
 - **No uppercase headings** — use normal case for section labels

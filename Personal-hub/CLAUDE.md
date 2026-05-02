@@ -366,11 +366,12 @@ All tables have RLS enabled with `allow_all` policy (FOR ALL USING true WITH CHE
 | config.js | Supabase credentials |
 | shopping.html | AisleMate standalone shopping page |
 | sarah-protocol.html | Sarah's MS & Epilepsy Protocol page |
-| japan-2026.html | Japan family trip planner home/dashboard. Open access. Countdown header, mini stats (checklist progress + budget), 3 collapsed section cards linking to other pages. |
-| japan-itinerary.html | Japan itinerary — 15 day accordion cards with city colour coding, route ribbon, stat strip, Today button. |
+| japan-2026.html | Japan family trip planner home/dashboard. Open access. Countdown header, mini stats (checklist progress + budget — budget stat fetches live from Supabase), 3 collapsed section cards linking to other pages. |
+| japan-itinerary.html | Japan itinerary — 15 day accordion cards with city colour coding, route ribbon, stat strip (shows live budget total from Supabase), Today button. |
 | japan-plan.html | Japan plan & packing — 27-item checklist in 5 sections with progress bars. |
-| japan-budget.html | Japan budget tracker — add/delete expenses by category, progress bar vs $25k budget, estimated breakdown guide. Expenses stored in Supabase `japan_expenses` table (cross-device). |
-| japan-info.html | Japan info — emergency contacts, Shinkansen routes, essential tips, notes. All 5 pages share 5-tab nav (Home/Itinerary/Plan/Budget/Info). localStorage keys: jck (checklist), jn-g (notes). Budget stored in Supabase. |
+| japan-budget.html | Japan budget tracker — add/delete expenses by category, progress bar vs $25k budget, estimated breakdown guide. Expenses stored in Supabase `japan_expenses` table (cross-device sync). |
+| japan-info.html | Japan info — emergency contacts, Shinkansen routes, essential tips, notes. |
+All 5 Japan pages share: 5-tab nav (Home/Itinerary/Plan/Budget/Info), ↻ hard-refresh button in top bar (clears SW cache + reloads), countdown, v-badge. localStorage: jck (checklist), jn-g (notes). Budget stored in Supabase `japan_expenses`.|
 | ndis.html | Standalone mobile NDIS page (not linked from nav) |
 | apps-directory.html | Apps directory page |
 | sw.js | Service worker for Baker Hub |
